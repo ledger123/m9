@@ -12,7 +12,12 @@ use DBIx::Simple;
 use Template;
 use CGI::FormBuilder;
 
+
 my $q = new CGI;
+my $tt = Template->new({
+    INCLUDE_PATH => '/var/www/munshi9/tmpl',
+    INTERPOLATE  => 1,
+}) || die "$Template::ERROR\n"; 
 
 my %attr = (PrintError => 0, RaiseError => 0); # Attributes to pass to DBI->connect() to disable automatic error checking
 my $dbh = DBI->connect("dbi:Oracle:XE", "munshi8", "gbaba4000" , \%attr) or die "Can't connect to database: ", $DBI::errstr, "\n";
@@ -20,8 +25,10 @@ my $dbs = DBIx::Simple->connect($dbh);
 
 my $nextsub = $q->param('nextsub');
 my $action = $q->param('action');
+my $tmpl = $q->param('tmpl');
+my $id = $q->param('id');
 
-$nextsub = 'sample';
+$nextsub = $q->param('nextsub');
 &$nextsub;
 
 1;
@@ -78,6 +85,53 @@ sub sample {
 </body>
 </html>
 |;
+}
+
+
+#----------------------------------------
+sub banquet {
+   my $vars = {};
+   $vars->{hdr} = $dbs->query('SELECT * FROM banquet_header WHERE event_number=?', $id)->hash;
+   $vars->{dtl} = $dbs->query('SELECT * FROM banquet_lines WHERE event_number=?', $id)->map_hashes('id');
+   print $q->header();
+   $tt->process("$tmpl.tmpl", $vars) || die $tt->error(), "\n";
+}
+
+
+#----------------------------------------
+sub reservation {
+   my $vars = {};
+   $vars->{res} = $dbs->query('SELECT * FROM hc_res WHERE res_id=?', $id)->hash;
+   print $q->header();
+   $tt->process("$tmpl.tmpl", $vars) || die $tt->error(), "\n";
+}
+
+
+#----------------------------------------
+sub reg_card {
+   my $vars = {};
+   $vars->{res} = $dbs->query('SELECT * FROM hc_res WHERE res_id=?', $id)->hash;
+   print $q->header();
+   $tt->process("$tmpl.tmpl", $vars) || die $tt->error(), "\n";
+}
+
+
+#----------------------------------------
+sub guest_folio {
+   my $vars = {};
+   $vars->{res} = $dbs->query('SELECT * FROM hc_res WHERE res_id=?', $id)->hash;
+   $vars->{charges} = $dbs->query('SELECT * FROM hc_charges WHERE res_id=? ORDER BY charge_date', $id)->map_hashes('tr_num');
+   print $q->header();
+   $tt->process("$tmpl.tmpl", $vars) || die $tt->error(), "\n";
+}
+
+#----------------------------------------
+sub invoice {
+   my $vars = {};
+   $vars->{hdr} = $dbs->query('SELECT * FROM hc_invoices WHERE inv_num=?', $id)->hash;
+   $vars->{dtl} = $dbs->query('SELECT * FROM hc_invoices_detail WHERE inv_num=?', $id)->map_hashes('res_id');
+   print $q->header();
+   $tt->process("$tmpl.tmpl", $vars) || die $tt->error(), "\n";
 }
 
 # EOF

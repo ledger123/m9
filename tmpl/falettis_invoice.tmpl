@@ -1,0 +1,89 @@
+<html>
+<head>
+ <title>Report Name</title>
+ <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+</head>
+<body oonload="return window.print();">
+
+<table width="100%">
+<tr>
+    <td>
+	<table width="100%">
+		<tr>
+		<th>SALES TAX INVOICE</th>
+		<td><img src="/munshi9/logo.jpg"></td>
+		<td>NTN: 4032712 - 4</td>
+	</table>
+    </td>
+</tr>
+<tr>
+    <td><hr/></td>
+</tr>
+<tr>
+    <td>
+	<table>
+		<tr><td><table>
+		<tr><th align="right">Code</th><td>[% hdr.comp_code %]</td></tr>
+		<tr><th align="right">Company</th><td>[% hdr.comp_code %]</td></tr>
+		<tr><th align="right">NTN</th><td>[% hdr.comp_code %]</td></tr>
+		<tr><th align="right">Address</th><td>[% hdr.comp_code %]</td></tr>
+		<tr><th align="right">City</th><td>[% hdr.comp_code %]</td></tr>
+		<tr><th align="right">Phone</th><td>[% hdr.comp_code %]</td></tr>
+		</table></td><td><table>
+		<tr><th align="right">Invoice Number</th><td>[% hdr.comp_code %]</td></tr>
+		<tr><th align="right">Invoice Amount</th><td>[% hdr.comp_code %]</td></tr>
+		<tr><th align="right">Invoice Date</th><td>[% hdr.comp_code %]</td></tr>
+		</table></td></tr>
+	</table>
+    </td>
+</tr>
+<tr>
+    <td>
+	<table width="100%" border=1 cellspacing=0 cellpadding=3>
+	<tr>
+		<th>Date</th>
+		<th>Res ID</th>
+		<th>Guest Name</th>
+		<th>Ref1</th>
+		<th>Room Num</th>
+		<th>Amount</th>
+		<th>Sales Tax</th>
+		<th>Bill Amt</th>
+	</tr>
+[% FOREACH res_id IN dtl.keys %]
+	<tr>
+		<td>[% dtl.$res_id.tr_date %]</td>
+		<td>[% res_id %]</td>
+		<td>[% dtl.$res_id.guest_name1 %]</td>
+		<td>[% dtl.$res_id.other_ref1 %]</td>
+		<td>[% dtl.$res_id.room_num %]</td>
+		<td>[% dtl.$res_id.bill_amt %]</td>
+		<td>[% dtl.$res_id.bill_amt %]</td>
+		<td>[% dtl.$res_id.bill_amt %]</td>
+	</tr>
+[% END %]
+	</table>
+    </td>
+</tr>
+<tr><td><br/><br/><br/><br/></td></tr>
+<tr><td>___________________</td></tr>
+<tr><td>Credit Manager</td></tr>
+
+<tr>
+    <td>
+	<table border=1 cellspacing=0 cellpadding=3>
+		<tr><th>15 DAYS CREDIT PERIOD</th></tr>
+		<tr><td>
+Cheque/Draft should be made in the name of<br/>
+<b>Imperial Hotel Management Services Pvt Ltd.</b><br/>
+24-Egerton Road, Lahore. Pakistan 54000.<br/>
+UAN #: +92 42 111-444-333, Fax #: +92 42 3636 6818<br/>
+Mail: credit.officer@falettishotel.com<br/>
+Web: www.falettishotel.com<br/>
+		</td></tr>
+	</table>
+    </td>
+</tr>
+</body>
+</html>
+

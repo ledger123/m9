@@ -10,9 +10,9 @@
     <td>
 	<table width="100%">
 		<tr>
-		<th>SALES TAX INVOICE</th>
-		<td><img src="/munshi9/logo.jpg"></td>
-		<td>NTN: 4032712 - 4</td>
+		<th valign="bottom">SALES TAX INVOICE</th>
+		<td><img src="/munshi9/logo.jpg"><br/>Falettis Hotel</td>
+		<td valign="bottom">NTN: 4032712 - 4</td>
 	</table>
     </td>
 </tr>
@@ -68,9 +68,9 @@
 [% END %]
         <tr>
 		<th colspan=5" align="right">TOTAL</th>
-		<th align="right">[% tax_amt_total %]</th>
-		<th align="right">[% bill_amt_total - tax_amt_total %]</th>
-		<th align="right">[% bill_amt_total %]</th>
+		<th align="right">[% nf.format_price(tax_amt_total) %]</th>
+		<th align="right">[% nf.format_price(bill_amt_total - tax_amt_total) %]</th>
+		<th align="right">[% nf.format_price(bill_amt_total) %]</th>
 	</tr>
 	</table>
     </td>

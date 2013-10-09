@@ -1,94 +1,87 @@
 <html>
 <head>
  <title>Reservation Confirmation</title>
- <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+ <link rel="stylesheet" href="/munshi9/medium.css" type="text/css">
 </head>
-<body oonload="return window.print();">
-
+<body onload="return window.print();">
 
 <table width="100%">
 <tr><td colspan=2 align="center"><img src=logo.jpg></td></tr>
-<tr>
-   <td>
-	<table>
+<tr align="center">
+   <td valign="top">
+	<table cellspacing=0 cellpadding=1>
 		<tr><th align="left">To:</th><td>[% res.guest_name1 %]</td></tr>
 		<tr><th align="left">Company:</th><td>[% res.company %]</td></tr>
 		<tr><th align="left">Phone:</th><td>[% res.phone %]</td></tr>
 		<tr><th align="left">Fax:</th><td>[% res.fax %]</td></tr>
 	</table>
    </td>
-   <td>
-	<table>
-		<tr><th align="left">To:</th><td>[% res.guest_name1 %]</td></tr>
-		<tr><th align="left">Company:</th><td>[% res.company %]</td></tr>
-		<tr><th align="left">Phone:</th><td>[% res.phone %]</td></tr>
-		<tr><th align="left">Fax:</th><td>[% res.fax %]</td></tr>
+   <td valign="top">
+	<table cellspacing=0 cellpadding=1>
+		<tr><th align="left">Resv By:</th><td>[% res.res_made_by %]</td></tr>
+		<tr><th align="left">Phone:</th><td>+92 42 111 444 333</td></tr>
+		<tr><th align="left">Fax:</th><td>+92 42 36 36 68 18</td></tr>
+		<tr><th align="left">Date:</th><td>[% res.resdate %]</td></tr>
+		<tr><th align="left">Email:</th><td>room.rsvn@falettishotel.com</td></tr>
+		<tr><th align="left">Web:</th><td>www.falettishotel.com</td></tr>
 	</table>
    </td>
 </tr>
-<tr><td align="center" colspan=2><h2>Reservation Status: Confirm</h2></td></tr>
+<tr><td align="center" colspan=2><h2>Reservation Status: [% IF res.res_status == 'Active' %] Confirmed [% ELSE %] Cancelled [% END %]</h2></td></tr>
 
 <tr>
    <td colspan=2">
-We feel immense pleasure to confirm your reservation at "Falettis's Hotel Lahore". Below is the summary of your initial itinerary as desired by yourslef. We warmly look forward to welcoming you as our honorable guest.
+We feel immense pleasure to confirm your reservation at <b>"Falettis's Hotel Lahore"</b>. Below is the summary of your initial itinerary as desired by yourself. We warmly look forward to welcoming you as our honorable guest.<br/>
    </td>
 </tr>
 
 <tr>
-   <td colspan=2>
-     <table cellspacing=0 cellpadding=3 border=1>
+   <td colspan=2 align="center">
+     <table cellspacing=0 cellpadding=2 border=1>
 	<tr><td>
-	   <table>
-		<tr><th align="left">Confirmation Number:</th><td>[% res.guest_name1 %]</td></tr>
-		<tr><th align="left">Guest Name1:</th><td>[% res.company %]</td></tr>
-		<tr><th align="left">Guest Name2:</th><td>[% res.phone %]</td></tr>
-		<tr><th align="left">Arrival Date:</th><td>[% res.fax %]</td></tr>
-		<tr><th align="left">Departure Date:</th><td>[% res.fax %]</td></tr>
-		<tr><th align="left">No. of nights:</th><td>[% res.fax %]</td></tr>
-		<tr><th align="left">No. of adult/child:</th><td>[% res.fax %]</td></tr>
+	   <table cellspacing=0 cellpadding=2>
+		<tr><th align="left">Confirmation Number:</th><td>[% res.res_id %]</td></tr>
+		<tr><th align="left">Guest Name1:</th><td>[% res.guest_name1 %]</td></tr>
+		<tr><th align="left">Guest Name2:</th><td>[% res.guest_name2 %]</td></tr>
+		<tr><th align="left">Arrival Date:</th><td>[% res.arrival_date %]</td></tr>
+		<tr><th align="left">Departure Date:</th><td>[% res.checkout_date %]</td></tr>
+		<tr><th align="left">No. of nights:</th><td>[% res.nights %]</td></tr>
+		<tr><th align="left">No. of adult/child:</th><td>[% res.adults %] / [% res.child %]</td></tr>
 	   </table>
 	</td><td>
-	   <table>
-		<tr><th align="left">Accomodation:</th><td>[% res.guest_name1 %]</td></tr>
-		<tr><th align="left">Room Rate:</th><td>[% res.company %]</td></tr>
-		<tr><th align="left">Breakfast Included:</th><td>[% res.phone %]</td></tr>
-		<tr><th align="left">Payment Mode:</th><td>[% res.fax %]</td></tr>
-		<tr><th align="left">Airport Pickup:</th><td>[% res.fax %]</td></tr>
-		<tr><th align="left">Flight Details:</th><td>[% res.fax %]</td></tr>
-		<tr><th align="left">Res Remarks:</th><td>[% res.fax %]</td></tr>
+	   <table cellspacing=0 cellpadding=2>
+		<tr><th align="left">Accomodation:</th><td>[% res.room_type %]</td></tr>
+		<tr><th align="left">Room Rate:</th><td>[% res.room_rate %] + Tax</td></tr>
+		<tr><th align="left">Breakfast Included:</th><td>[% res.adults %]</td></tr>
+		<tr><th align="left">Payment Mode:</th><td>[% res.payment_mode %]</td></tr>
+		<tr><th align="left">Airport Pickup:</th><td>[% res.ap_pickup %]</td></tr>
+		<tr><th align="left">Flight Details:</th><td>[% res.flight_num %] [% res.flight_time %]</td></tr>
+		<tr><th align="left">Res Remarks:</th><td>[% res.res_remarks %]</td></tr>
 	   </table>
         </td></tr>
       </table>
    </td>
 </tr>
 
-<tr>
-  <th colspan=2><h2>Terms and Conditions</h2></th>
-</tr>
+<tr><th colspan=2><h2>Terms and Conditions</h2></th></tr>
 
 <tr>
   <td colspan=2"><ol>
-	<li>The above room rates are subject to applicable government taxes which are 25.28% per room per night.
+	<li>The above Room Rates are subject to applicable Government Taxes which are 25.28% per room per night.
 	<li>Our check-in time is 1300 hrs. In case arrival is before 1300 hrs and after 1600 hrs, room will be subject to availability.
-	<li>Our check-out time is 1200 hrs and please note that 50% of room rent will be charged in case of late checkout from 1200 hrs to 1800 hrs and after 1800 hrs full night room rent will be charged.
+	<li>Our check-out time is 1200 hrsi noon and please note that 50% of room rent will be charged in case of late checkout from 1200 hrs noon to 1800 hrs and after 1800 hrs full night room rent will be charged.
 	<li>All non-guaranteed reservations will be held on a tentative basis, subject to the availability unless guaranteed by valid credit card / company letter or advance deposit.
-	<li>Confirmed reservations must be cancelled / amended at least 24 hours prior to arrival to avoid one night NO-SHOW or CANCELLATION cahrges. Cancellations should be forwarded in writing to our office.
-	<li>In case of any query, please contact our front office department.
+	<li>Confirmed reservations must be cancelled / amended at least 24 hours prior to arrival to avoid one night NO-SHOW or CANCELLATION charges. Cancellations should be forwarded in writing to our office.
+	<li>In case of any query, please contact our Front Office Department.
   </ol></td>
 </tr>
 
 </table>
 <br/>
-<br/>
 We assure you of our best services at all times and look forward to welcoming you at Falettis Hotel, Lahore.
 <br/>
 <br/>
-<br/>
-<br/>
-<br/>
-Sincrerely yours,
-<br/>
-<br/>
+Sincerely yours,
 <br/>
 <br/>
 <br/>

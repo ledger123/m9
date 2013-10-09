@@ -11,9 +11,10 @@ use DBI;
 use DBIx::Simple;
 use Template;
 use CGI::FormBuilder;
-
+use Number::Format;
 
 my $q = new CGI;
+my $nf = new Number::Format(-int_curr_symbol => '');
 my $tt = Template->new({
     INCLUDE_PATH => '/var/www/munshi9/tmpl',
     INTERPOLATE  => 1,
@@ -128,8 +129,13 @@ sub guest_folio {
 #----------------------------------------
 sub invoice {
    my $vars = {};
+   $vars->{nf} = $nf;
    $vars->{hdr} = $dbs->query('SELECT * FROM hc_invoices WHERE inv_num=?', $id)->hash;
-   $vars->{dtl} = $dbs->query('SELECT * FROM hc_invoices_detail WHERE inv_num=?', $id)->map_hashes('res_id');
+   $vars->{company} = $dbs->query('SELECT * FROM hc_companies WHERE comp_code=?', $vars->{hdr}->{comp_code})->hash;
+   $vars->{dtl} = $dbs->query('
+	SELECT tr_date, res_id, guest_name1, 
+		other_ref1, room_num, bill_amt, ROUND(bill_amt / 1.16, 2) tax_amt
+	FROM hc_invoices_detail WHERE inv_num=?', $id)->map_hashes('res_id');
    print $q->header();
    $tt->process("$tmpl.tmpl", $vars) || die $tt->error(), "\n";
 }

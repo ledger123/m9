@@ -1,9 +1,9 @@
 <html>
 <head>
  <title>Report Name</title>
- <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+ <link rel="stylesheet" href="/munshi9/medium.css" type="text/css">
 </head>
-<body oonload="return window.print();">
+<body onload="return window.print();">
 
 <table width="100%">
 <tr>
@@ -21,18 +21,18 @@
 </tr>
 <tr>
     <td>
-	<table>
-		<tr><td><table>
-		<tr><th align="right">Code</th><td>[% hdr.comp_code %]</td></tr>
-		<tr><th align="right">Company</th><td>[% hdr.comp_code %]</td></tr>
-		<tr><th align="right">NTN</th><td>[% hdr.comp_code %]</td></tr>
-		<tr><th align="right">Address</th><td>[% hdr.comp_code %]</td></tr>
-		<tr><th align="right">City</th><td>[% hdr.comp_code %]</td></tr>
-		<tr><th align="right">Phone</th><td>[% hdr.comp_code %]</td></tr>
-		</table></td><td><table>
-		<tr><th align="right">Invoice Number</th><td>[% hdr.comp_code %]</td></tr>
-		<tr><th align="right">Invoice Amount</th><td>[% hdr.comp_code %]</td></tr>
-		<tr><th align="right">Invoice Date</th><td>[% hdr.comp_code %]</td></tr>
+	<table width="100%" border=1 cellspacing=0 cellpadding=3>
+		<tr><td valign="top" width="50%"><table>
+		<tr><th align="left">Code:</th><td>[% hdr.comp_code %]</td></tr>
+		<tr><th align="left">Company:</th><td>[% company.company %]</td></tr>
+		<tr><th align="left">NTN:</th><td>[% company.ntn %]</td></tr>
+		<tr><th align="left">Address:</th><td>[% company.address %]</td></tr>
+		<tr><th align="left">City:</th><td>[% company.city %]</td></tr>
+		<tr><th align="left">Phone:</th><td>[% company.phone %]</td></tr>
+		</table></td><td valign="top"><table>
+		<tr><th align="left">Invoice Number:</th><td>[% hdr.inv_num %]</td></tr>
+		<tr><th align="left">Invoice Amount:</th><td><b>[% hdr.inv_amt %]</b></td></tr>
+		<tr><th align="left">Invoice Date:</th><td>[% hdr.inv_date %]</td></tr>
 		</table></td></tr>
 	</table>
     </td>
@@ -50,6 +50,8 @@
 		<th>Sales Tax</th>
 		<th>Bill Amt</th>
 	</tr>
+[% tax_amt_total = 0 %]
+[% bill_amt_total = 0 %]
 [% FOREACH res_id IN dtl.keys %]
 	<tr>
 		<td>[% dtl.$res_id.tr_date %]</td>
@@ -57,11 +59,19 @@
 		<td>[% dtl.$res_id.guest_name1 %]</td>
 		<td>[% dtl.$res_id.other_ref1 %]</td>
 		<td>[% dtl.$res_id.room_num %]</td>
-		<td>[% dtl.$res_id.bill_amt %]</td>
-		<td>[% dtl.$res_id.bill_amt %]</td>
-		<td>[% dtl.$res_id.bill_amt %]</td>
+		<td align="right">[% nf.format_price(dtl.$res_id.tax_amt) %]</td>
+		<td align="right">[% nf.format_price(dtl.$res_id.bill_amt - dtl.$res_id.tax_amt) %]</td>
+		<td align="right">[% nf.format_price(dtl.$res_id.bill_amt) %]</td>
 	</tr>
+[% tax_amt_total = tax_amt_total + dtl.$res_id.tax_amt %]
+[% bill_amt_total = bill_amt_total + dtl.$res_id.bill_amt %]
 [% END %]
+        <tr>
+		<th colspan=5" align="right">TOTAL</th>
+		<th align="right">[% tax_amt_total %]</th>
+		<th align="right">[% bill_amt_total - tax_amt_total %]</th>
+		<th align="right">[% bill_amt_total %]</th>
+	</tr>
 	</table>
     </td>
 </tr>
@@ -70,7 +80,7 @@
 <tr><td>Credit Manager</td></tr>
 
 <tr>
-    <td>
+    <td align="center">
 	<table border=1 cellspacing=0 cellpadding=3>
 		<tr><th>15 DAYS CREDIT PERIOD</th></tr>
 		<tr><td>

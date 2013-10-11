@@ -134,9 +134,12 @@ sub invoice {
    $vars->{company} = $dbs->query('SELECT * FROM hc_companies WHERE comp_code=?', $vars->{hdr}->{comp_code})->hash;
    $vars->{dtl} = $dbs->query('
 	SELECT tr_date, res_id, guest_name1, 
-		other_ref1, room_num, bill_amt, ROUND(bill_amt / 1.16, 2) tax_amt
+		other_ref1, other_ref2, room_num, bill_amt, ROUND(bill_amt / 1.16, 2) tax_amt
 	FROM hc_invoices_detail WHERE inv_num=?', $id)->map_hashes('res_id');
    print $q->header();
+   $vars->{chq} = $dbs->query('
+	SELECT * FROM hc_fb_sale
+	WHERE TO_CHAR(sale_id) IN (SELECT other_ref2 FROM hc_charges WHERE bill_num = ?)', $id)->hash;
    $tt->process("$tmpl.tmpl", $vars) || die $tt->error(), "\n";
 }
 

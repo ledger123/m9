@@ -1,7 +1,7 @@
 <html>
 <head>
  <title>Report Name</title>
- <link rel="stylesheet" href="/munshi9/medium.css" type="text/css">
+ <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
 </head>
 <body onload="return window.print();">
 
@@ -53,6 +53,7 @@
 	</tr>
 [% tax_amt_total = 0 %]
 [% bill_amt_total = 0 %]
+[% tax10_total = 0 %]
 [% FOREACH res_id IN dtl.keys %]
 	<tr>
 		<td nowrap>[% dtl.$res_id.charge_date %]</td>
@@ -71,7 +72,7 @@
 
 [% FOREACH sale_id IN chq.keys %]
 	<tr>
-		<td>[% chq.$res_id.sale_date %]</td>
+		<td>[% chq.$sale_id.sale_date %]</td>
 		<td>[% sale_id %]</td>
 		<td>[% chq.$sale_id.outlet_id %]</td>
 		<td>[% chq.$sale_id.chq_num %]</td>
@@ -83,13 +84,14 @@
 	</tr>
 [% tax_amt_total = tax_amt_total + chq.$sale_id.sale_amt + chq.$sale_id.tip %]
 [% bill_amt_total = bill_amt_total + chq.$sale_id.net_amt %]
+[% tax10_total = tax10_total + chq.$sale_id.tax10 %]
 [% END %]
 
         <tr>
 		<th colspan=5" align="right">TOTAL</th>
 		<th align="right">[% nf.format_price(tax_amt_total) %]</th>
 		<th align="right">[% nf.format_price(bill_amt_total - tax_amt_total) %]</th>
-		<td>&nbsp;</td>
+		<th align="right">[% nf.format_price(tax10_total) %]</th>
 		<th align="right">[% nf.format_price(bill_amt_total) %]</th>
 	</tr>
 	</table>

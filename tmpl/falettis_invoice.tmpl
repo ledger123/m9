@@ -48,28 +48,48 @@
 		<th>Room Num</th>
 		<th>Amount</th>
 		<th>Sales Tax</th>
+		<th>Advance Tax</th>
 		<th>Bill Amt</th>
 	</tr>
 [% tax_amt_total = 0 %]
 [% bill_amt_total = 0 %]
 [% FOREACH res_id IN dtl.keys %]
 	<tr>
-		<td>[% dtl.$res_id.tr_date %]</td>
+		<td nowrap>[% dtl.$res_id.charge_date %]</td>
 		<td>[% res_id %]</td>
 		<td>[% dtl.$res_id.guest_name1 %]</td>
 		<td>[% dtl.$res_id.other_ref1 %]</td>
 		<td>[% dtl.$res_id.room_num %]</td>
 		<td align="right">[% nf.format_price(dtl.$res_id.tax_amt) %]</td>
-		<td align="right">[% nf.format_price(dtl.$res_id.bill_amt - dtl.$res_id.tax_amt) %]</td>
-		<td align="right">[% nf.format_price(dtl.$res_id.bill_amt) %]</td>
+		<td align="right">[% nf.format_price(dtl.$res_id.amount - dtl.$res_id.tax_amt) %]</td>
+		<td>&nbsp;</td>
+		<td align="right">[% nf.format_price(dtl.$res_id.amount) %]</td>
 	</tr>
 [% tax_amt_total = tax_amt_total + dtl.$res_id.tax_amt %]
-[% bill_amt_total = bill_amt_total + dtl.$res_id.bill_amt %]
+[% bill_amt_total = bill_amt_total + dtl.$res_id.amount %]
 [% END %]
+
+[% FOREACH sale_id IN chq.keys %]
+	<tr>
+		<td>[% chq.$res_id.sale_date %]</td>
+		<td>[% sale_id %]</td>
+		<td>[% chq.$sale_id.outlet_id %]</td>
+		<td>[% chq.$sale_id.chq_num %]</td>
+		<td>[% chq.$sale_id.covers %]</td>
+		<td align="right">[% nf.format_price(chq.$sale_id.sale_amt+chq.$sale_id.tip) %]</td>
+		<td align="right">[% nf.format_price(chq.$sale_id.ced) %]</td>
+		<td align="right">[% nf.format_price(chq.$sale_id.tax10) %]</td>
+		<td align="right">[% nf.format_price(chq.$sale_id.net_amt) %]</td>
+	</tr>
+[% tax_amt_total = tax_amt_total + chq.$sale_id.sale_amt + chq.$sale_id.tip %]
+[% bill_amt_total = bill_amt_total + chq.$sale_id.net_amt %]
+[% END %]
+
         <tr>
 		<th colspan=5" align="right">TOTAL</th>
 		<th align="right">[% nf.format_price(tax_amt_total) %]</th>
 		<th align="right">[% nf.format_price(bill_amt_total - tax_amt_total) %]</th>
+		<td>&nbsp;</td>
 		<th align="right">[% nf.format_price(bill_amt_total) %]</th>
 	</tr>
 	</table>

@@ -63,7 +63,7 @@
 		<td>[% dtl.$res_id.room_num %]</td>
 		<td align="right">[% nf.format_price(dtl.$res_id.tax_amt) %]</td>
 		<td align="right">[% nf.format_price(dtl.$res_id.amount - dtl.$res_id.tax_amt) %]</td>
-		<td>&nbsp;</td>
+		<td align="right">0</td>
 		<td align="right">[% nf.format_price(dtl.$res_id.amount) %]</td>
 	</tr>
 [% tax_amt_total = tax_amt_total + dtl.$res_id.tax_amt %]

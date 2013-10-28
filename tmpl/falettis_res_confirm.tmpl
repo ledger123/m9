@@ -9,25 +9,28 @@
 <tr><td colspan=2 align="center"><img src=logo.jpg></td></tr>
 <tr align="center">
    <td valign="top">
-	<table cellspacing=0 cellpadding=1>
-		<tr><th align="left">To:</th><td>[% res.guest_name1 %]</td></tr>
-		<tr><th align="left">Company:</th><td>[% res.company %]</td></tr>
-		<tr><th align="left">Phone:</th><td>[% res.phone %]</td></tr>
-		<tr><th align="left">Fax:</th><td>[% res.fax %]</td></tr>
+	<table cellspacing=0 cellpadding=1 width="100%">
+		<tr><td align="left">To:</td><td>[% company.contact_person %]</td></tr>
+		<tr><td align="left">Company:</td><td>[% res.company %]</td></tr>
+		<tr><td align="left">Phone:</td><td>[% res.phone %]</td></tr>
+		<tr><td align="left">Fax:</td><td>[% res.fax %]</td></tr>
 	</table>
    </td>
    <td valign="top">
-	<table cellspacing=0 cellpadding=1>
-		<tr><th align="left">Resv By:</th><td>[% res.res_made_by %]</td></tr>
-		<tr><th align="left">Phone:</th><td>+92 42 111 444 333</td></tr>
-		<tr><th align="left">Fax:</th><td>+92 42 36 36 68 18</td></tr>
-		<tr><th align="left">Date:</th><td>[% res.resdate %]</td></tr>
-		<tr><th align="left">Email:</th><td>room.rsvn@falettishotel.com</td></tr>
-		<tr><th align="left">Web:</th><td>www.falettishotel.com</td></tr>
+	<table cellspacing=0 cellpadding=1 width="100%">
+		<tr><td align="left">Resv By:</td><td>[% res.res_made_by %]</td></tr>
+		<tr><td align="left">Phone:</td><td>+92 42 111 444 333</td></tr>
+		<tr><td align="left">Fax:</td><td>+92 42 36 36 68 18</td></tr>
+		<tr><td align="left">Date:</td><td>[% res.resdate %]</td></tr>
+		<tr><td align="left">Email:</td><td>room.rsvn@falettishotel.com</td></tr>
+		<tr><td align="left">Web:</td><td>www.falettishotel.com</td></tr>
 	</table>
    </td>
 </tr>
-<tr><td align="center" colspan=2><br/><h2>Reservation Status: [% IF res.res_status == 'Active' %] Confirmed [% ELSE %] Cancelled [% END %]</h2></br></td></tr>
+
+<tr><td align="center" colspan=2>
+	<table border=1 cellspacing=0 cellpadding=5 width="100%"><tr><th><h2>Reservation Status: [% IF res.res_status == 'Active' %] Confirmed [% ELSE %] Cancelled [% END %]</h2></th></tr></table>
+</td></tr>
 
 <tr>
    <td colspan=2">
@@ -37,9 +40,9 @@ We feel immense pleasure to confirm your reservation at <b>"Falettis's Hotel Lah
 
 <tr>
    <td colspan=2 align="center">
-     <table cellspacing=0 cellpadding=2 border=1>
+     <table cellspacing=0 cellpadding=2 border=0 width="100%">
 	<tr><td>
-	   <table cellspacing=0 cellpadding=2>
+	   <table cellspacing=0 cellpadding=2 width="100%">
 		<tr><th align="left">Confirmation Number:</th><td>[% res.res_id %]</td></tr>
 		<tr><th align="left">Guest Name1:</th><td>[% res.guest_name1 %]</td></tr>
 		<tr><th align="left">Guest Name2:</th><td>[% res.guest_name2 %]</td></tr>
@@ -49,7 +52,7 @@ We feel immense pleasure to confirm your reservation at <b>"Falettis's Hotel Lah
 		<tr><th align="left">No. of adult/child:</th><td>[% res.adults %] / [% res.child %]</td></tr>
 	   </table>
 	</td><td>
-	   <table cellspacing=0 cellpadding=2>
+	   <table cellspacing=0 cellpadding=2 width="100%">
 		<tr><th align="left">Accomodation:</th><td>[% res.room_type %]</td></tr>
 		<tr><th align="left">Room Rate:</th><td>[% res.room_rate %] + Tax</td></tr>
 		<tr><th align="left">Breakfast Included:</th><td>[% res.adults %]</td></tr>
@@ -63,17 +66,19 @@ We feel immense pleasure to confirm your reservation at <b>"Falettis's Hotel Lah
    </td>
 </tr>
 
-<tr><th colspan=2><br/><h2>Terms and Conditions</h2><br/></th></tr>
+<tr><th colspan=2>
+	<table width="100%" border=1 cellpadding=2 cellspacing=0><tr><th><h2>* Terms and Conditions</h2></th></tr></table>
+</th></tr>
 
 <tr>
-  <td colspan=2"><ol>
+  <td colspan=2">
 	<li>The above Room Rates are subject to applicable Government Taxes which are 25.28% per room per night.
-	<li>Our check-in time is 1400 hrs.
-	<li>Our check-out time is 1200 hrs and please note that 50% of room rent will be charged in case of late checkout from 1200 hrs to 1800 hrs and after 1800 hrs full night room rent will be charged.
-	<li>All non-guaranteed reservations will be held on a tentative basis, subject to the availability unless guaranteed by valid credit card / company letter or advance deposit.
+	<li>Our check-in time is 1300 hrs. Incase arrival is before 1300 hrs and after 1600 hrs, room will be subject to availability unless guranteed and if check-in beofre 0800 hrs, previous night will be charged.
+	<li>Our check-out time is 1200 noon and please note that 50% of room rent will be charged in case of late checkout from 1200 noon to 1800 hrs and after 1800 hrs full night room rent will be charged.
+	<li>All non-guaranteed reservations will be held on a tentative basis, subject to availability unless guaranteed by valid credit card / company letter or advance deposit.
 	<li>Confirmed reservations must be cancelled / amended at least 24 hours prior to arrival to avoid one night NO-SHOW or CANCELLATION charges. Cancellations should be forwarded in writing to our office.
 	<li>In case of any query, please contact our Front Office Department.
-  </ol></td>
+  </td>
 </tr>
 
 </table>

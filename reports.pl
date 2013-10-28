@@ -103,6 +103,7 @@ sub banquet {
 sub reservation {
    my $vars = {};
    $vars->{res} = $dbs->query('SELECT * FROM hc_res WHERE res_id=?', $id)->hash;
+   $vars->{company} = $dbs->query('SELECT * FROM hc_companies WHERE comp_code = (SELECT comp_code FROM hc_res WHERE res_id = ?)', $id)->hash;
    print $q->header();
    $tt->process("$tmpl.tmpl", $vars) || die $tt->error(), "\n";
 }

@@ -60,10 +60,17 @@
 		<td>[% dtl.$res_id.guest_name1 %]</td>
 		<td>[% dtl.$res_id.other_ref1 %]</td>
 		<td>[% dtl.$res_id.room_num %]</td>
+<<<<<<< HEAD
 		<td align="right">[% nf.format_price(chq.sale_amt) %]</td>
 		<td align="right">[% nf.format_price(chq.ced) %]</td>
 		<td align="right">[% nf.format_price(chq.tax10) %]</td>
 		<td align="right">[% nf.format_price(chq.net_amt) %]</td>
+=======
+		<td align="right">[% nf.format_price(dtl.$res_id.tax_amt) %]</td>
+		<td align="right">[% nf.format_price(dtl.$res_id.amount - dtl.$res_id.tax_amt) %]</td>
+		<td align="right">0</td>
+		<td align="right">[% nf.format_price(dtl.$res_id.amount) %]</td>
+>>>>>>> 1343fe8167ec1d203379b86b46f258da93e6809f
 	</tr>
 [% tax_amt_total = tax_amt_total + dtl.$res_id.tax_amt %]
 [% bill_amt_total = bill_amt_total + dtl.$res_id.bill_amt %]

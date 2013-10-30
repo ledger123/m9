@@ -57,7 +57,7 @@
 [% FOREACH res_id IN dtl.keys %]
 	<tr>
 		<td nowrap>[% dtl.$res_id.charge_date %]</td>
-		<td>[% res_id %]</td>
+		<td>[% dtl.$res_id.res_id %]</td>
 		<td>[% dtl.$res_id.guest_name1 %]</td>
 		<td>[% dtl.$res_id.other_ref1 %]</td>
 		<td>[% dtl.$res_id.room_num %]</td>

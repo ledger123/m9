@@ -134,7 +134,7 @@ sub invoice {
    $vars->{hdr} = $dbs->query('SELECT * FROM hc_invoices WHERE inv_num=?', $id)->hash;
    $vars->{company} = $dbs->query('SELECT * FROM hc_companies WHERE comp_code=?', $vars->{hdr}->{comp_code})->hash;
    $vars->{dtl} = $dbs->query('
-	SELECT charge_date, res_id, guest_name1, other_ref1, other_ref2, room_num, 0-amount amount, ROUND((0-amount) / 1.16, 2) tax_amt
+	SELECT tr_num, charge_date, res_id, guest_name1, other_ref1, other_ref2, room_num, 0-amount amount, ROUND((0-amount) / 1.16, 2) tax_amt
 	FROM hc_charges WHERE bill_num=? AND sale_id = 0', $id)->map_hashes('tr_num');
    print $q->header();
    $vars->{chq} = $dbs->query('

@@ -124,12 +124,12 @@ sub invoice {
     $vars->{nf}      = $nf;
     $vars->{hdr}     = $dbs->query( 'SELECT * FROM hc_invoices WHERE inv_num=?', $id )->hash;
     $vars->{company} = $dbs->query( 'SELECT * FROM hc_companies WHERE comp_code=?', $vars->{hdr}->{comp_code} )->hash;
-    $vars->{dtl}     = $dbs->query( '
-	SELECT tr_num, charge_date, res_id, guest_name1, other_ref1, other_ref2, room_num, 0-amount amount, ROUND((0-amount) / 1.16, 2) tax_amt
-	FROM hc_charges WHERE bill_num=? AND sale_id = 0', $id )->map_hashes('tr_num');
-    $vars->{chq} = $dbs->query( '
-	SELECT * FROM hc_fb_sale
-	WHERE sale_id IN (SELECT sale_id FROM hc_charges WHERE bill_num = ?)', $id )->map_hashes('sale_id');
+    $vars->{dtl}     = $dbs->query( "
+	SELECT to_char(charge_date, 'yymmdd') id, tr_num, charge_date, res_id, guest_name1, other_ref1, other_ref2, room_num, 0-amount amount, ROUND((0-amount) / 1.16, 2) tax_amt
+	FROM hc_charges WHERE bill_num=? AND sale_id = 0 ORDER BY 1", $id )->map_hashes('id');
+    $vars->{chq} = $dbs->query( "
+	SELECT to_char(sale_date, 'yymmdd') id, hc_fb_sale.* FROM hc_fb_sale
+	WHERE sale_id IN (SELECT sale_id FROM hc_charges WHERE bill_num = ?) ORDER BY 1", $id )->map_hashes('id');
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }

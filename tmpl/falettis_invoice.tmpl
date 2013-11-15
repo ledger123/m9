@@ -54,7 +54,7 @@
 [% tax_amt_total = 0 %]
 [% bill_amt_total = 0 %]
 [% tax10_total = 0 %]
-[% FOREACH res_id IN dtl.keys %]
+[% FOREACH res_id IN dtl.keys.sort %]
 	<tr>
 		<td nowrap>[% dtl.$res_id.charge_date %]</td>
 		<td>[% dtl.$res_id.res_id %]</td>
@@ -70,10 +70,10 @@
 [% bill_amt_total = bill_amt_total + dtl.$res_id.amount %]
 [% END %]
 
-[% FOREACH sale_id IN chq.keys %]
+[% FOREACH sale_id IN chq.keys.sort %]
 	<tr>
 		<td>[% chq.$sale_id.sale_date %]</td>
-		<td>[% sale_id %]</td>
+		<td>[% chq.$sale_id.sale_id %]</td>
 		<td>[% chq.$sale_id.outlet_id %]</td>
 		<td>[% chq.$sale_id.chq_num %]</td>
 		<td>[% chq.$sale_id.covers %]</td>

@@ -1,0 +1,89 @@
+<html>
+<head>
+ <title>Report Name</title>
+ <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+</head>
+<body onload="return window.print();">
+
+<table width="100%">
+<tr>
+    <td>
+	<table width="100%">
+		<tr>
+		<th valign="bottom">PURCHASE REQUEST</th>
+		<td><img src="/munshi9/logo.jpg"><br/>Falettis Hotel</td>
+        </tr>
+	</table>
+    </td>
+</tr>
+<tr>
+    <td><hr/></td>
+</tr>
+<tr>
+    <td>
+	<table width="100%" border=1 cellspacing=0 cellpadding=3>
+		<tr>
+            <td valign="top" width="50%">
+            <table>
+                <tr><th align="left">Required By:</th><td>[% hdr.req_by %]</td></tr>
+                <tr><th align="left">Store:</th><td>[% hdr.store_id %]</td></tr>
+                <tr><th align="left">Ref1:</th><td>[% hdr.ref1 %]</td></tr>
+                <tr><th align="left">Ref2:</th><td>[% hdr.ref2 %]</td></tr>
+                <tr><th align="left">Notes:</th><td>[% hdr.notes %]</td></tr>
+            </table>
+            </td><td valign="top">
+            <table>
+                <tr><th align="left">PR Number:</th><td>[% hdr.tr_num %]</td></tr>
+                <tr><th align="left">PR Amount:</th><td><b>[% nf.format_price(hdr.ord_amt) %]</b></td></tr>
+                <tr><th align="left">PR Date:</th><td>[% hdr.tr_date %]</td></tr>
+            </table>
+            </td>
+        </tr>
+	</table>
+    </td>
+</tr>
+<tr>
+    <td>
+	<table width="100%" border=1 cellspacing=0 cellpadding=3>
+	<tr>
+		<th>Item</th>
+		<th>Description</th>
+		<th>Qty</th>
+        <th>Onhand</th>
+		<th>Vendor</th>
+		<th>Last Price</th>
+        <th>Last Purchase</th>
+        <th>Last Qty</th>
+		<th>Amount</th>
+	</tr>
+[% net_cost_total = 0 %]
+
+[% FOREACH id IN dtl.keys %]
+	<tr>
+		<td nowrap>[% dtl.$id.item_id %]</td>
+		<td>[% dtl.$id.item_name %]</td>
+		<td align="right">[% nf.format_price(dtl.$id.req_qty) %]</td>
+		<td align="right">[% nf.format_price(dtl.$id.onhand) %]</td>
+		<td>[% dtl.$id.vendor_name %]</td>
+		<td align="right">[% nf.format_price(dtl.$id.last_cost) %]</td>
+		<td>[% dtl.$id.last_date %]</td>
+		<td align="right">[% nf.format_price(dtl.$id.last_qty) %]</td>
+		<td align="right">[% nf.format_price(dtl.$id.req_qty * dtl.$id.last_cost) %]</td>
+	</tr>
+[% net_cost_total = net_cost_total + dtl.$id.last_cost * dtl.$id.req_qty %]
+[% END %]
+
+        <tr>
+		<th colspan=8" align="right">TOTAL</th>
+		<th align="right">[% nf.format_price(net_cost_total) %]</th>
+	</tr>
+	</table>
+    </td>
+</tr>
+<tr><td><br/><br/><br/><br/></td></tr>
+<tr><td>___________________</td></tr>
+<tr><td>Store Incharge</td></tr>
+
+</body>
+</html>
+

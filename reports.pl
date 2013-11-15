@@ -127,10 +127,32 @@ sub invoice {
     $vars->{dtl}     = $dbs->query( '
 	SELECT tr_num, charge_date, res_id, guest_name1, other_ref1, other_ref2, room_num, 0-amount amount, ROUND((0-amount) / 1.16, 2) tax_amt
 	FROM hc_charges WHERE bill_num=? AND sale_id = 0', $id )->map_hashes('tr_num');
-    print $q->header();
     $vars->{chq} = $dbs->query( '
 	SELECT * FROM hc_fb_sale
 	WHERE sale_id IN (SELECT sale_id FROM hc_charges WHERE bill_num = ?)', $id )->map_hashes('sale_id');
+    print $q->header();
+    $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
+}
+
+#----------------------------------------
+sub pr {
+    my $vars = {};
+    $vars->{nf}      = $nf;
+    $vars->{hdr}     = $dbs->query( 'SELECT * FROM pr WHERE tr_num=?', $id )->hash;
+    $vars->{company} = $dbs->query( 'SELECT * FROM ap_vendors WHERE vendor_id=?', $vars->{hdr}->{vendor_id} )->hash;
+    $vars->{dtl}     = $dbs->query( 'SELECT * FROM pr_lines WHERE tr_num = ?', $id )->map_hashes('id');
+    print $q->header();
+    $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
+}
+
+#----------------------------------------
+sub po {
+    my $vars = {};
+    $vars->{nf}      = $nf;
+    $vars->{hdr}     = $dbs->query( 'SELECT * FROM po WHERE tr_num=?', $id )->hash;
+    $vars->{company} = $dbs->query( 'SELECT * FROM ap_vendors WHERE vendor_id=?', $vars->{hdr}->{vendor_id} )->hash;
+    $vars->{dtl}     = $dbs->query( 'SELECT * FROM po_lines WHERE tr_num = ?', $id )->map_hashes('id');
+    print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }
 

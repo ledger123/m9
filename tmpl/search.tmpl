@@ -2,9 +2,37 @@
 <head>
  <title>Report Name</title>
  <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+
+<link rel="stylesheet" href="http://localhost/munshi9/standard.css" type="text/css">
+<link type="text/css" href="http://localhost/munshi9/css/start/jquery-ui-1.8.10.custom.css" rel="Stylesheet" />
+<script type="text/javascript" language="javascript" src="/munshi9/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" language="javascript" src="/munshi9/js/jquery-ui-1.8.10.custom.min.js"></script>
+<script type="text/javascript" language="javascript" src="/munshi9/js/jquery.tablesorter.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function() {
+       $("input[type='text']:first", document.forms[0]).focus();
+    })
+</script>
+<script>
+    $(function() {
+           $( ".datepicker" ).datepicker({
+                dateFormat: 'd-M-yy',
+                    showOn: "button",
+                    buttonImage: "/munshi9/css/calendar.gif",
+                    buttonImageOnly: true,
+                    showOtherMonths: true,
+                    selectOtherMonths: true,
+                    changeMonth: true,
+                    changeYear: true
+           }); 
+           $(function(){
+                 $("#sortedtable").tablesorter();
+           });
+     })
+</script>
 </head>
 [% form1.jshead %]
-<body onLoad="document.forms[0].reference.focus()" />
+<body>
   <table width=100%>
   <tr><th class=listtop>Report Name</th></tr>
   <tr height="5"></tr>

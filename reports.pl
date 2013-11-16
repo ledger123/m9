@@ -26,10 +26,11 @@ my %attr = ( PrintError => 0, RaiseError => 0 );    # Attributes to pass to DBI-
 my $dbh = DBI->connect( "dbi:Oracle:XE", "munshi8", "gbaba4000", \%attr ) or die "Can't connect to database: ", $DBI::errstr, "\n";
 my $dbs = DBIx::Simple->connect($dbh);
 
-my $nextsub = $q->param('nextsub');
-my $action  = $q->param('action');
-my $tmpl    = $q->param('tmpl');
-my $id      = $q->param('id');
+my $nextsub   = $q->param('nextsub');
+my $action    = $q->param('action');
+my $tmpl      = $q->param('tmpl');
+my $id        = $q->param('id');
+my $comp_code = $q->param('comp_code');
 
 $nextsub = $q->param('nextsub');
 &$nextsub;
@@ -130,6 +131,16 @@ sub invoice {
     $vars->{chq} = $dbs->query( "
 	SELECT to_char(sale_date, 'yymmdd') id, hc_fb_sale.* FROM hc_fb_sale
 	WHERE sale_id IN (SELECT sale_id FROM hc_charges WHERE bill_num = ?) ORDER BY 1", $id )->map_hashes('id');
+    print $q->header();
+    $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
+}
+
+#----------------------------------------
+sub reminder {
+    my $vars = {};
+    $vars->{nf}       = $nf;
+    $vars->{company}  = $dbs->query( 'SELECT * FROM hc_companies WHERE comp_code=?', $comp_code )->hash;
+    $vars->{invoices} = $dbs->query( "SELECT TO_CHAR(inv_date,'yymmdd')||inv_num id, hc_invoices.* FROM hc_invoices WHERE comp_code=? AND rec_amt = 0", $comp_code )->map_hashes('id');
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }

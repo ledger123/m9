@@ -1,0 +1,89 @@
+<html>
+<head>
+ <title>Report Name</title>
+ <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+</head>
+<body onload="return window.print();">
+
+<table width="100%">
+<tr>
+    <td>
+	<table width="100%">
+		<tr>
+		<th valign="bottom">PURCHASE ORDER</th>
+		<td><img src="/munshi9/logo.jpg"><br/>Ramada Islamabad Hotel</td>
+        </tr>
+	</table>
+    </td>
+</tr>
+<tr>
+    <td><hr/></td>
+</tr>
+<tr>
+    <td>
+	<table width="100%" border=1 cellspacing=0 cellpadding=3>
+		<tr><td valign="top" width="50%"><table>
+		<tr><th align="left">Vendor ID:</th><td>[% hdr.vendor_id %]</td></tr>
+		<tr><th align="left">Vendor Name:</th><td>[% company.company_name %]</td></tr>
+		<tr><th align="left">Address:</th><td>[% company.address1 %]</td></tr>
+		<tr><th align="left">City:</th><td>[% company.city %]</td></tr>
+		<tr><th align="left">Phone:</th><td>[% company.phone1 %]</td></tr>
+		</table></td><td valign="top"><table>
+		<tr><th align="left">PO Number:</th><td>[% hdr.tr_num %]</td></tr>
+		<tr><th align="left">PO Amount:</th><td><b>[% nf.format_price(hdr.ord_amt) %]</b></td></tr>
+		<tr><th align="left">PO Date:</th><td>[% hdr.tr_date %]</td></tr>
+		</table></td></tr>
+	</table>
+    </td>
+</tr>
+<tr>
+    <td>
+	<table width="100%" border=1 cellspacing=0 cellpadding=3>
+	<tr>
+		<th>Item</th>
+		<th>Description</th>
+		<th>Qty</th>
+		<th>Price</th>
+		<th>Amount</th>
+	</tr>
+[% net_cost_total = 0 %]
+
+[% FOREACH id IN dtl.keys %]
+	<tr>
+		<td nowrap>[% dtl.$id.item_id %]</td>
+		<td>[% dtl.$id.item_name %]</td>
+		<td align="right">[% nf.format_price(dtl.$id.req_qty) %]</td>
+		<td align="right">[% nf.format_price(dtl.$id.cost) %]</td>
+		<td align="right">[% nf.format_price(dtl.$id.net_cost) %]</td>
+	</tr>
+[% net_cost_total = net_cost_total + dtl.$id.net_cost %]
+[% END %]
+
+        <tr>
+		<th colspan=4" align="right">TOTAL</th>
+		<th align="right">[% nf.format_price(net_cost_total) %]</th>
+	</tr>
+	</table>
+    </td>
+</tr>
+<tr><td><br/><br/><br/><br/></td></tr>
+<tr><td>___________________</td></tr>
+<tr><td>Purchase Manager</td></tr>
+
+<tr>
+    <td align="center">
+	<table border=1 cellspacing=0 cellpadding=3>
+		<tr><th>45 DAYS CREDIT TERMS</th></tr>
+		<tr><td>
+<b>Imperial Hotel Management Services Pvt Ltd.</b><br/>
+24-Egerton Road, Lahore. Pakistan 54000.<br/>
+UAN #: +92 42 111-444-333, Fax #: +92 42 3636 6818<br/>
+Mail: purchase@falettishotel.com<br/>
+Web: www.falettishotel.com<br/>
+		</td></tr>
+	</table>
+    </td>
+</tr>
+</body>
+</html>
+

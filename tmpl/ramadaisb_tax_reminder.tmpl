@@ -1,0 +1,71 @@
+<html>
+<head>
+ <title>Report Name</title>
+ <link rel="stylesheet" href="/munshi9/medium.css" type="text/css">
+</head>
+<body onload="return window.print();">
+
+[% company.comp_code %]<br/>
+[% company.company %]<br/>
+[% company.contact_person %]<br/>
+[% company.title %]<br/>
+[% company.address %]<br/>
+[% company.city %]<br/>
+[% company.phone %]<br/>
+
+<br/>
+<br/>
+
+<p><b>SUB: OUTSTANDING TAX CHALLANS(S)</b></p>
+<br/>
+<p>Dear Sir</p>
+<br/>
+<p>We thank you for your patronage and look forward to your support in future as well.</p>
+<br/>
+<p>We invite your kind attention towards the following outstanding Tax Challan(s) which require immediate settlement at your end.</p>
+
+<table width="100%" border=1 cellspacing=0 cellpadding=3>
+<tr>
+    <th>Invoice Date</th>
+    <th>Invoice Number</th>
+    <th>Invoice Amount</th>
+    <th>Amount Received</th>
+    <th>Tax Amount</th>
+</tr>
+
+[% inv_amt_total = 0 %]
+[% rec_amt_total = 0 %]
+[% FOREACH id IN tax.keys.sort %]
+<tr>
+    <td align="center">[% tax.$id.inv_date %]</td>
+    <td align="center">[% tax.$id.inv_num %]</td>
+    <td align="right">[% nf.format_price(tax.$id.inv_amt) %]</td>
+    <td align="right">[% nf.format_price(tax.$id.rec_amt) %]</td>
+    <td align="right">[% nf.format_price(tax.$id.inv_amt - tax.$id.rec_amt) %]</td>
+</tr>
+[% inv_amt_total = inv_amt_total + tax.$id.inv_amt %]
+[% rec_amt_total = rec_amt_total + tax.$id.rec_amt %]
+[% END %]
+
+<tr>
+    <th colspan="2" align="right">TOTAL</th>
+    <th align="right">[% nf.format_price(inv_amt_total) %]</th>
+    <th align="right">[% nf.format_price(rec_amt_total) %]</th>
+    <th align="right">[% nf.format_price(inv_amt_total - rec_amt_total) %]</th>
+</tr>
+</table>
+<p>If you have any query regarding the above invoice(s), please feel free to contact the undersigned. As always assuring you of our best services.</p>
+<br/>
+<p>Thanking you</p>
+<br/>
+<br/>
+<p>Best Regards</p>
+<br/>
+<br/>
+<p>Malik Zahid</p>
+<p>Credit Manager</p>
+<p>0300 60 111 52</p>
+
+</body>
+</html>
+

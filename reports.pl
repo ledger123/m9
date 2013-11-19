@@ -141,6 +141,7 @@ sub reminder {
     $vars->{nf}       = $nf;
     $vars->{company}  = $dbs->query( 'SELECT * FROM hc_companies WHERE comp_code=?', $comp_code )->hash;
     $vars->{invoices} = $dbs->query( "SELECT TO_CHAR(inv_date,'yymmdd')||inv_num id, hc_invoices.* FROM hc_invoices WHERE comp_code=? AND rec_amt = 0", $comp_code )->map_hashes('id');
+    $vars->{tax} = $dbs->query( "SELECT TO_CHAR(inv_date,'yymmdd')||inv_num id, hc_invoices.* FROM hc_invoices WHERE comp_code=? AND rec_amt <> 0", $comp_code )->map_hashes('id');
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }

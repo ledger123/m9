@@ -16,8 +16,8 @@
 	<tr><td colspan="4" align="right">NTN :</th><td>3362564-6</td></tr>
 	<tr><td colspan="4" align="right">&nbsp;</td><td>M/S NIMR (PVT) LTD.</td></tr>
 
-	<tr><th align="left">Attention : </th><td>ANILA ISHAQ</td><th align="left">Invoice Number :</th><td>[% hdr.inv_num %]</td></tr>
-	<tr><th align="left">Title : </th><td>ASSISTANT DECORATIVE</td><th align="left">&nbsp;</th><td>&nbsp;</td></tr>
+	<tr><th align="left">Attention : </th><td>[% company.contact_person %]</td><th align="left">Invoice Number :</th><td>[% hdr.inv_num %]</td></tr>
+	<tr><th align="left">Title : </th><td>[% company.title %]</td><th align="left">&nbsp;</th><td>&nbsp;</td></tr>
 	<tr><th align="left">Company : </th><td>[% company.company %]</td><th align="left">Invoice Amount :</th><td>[% nf.format_price(hdr.inv_amt) %]</td></tr>
 	<tr><th align="left">Address : </th><td>[% company.address %]</td><th align="left">Invoice Date :</th><td>[% hdr.inv_date %]</td></tr>
 	<tr><th align="left">City : </th><td>[% company.city %]</td><th align="left">GST :</th><td>[% company.other_ref2 %]</td></tr>
@@ -26,44 +26,61 @@
 </table>
 
 <br/><br/>
-<TABLE width="100%" cellspacing="0" cellpadding="2" border="1"><tr>
-
-<th>Date</th>
-<th>Room #</th>
-<th>Guest Name</th>
-<th>Reference</th>
-<th>Outlet</th>
-<th>Amount<br/>Rs.</th>
-<th>Salestax<br/>Rs.</th>
-<th>Total<br/>Rs.</th>
+<table width="100%" border=1 cellspacing=0 cellpadding=3>
+<tr>
+    <th>Date</th>
+    <th>Res ID</th>
+    <th>Guest Name</th>
+    <th>Reference</th>
+    <th>Room #</th>
+    <th>Amount</th>
+    <th>Sales Tax</th>
+    <th>Advance Tax</th>
+    <th>Total</th>
 </tr>
-
 [% tax_amt_total = 0 %]
 [% bill_amt_total = 0 %]
-[% FOREACH res_id IN dtl.keys %]
-
+[% tax10_total = 0 %]
+[% FOREACH res_id IN dtl.keys.sort %]
 <tr>
-	<td>[% dtl.$res_id.tr_date %]</td>
-	<td>[% dtl.$res_id.room_num %]</td>
-	<td>[% dtl.$res_id.guest_name1 %]<br/><br/></td>
-	<td>[% dtl.$res_id.other_ref1 %]</td>
-	<td>[% dtl.$res_id.other_ref2 %]</td>
-	<td align="right">[% nf.format_price(dtl.$res_id.tax_amt) %]</td>
-	<td align="right">[% nf.format_price(dtl.$res_id.bill_amt - dtl.$res_id.tax_amt) %]</td>
-	<td align="right">[% nf.format_price(dtl.$res_id.bill_amt) %]</td>
+    <td nowrap>[% dtl.$res_id.charge_date %]</td>
+    <td>[% dtl.$res_id.res_id %]</td>
+    <td>[% dtl.$res_id.guest_name1 %]</td>
+    <td>[% dtl.$res_id.other_ref1 %]</td>
+    <td>[% dtl.$res_id.room_num %]</td>
+    <td align="right">[% nf.format_price(dtl.$res_id.tax_amt) %]</td>
+    <td align="right">[% nf.format_price(dtl.$res_id.amount - dtl.$res_id.tax_amt) %]</td>
+    <td align="right">0</td>
+    <td align="right">[% nf.format_price(dtl.$res_id.amount) %]</td>
 </tr>
 [% tax_amt_total = tax_amt_total + dtl.$res_id.tax_amt %]
-[% bill_amt_total = bill_amt_total + dtl.$res_id.bill_amt %]
+[% bill_amt_total = bill_amt_total + dtl.$res_id.amount %]
 [% END %]
+
+[% FOREACH sale_id IN chq.keys.sort %]
 <tr>
-	<td colspan="5" align="right"><b>Total:</b></td>
-	<td align="right"><b>[% nf.format_price(tax_amt_total) %]</b></td>
-	<td align="right"><b>[% nf.format_price(bill_amt_total - tax_amt_total) %]</b></td>
-	<td align="right"><b>[% nf.format_price(bill_amt_total) %]</b></td>
+    <td>[% chq.$sale_id.sale_date %]</td>
+    <td>[% chq.$sale_id.sale_id %]</td>
+    <td>[% chq.$sale_id.outlet_id %]</td>
+    <td>[% chq.$sale_id.chq_num %]</td>
+    <td>[% chq.$sale_id.covers %]</td>
+    <td align="right">[% nf.format_price(chq.$sale_id.sale_amt+chq.$sale_id.tip) %]</td>
+    <td align="right">[% nf.format_price(chq.$sale_id.ced) %]</td>
+    <td align="right">[% nf.format_price(chq.$sale_id.tax10) %]</td>
+    <td align="right">[% nf.format_price(chq.$sale_id.net_amt) %]</td>
 </tr>
-
+[% tax_amt_total = tax_amt_total + chq.$sale_id.sale_amt + chq.$sale_id.tip %]
+[% bill_amt_total = bill_amt_total + chq.$sale_id.net_amt %]
+[% tax10_total = tax10_total + chq.$sale_id.tax10 %]
+[% END %]
+ <tr>
+    <th colspan=5" align="right">TOTAL</th>
+    <th align="right">[% nf.format_price(tax_amt_total) %]</th>
+    <th align="right">[% nf.format_price(bill_amt_total - tax_amt_total) %]</th>
+    <th align="right">[% nf.format_price(tax10_total) %]</th>
+    <th align="right">[% nf.format_price(bill_amt_total) %]</th>
+</tr>
 </table>
-
 <br/>
 <br/>
 <br/>

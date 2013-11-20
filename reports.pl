@@ -140,8 +140,26 @@ sub reminder {
     my $vars = {};
     $vars->{nf}       = $nf;
     $vars->{company}  = $dbs->query( 'SELECT * FROM hc_companies WHERE comp_code=?', $comp_code )->hash;
-    $vars->{invoices} = $dbs->query( "SELECT TO_CHAR(inv_date,'yymmdd')||inv_num id, hc_invoices.* FROM hc_invoices WHERE comp_code=? AND rec_amt = 0", $comp_code )->map_hashes('id');
-    $vars->{tax} = $dbs->query( "SELECT TO_CHAR(inv_date,'yymmdd')||inv_num id, hc_invoices.* FROM hc_invoices WHERE comp_code=? AND rec_amt <> 0", $comp_code )->map_hashes('id');
+    $vars->{invoices} = $dbs->query( "
+        SELECT TO_CHAR(inv_date,'yymmdd')||inv_num id, hc_invoices.* 
+        FROM hc_invoices WHERE comp_code=? AND ROUND(inv_amt - rec_amt,0) <> 0 ", $comp_code )->map_hashes('id');
+    print $q->header();
+    $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
+}
+
+#----------------------------------------
+sub taxreminder {
+    my $vars = {};
+    $vars->{nf}       = $nf;
+    $vars->{company}  = $dbs->query( 'SELECT * FROM hc_companies WHERE comp_code=?', $comp_code )->hash;
+    $vars->{tax} = $dbs->query( "
+        SELECT TO_CHAR(inv_date,'yymmdd')||i.inv_num id, i.inv_amt,
+        (SELECT SUM(rec_amt) FROM hc_receipts_detail rd WHERE rd.inv_num = i.inv_num AND rd.rec_type <> 'TAX') rec_amt
+        FROM hc_receipts_detail r, hc_invoices i
+        WHERE r.inv_num = i.inv_num
+        AND comp_code=? AND ROUND(inv_amt - rec_amt,0) <> 0
+        AND inv_num IN (SELECT DISTINCT inv_num FROM hc_receipts_detail WHERE rec_type = 'TAX')
+    ", $comp_code )->map_hashes('id');
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }

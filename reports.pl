@@ -150,9 +150,9 @@ sub reminder {
 #----------------------------------------
 sub taxreminder {
     my $vars = {};
-    $vars->{nf}       = $nf;
-    $vars->{company}  = $dbs->query( 'SELECT * FROM hc_companies WHERE comp_code=?', $comp_code )->hash;
-    $vars->{tax} = $dbs->query( "
+    $vars->{nf}      = $nf;
+    $vars->{company} = $dbs->query( 'SELECT * FROM hc_companies WHERE comp_code=?', $comp_code )->hash;
+    $vars->{tax}     = $dbs->query( "
         SELECT TO_CHAR(inv_date,'yymmdd')||i.inv_num id, i.inv_amt,
         (SELECT SUM(rec_amt) FROM hc_receipts_detail rd WHERE rd.inv_num = i.inv_num AND rd.rec_type <> 'TAX') rec_amt
         FROM hc_receipts_detail r, hc_invoices i
@@ -167,10 +167,13 @@ sub taxreminder {
 #----------------------------------------
 sub pr {
     my $vars = {};
-    $vars->{nf}      = $nf;
-    $vars->{hdr}     = $dbs->query( 'SELECT * FROM pr WHERE tr_num=?', $id )->hash;
-    $vars->{company} = $dbs->query( 'SELECT * FROM ap_vendors WHERE vendor_id=?', $vars->{hdr}->{vendor_id} )->hash;
-    $vars->{dtl}     = $dbs->query( 'SELECT * FROM pr_lines WHERE tr_num = ?', $id )->map_hashes('id');
+    $vars->{nf}       = $nf;
+    $vars->{hdr}      = $dbs->query( 'SELECT * FROM pr WHERE tr_num=?', $id )->hash;
+    $vars->{company}  = $dbs->query( 'SELECT * FROM ap_vendors WHERE vendor_id=?', $vars->{hdr}->{vendor_id} )->hash;
+    $vars->{dtl}      = $dbs->query( 'SELECT * FROM pr_lines WHERE tr_num = ?', $id )->map_hashes('id');
+    $vars->{pr_amt}   = $dbs->query( 'SELECT SUM(req_qty*cost) FROM pr_lines WHERE tr_num = ?', $id )->list;
+    $vars->{req_by}   = $dbs->query( 'SELECT loc_name FROM ic_locs WHERE loc_id = ?', $vars->{hdr}->{req_by} )->list;
+    $vars->{store_id} = $dbs->query( 'SELECT loc_name FROM ic_locs WHERE loc_id = ?', $vars->{hdr}->{store_id} )->list;
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }

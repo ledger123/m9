@@ -36,9 +36,9 @@
 <tr>
     <td align="center">[% invoices.$id.inv_date %]</td>
     <td align="center">[% invoices.$id.inv_num %]</td>
-    <td align="right">[% nf.format_price(invoices.$id.inv_amt) %]</td>
+    <td align="right">[% nf.format_price(invoices.$id.inv_amt - invoices.$id.rec_amt) %]</td>
 </tr>
-[% inv_amt_total = inv_amt_total + invoices.$id.inv_amt %]
+[% inv_amt_total = inv_amt_total + (invoices.$id.inv_amt - invoices.$id.rec_amt) %]
 [% END %]
 
 <tr>

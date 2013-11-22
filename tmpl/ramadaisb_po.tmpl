@@ -9,10 +9,9 @@
 <tr>
     <td>
 	<table width="100%">
-		<tr>
-		<th valign="bottom">PURCHASE ORDER</th>
-		<td><img src="/munshi9/logo.jpg"><br/>Ramada Islamabad Hotel</td>
-        </tr>
+		<tr><th>PURCHASE ORDER</th></tr>
+		<tr><th><img src="/munshi9/logo.jpg"></th></tr>
+        <tr><th>Falettis Hotel</th></tr>
 	</table>
     </td>
 </tr>
@@ -32,6 +31,8 @@
 		<tr><th align="left">PO Number:</th><td>[% hdr.tr_num %]</td></tr>
 		<tr><th align="left">PO Amount:</th><td><b>[% nf.format_price(hdr.ord_amt) %]</b></td></tr>
 		<tr><th align="left">PO Date:</th><td>[% hdr.tr_date %]</td></tr>
+		<tr><th align="left">Validity:</th><td>[% hdr.validity %]</td></tr>
+		<tr><th align="left">PR Num:</th><td>[% hdr.pr_num %]</td></tr>
 		</table></td></tr>
 	</table>
     </td>
@@ -66,24 +67,37 @@
 	</table>
     </td>
 </tr>
-<tr><td><br/><br/><br/><br/></td></tr>
-<tr><td>___________________</td></tr>
-<tr><td>Purchase Manager</td></tr>
+</table>
 
-<tr>
-    <td align="center">
-	<table border=1 cellspacing=0 cellpadding=3>
-		<tr><th>45 DAYS CREDIT TERMS</th></tr>
-		<tr><td>
-<b>Imperial Hotel Management Services Pvt Ltd.</b><br/>
-24-Egerton Road, Lahore. Pakistan 54000.<br/>
-UAN #: +92 42 111-444-333, Fax #: +92 42 3636 6818<br/>
-Mail: purchase@falettishotel.com<br/>
-Web: www.falettishotel.com<br/>
-		</td></tr>
+Terms & Conditions:
+<ul>
+<li>Merchandise must be delivered to our Receiving Office, Faletti's Hotel Lahore accompained with Billing duplicate which must specify the Purchase Order Number</li>
+<li>Our Receiving,In-charge will return the duplicate copy of the Bill to the purveyor with our receiving seal.</li>
+<li>The responsibility for payment will commence upon receipt of merchandise in our store room.</li>
+</ul>
+
+<br/><br/><br/><br/>
+
+<table width="100%">
+<tr><td>
+	<table width="100%">
+	<tr>
+	<th>________________</th>
+	<th>________________</th>
+	<th>________________</th>
+	<th>________________</th>
+	<th>________________</th>
+	</tr>
+
+	<tr>
+	<th>Prepared by</th>
+	<th>Department Head</th>
+	<th>Finance Manager</th>
+	<th>Director Operations</th>
+	<th>Purcahse Manage</th>
+	</tr>
 	</table>
-    </td>
-</tr>
+</td></tr>
 </body>
 </html>
 

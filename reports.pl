@@ -119,6 +119,7 @@ sub guest_folio {
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }
 
+
 #----------------------------------------
 sub invoice {
     my $vars = {};
@@ -134,6 +135,19 @@ sub invoice {
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }
+
+
+#----------------------------------------
+sub payable {
+    my $vars = {};
+    $vars->{nf}      = $nf;
+    $vars->{hdr}     = $dbs->query( 'SELECT * FROM ap_header WHERE inv_id=?', $id )->hash;
+    $vars->{company} = $dbs->query( 'SELECT * FROM ap_vendors WHERE comp_code=?', $vars->{hdr}->{vendor_id} )->hash;
+    $vars->{dtl}     = $dbs->query( "SELECT * FROM ic_trans_header_tmp WHERE inv_id=?", $id )->map_hashes('tr_num');
+    print $q->header();
+    $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
+}
+
 
 #----------------------------------------
 sub reminder {

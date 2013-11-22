@@ -1,0 +1,102 @@
+<html>
+<head>
+ <title>Report Name</title>
+ <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+</head>
+<body onload="return window.print();">
+
+<table width="100%">
+<tr>
+    <td>
+	<table width="100%">
+		<tr><th><img src="/munshi9/logo.jpg"></th></tr>
+        <tr><th>Falettis Hotel</th></tr>
+		<tr><th>PAYABLE VOUCHER</th></tr>
+	</table>
+    </td>
+</tr>
+<tr>
+    <td><hr/></td>
+</tr>
+<tr>
+    <td>
+	<table width="100%" border=1 cellspacing=0 cellpadding=3>
+		<tr>
+            <td valign="top" width="50%">
+            <table>
+                <tr><th align="left">Inv Id:</th><td>[% hdr.inv_id %]</td></tr>
+                <tr><th align="left">Inv Num:</th><td>[% hdr.inv_num %]</td></tr>
+                <tr><th align="left">Vendor ID:</th><td>[% hdr.vendor_id %]</td></tr>
+                <tr><th align="left">Vendor Name:</th><td>[% hdr.company_name %]</td></tr>
+            </table>
+            </td><td valign="top">
+            <table>
+                <tr><th align="left">Pur Amt:</th><td>[% nf.format_price(hdr.pur_amt) %]</td></tr>
+                <tr><th align="left">Ref1:</th><td>[% hdr.ref1 %]</td></tr>
+                <tr><th align="left">Ref2:</th><td>[% hdr.ref2 %]</td></tr>
+            </table>
+            </td>
+        </tr>
+	</table>
+    </td>
+</tr>
+<tr>
+    <td>
+	<table width="100%" border=1 cellspacing=0 cellpadding=3>
+	<tr>
+		<th>RR Num</th>
+		<th>Store</th>
+		<th>Tr Date</th>
+		<th>Cost Amt</th>
+		<th>Dis Amt</th>
+        <th>Tax Amt</th>
+        <th>Net Cost</th>
+		<th>Ref1</th>
+		<th>Ref2</th>
+	</tr>
+[% net_cost_total = 0 %]
+[% tax_amt_total = 0 %]
+
+[% FOREACH id IN dtl.keys.sort %]
+	<tr>
+		<td nowrap>[% id %]</td>
+		<td>[% dtl.$id.rec_loc_id %]</td>
+		<td>[% dtl.$id.tr_date %]</td>
+		<td align="right">[% nf.format_price(dtl.$id.cost_amt) %]</td>
+		<td align="right">[% nf.format_price(dtl.$id.dis_amt) %]</td>
+		<td align="right">[% nf.format_price(dtl.$id.tax_amt) %]</td>
+		<td align="right">[% nf.format_price(dtl.$id.net_cost) %]</td>
+		<td>[% dtl.$id.ref1 %]</td>
+		<td>[% dtl.$id.ref2 %]</td>
+	</tr>
+[% tax_amt_total = tax_amt_total + dtl.$id.tax_amt %]
+[% net_cost_total = net_cost_total + dtl.$id.net_cost %]
+[% END %]
+
+        <tr>
+		<th colspan="5" align="right">TOTAL</th>
+		<th align="right">[% nf.format_price(tax_amt_total) %]</th>
+		<th align="right">[% nf.format_price(net_cost_total) %]</th>
+        <th colspan="2" align="right">&nbsp;</th>
+	    </tr>
+	</table>
+    </td>
+</tr>
+<tr><td><br/><br/><br/><br/></td></tr>
+<tr><td>
+	<table width="100%">
+	<tr>
+	<th>________________</th>
+	<th>________________</th>
+	</tr>
+
+	<tr>
+	<th>Payable Incharge</th>
+	<th>Finance Manager</th>
+	</tr>
+	</table>
+</td></tr>
+
+</body>
+</html>
+

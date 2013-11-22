@@ -35,6 +35,7 @@
                 <tr><th align="left">PR Number:</th><td>[% hdr.tr_num %]</td></tr>
                 <tr><th align="left">PR Amount:</th><td><b>[% nf.format_price(pr_amt) %]</b></td></tr>
                 <tr><th align="left">PR Date:</th><td>[% hdr.tr_date %]</td></tr>
+                <tr><th align="left">Req Date:</th><td>[% hdr.req_date %]</td></tr>
                 <tr><th align="left">Priority:</th><td>[% hdr.priority %]</td></tr>
             </table>
             </td>
@@ -52,7 +53,6 @@
 		<th>Cost</th>
 		<th>Amount</th>
         <th>Onhand</th>
-        <th>Required</th>
 		<th>Vendor</th>
 		<th>Last Price</th>
         <th>Last Purchase</th>
@@ -68,7 +68,6 @@
 		<td align="right">[% nf.format_price(dtl.$id.cost) %]</td>
 		<td align="right">[% nf.format_price(dtl.$id.req_qty * dtl.$id.cost) %]</td>
 		<td align="right">[% nf.format_price(dtl.$id.onhand) %]</td>
-		<td>[% dtl.$id.req_date %]</td>
 		<td>[% dtl.$id.vendor_name %]</td>
 		<td align="right">[% nf.format_price(dtl.$id.last_cost) %]</td>
 		<td>[% dtl.$id.last_date %]</td>
@@ -78,7 +77,7 @@
 [% END %]
 
         <tr>
-		<th colspan="5" align="right">TOTAL</th>
+		<th colspan="4" align="right">TOTAL</th>
 		<th align="right">[% nf.format_price(net_cost_total) %]</th>
         <th colspan="5" align="right">&nbsp;</th>
 	    </tr>

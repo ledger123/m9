@@ -17,7 +17,7 @@ my $q  = new CGI;
 my $nf = new Number::Format( -int_curr_symbol => '' );
 my $tt = Template->new(
     {
-        INCLUDE_PATH => '/var/www/lighttpd/munshi9/tmpl',
+        INCLUDE_PATH => '/var/www/munshi9/tmpl',
         INTERPOLATE  => 1,
     }
 ) || die "$Template::ERROR\n";

@@ -29,7 +29,6 @@
     <th>Invoice Date</th>
     <th>Invoice Number</th>
     <th>Invoice Amount</th>
-    <th>Amount Received</th>
     <th>Tax Amount</th>
 </tr>
 
@@ -41,7 +40,6 @@
     <td align="center">[% tax.$id.inv_num %]</td>
     <td align="right">[% nf.format_price(tax.$id.inv_amt) %]</td>
     <td align="right">[% nf.format_price(tax.$id.rec_amt) %]</td>
-    <td align="right">[% nf.format_price(tax.$id.inv_amt - tax.$id.rec_amt) %]</td>
 </tr>
 [% inv_amt_total = inv_amt_total + tax.$id.inv_amt %]
 [% rec_amt_total = rec_amt_total + tax.$id.rec_amt %]
@@ -51,7 +49,6 @@
     <th colspan="2" align="right">TOTAL</th>
     <th align="right">[% nf.format_price(inv_amt_total) %]</th>
     <th align="right">[% nf.format_price(rec_amt_total) %]</th>
-    <th align="right">[% nf.format_price(inv_amt_total - rec_amt_total) %]</th>
 </tr>
 </table>
 <p>If you have any query regarding the above invoice(s), please feel free to contact the undersigned. As always assuring you of our best services.</p>

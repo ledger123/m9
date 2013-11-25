@@ -17,7 +17,7 @@ my $q  = new CGI;
 my $nf = new Number::Format( -int_curr_symbol => '' );
 my $tt = Template->new(
     {
-        INCLUDE_PATH => '/var/www/munshi9/tmpl',
+        INCLUDE_PATH => '/var/www/lighttpd/munshi9/tmpl',
         INTERPOLATE  => 1,
     }
 ) || die "$Template::ERROR\n";
@@ -157,6 +157,13 @@ sub reminder {
     $vars->{invoices} = $dbs->query( "
         SELECT TO_CHAR(inv_date,'yymmdd')||inv_num id, hc_invoices.* 
         FROM hc_invoices WHERE comp_code=? AND ROUND(inv_amt - rec_amt,0) <> 0 ", $comp_code )->map_hashes('id');
+    $vars->{tax}     = $dbs->query( "
+        SELECT TO_CHAR(inv_date,'yymmdd')||i.inv_num id, i.inv_num, i.inv_date, i.inv_amt, r.rec_amt
+        FROM hc_receipts_detail r, hc_invoices i
+        WHERE r.inv_num = i.inv_num
+        AND i.comp_code = ?
+        AND i.inv_num IN (SELECT DISTINCT inv_num FROM hc_receipts_detail WHERE rec_type = 'TAX' AND gl_posted = 'N')
+    ", $comp_code )->map_hashes('id');
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }

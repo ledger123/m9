@@ -67,12 +67,12 @@
 [% FOREACH id IN dtl.keys.sort %]
 	<tr>
 		<td nowrap>[% dtl.$id.item_id %]</td>
-		<td>[% dtl.$id.item_name.substr(1,22) %]</td>
+		<td>[% dtl.$id.item_name.substr(0,22) %]</td>
 		<td align="right">[% dtl.$id.req_qty %]</td>
 		<td align="right">[% dtl.$id.cost %]</td>
 		<td align="right">[% nf.format_price(dtl.$id.req_qty * dtl.$id.cost,0) %]</td>
 		<td align="right">[% dtl.$id.onhand %]</td>
-		<td>[% dtl.$id.vendor_name.substr(1,15) %]</td>
+		<td>[% dtl.$id.vendor_name.substr(0,15) %]</td>
 		<td align="right">[% dtl.$id.last_cost %]</td>
 		<td>[% dtl.$id.last_date %]</td>
 		<td align="right">[% dtl.$id.last_qty %]</td>

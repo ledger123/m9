@@ -1,41 +1,50 @@
 <html>
 <head>
  <title>Report Name</title>
- <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+ <link rel="stylesheet" href="/munshi9/small.css" type="text/css">
 </head>
 <body onload="return window.print();">
+
 
 <table width="100%">
 <tr>
     <td>
 	<table width="100%">
-		<tr>
-		<th valign="bottom">PURCHASE REQUEST</th>
-		<td><img src="/munshi9/logo.jpg"><br/>Ramada Islamabad Hotel</td>
-        </tr>
+		<tr><th><img src="/munshi9/logo.jpg"></th></tr>
+        <tr><th>RAMADA HOTEL</th></tr>
+		<tr><th>PURCHASE REQUEST</th></tr>
 	</table>
     </td>
 </tr>
+</table>
+
+<table width="100%">
+<thead>
 <tr>
-    <td><hr/></td>
-</tr>
+<td>
+    PR Number: [% hdr.tr_num %], PR Date: [% hdr.tr_date %]
+</td>
+</thead>
+<tbody>
 <tr>
     <td>
 	<table width="100%" border=1 cellspacing=0 cellpadding=3>
 		<tr>
             <td valign="top" width="50%">
             <table>
-                <tr><th align="left">Required By:</th><td>[% hdr.req_by %]</td></tr>
-                <tr><th align="left">Store:</th><td>[% hdr.store_id %]</td></tr>
+                <tr><th align="left">Required By:</th><td>[% req_by %]</td></tr>
+                <tr><th align="left">Department:</th><td>[% store_id %]</td></tr>
                 <tr><th align="left">Ref1:</th><td>[% hdr.ref1 %]</td></tr>
                 <tr><th align="left">Ref2:</th><td>[% hdr.ref2 %]</td></tr>
-                <tr><th align="left">Notes:</th><td>[% hdr.notes %]</td></tr>
+                <tr><th align="left">Remarks:</th><td>[% hdr.notes %]</td></tr>
             </table>
             </td><td valign="top">
             <table>
                 <tr><th align="left">PR Number:</th><td>[% hdr.tr_num %]</td></tr>
-                <tr><th align="left">PR Amount:</th><td><b>[% nf.format_price(hdr.ord_amt) %]</b></td></tr>
+                <tr><th align="left">PR Amount:</th><td><b>[% nf.format_price(pr_amt) %]</b></td></tr>
                 <tr><th align="left">PR Date:</th><td>[% hdr.tr_date %]</td></tr>
+                <tr><th align="left">Req Date:</th><td>[% hdr.req_date %]</td></tr>
+                <tr><th align="left">Priority:</th><td>[% hdr.priority %]</td></tr>
             </table>
             </td>
         </tr>
@@ -46,44 +55,82 @@
     <td>
 	<table width="100%" border=1 cellspacing=0 cellpadding=3>
 	<tr>
-		<th>Item</th>
+		<th>Item ID</th>
 		<th>Description</th>
 		<th>Qty</th>
+		<th>Unit</th>
+		<th>Cost</th>
+		<th>Amount</th>
         <th>Onhand</th>
 		<th>Vendor</th>
 		<th>Last Price</th>
         <th>Last Purchase</th>
         <th>Last Qty</th>
-		<th>Amount</th>
 	</tr>
 [% net_cost_total = 0 %]
 
-[% FOREACH id IN dtl.keys %]
+[% FOREACH id IN dtl.keys.sort %]
 	<tr>
 		<td nowrap>[% dtl.$id.item_id %]</td>
-		<td>[% dtl.$id.item_name %]</td>
-		<td align="right">[% nf.format_price(dtl.$id.req_qty) %]</td>
-		<td align="right">[% nf.format_price(dtl.$id.onhand) %]</td>
-		<td>[% dtl.$id.vendor_name %]</td>
-		<td align="right">[% nf.format_price(dtl.$id.last_cost) %]</td>
+		<td>[% dtl.$id.item_name.substr(0,22) %]</td>
+		<td align="right">[% dtl.$id.req_qty %]</td>
+		<td nowrap>[% dtl.$id.unit %]</td>
+		<td align="right">[% dtl.$id.cost %]</td>
+		<td align="right">[% nf.format_price(dtl.$id.req_qty * dtl.$id.cost,0) %]</td>
+		<td align="right">[% dtl.$id.onhand %]</td>
+		<td>[% dtl.$id.vendor_name.substr(0,15) %]</td>
+		<td align="right">[% dtl.$id.last_cost %]</td>
 		<td>[% dtl.$id.last_date %]</td>
-		<td align="right">[% nf.format_price(dtl.$id.last_qty) %]</td>
-		<td align="right">[% nf.format_price(dtl.$id.req_qty * dtl.$id.last_cost) %]</td>
+		<td align="right">[% dtl.$id.last_qty %]</td>
 	</tr>
-[% net_cost_total = net_cost_total + dtl.$id.last_cost * dtl.$id.req_qty %]
+[% net_cost_total = net_cost_total + dtl.$id.cost * dtl.$id.req_qty %]
 [% END %]
 
         <tr>
-		<th colspan=8" align="right">TOTAL</th>
-		<th align="right">[% nf.format_price(net_cost_total) %]</th>
-	</tr>
+		<th colspan="5" align="right">TOTAL</th>
+		<th align="right">[% nf.format_price(net_cost_total,0) %]</th>
+        <th colspan="5" align="right">&nbsp;</th>
+	    </tr>
 	</table>
     </td>
 </tr>
 <tr><td><br/><br/><br/><br/></td></tr>
-<tr><td>___________________</td></tr>
-<tr><td>Store Incharge</td></tr>
+</tbody>
+<tfoot>
+<tr><td>
+	<table width="100%">
+	<tr>
+	<th>________________</th>
+	<th>________________</th>
+	<th>________________</th>
+	<th>________________</th>
+	</tr>
 
+	<tr>
+	<th>Prepared by</th>
+	<th>Department Head</th>
+	<th>Finance Manager</th>
+	<th>Director Operations</th>
+	</tr>
+    <tr><td colspan=5>&nbsp;</td></tr>
+	<tr>
+	<th>________________</th>
+	<th>&nbsp;</th>
+	<th>&nbsp;</th>
+	<th>&nbsp;</th>
+	</tr>
+
+	<tr>
+	<th>Purchase Department</th>
+	<th>&nbsp;</th>
+	<th>&nbsp;</th>
+	<th>&nbsp;</th>
+	</tr>
+
+	</table>
+</td></tr>
+</tfoot>
+</table>
 </body>
 </html>
 

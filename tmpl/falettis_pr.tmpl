@@ -5,8 +5,8 @@
 </head>
 <body onload="return window.print();">
 
+
 <table width="100%">
-<thead>
 <tr>
     <td>
 	<table width="100%">
@@ -16,9 +16,10 @@
 	</table>
     </td>
 </tr>
-<tr>
-    <td><hr/></td>
-</tr>
+</table>
+
+<table width="100%">
+<thead>
 <tr>
     <td>
 	<table width="100%" border=1 cellspacing=0 cellpadding=3>
@@ -45,10 +46,10 @@
     </td>
 </tr>
 </thead>
+<tbody>
 <tr>
     <td>
 	<table width="100%" border=1 cellspacing=0 cellpadding=3>
-    <thead>
 	<tr>
 		<th>Item ID</th>
 		<th>Description</th>
@@ -61,7 +62,6 @@
         <th>Last Purchase</th>
         <th>Last Qty</th>
 	</tr>
-    </thead>
 [% net_cost_total = 0 %]
 
 [% FOREACH id IN dtl.keys.sort %]
@@ -89,6 +89,7 @@
     </td>
 </tr>
 <tr><td><br/><br/><br/><br/></td></tr>
+</tbody>
 <tfoot>
 <tr><td>
 	<table width="100%">
@@ -110,6 +111,7 @@
 	</table>
 </td></tr>
 </tfoot>
+</table>
 </body>
 </html>
 

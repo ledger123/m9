@@ -21,6 +21,12 @@
 <table width="100%">
 <thead>
 <tr>
+<td>
+    PR Number: [% hdr.tr_num %], PR Date: [% hdr.tr_date %]
+</td>
+</thead>
+<tbody>
+<tr>
     <td>
 	<table width="100%" border=1 cellspacing=0 cellpadding=3>
 		<tr>
@@ -45,8 +51,6 @@
 	</table>
     </td>
 </tr>
-</thead>
-<tbody>
 <tr>
     <td>
 	<table width="100%" border=1 cellspacing=0 cellpadding=3>
@@ -54,6 +58,7 @@
 		<th>Item ID</th>
 		<th>Description</th>
 		<th>Qty</th>
+		<th>Unit</th>
 		<th>Cost</th>
 		<th>Amount</th>
         <th>Onhand</th>
@@ -69,6 +74,7 @@
 		<td nowrap>[% dtl.$id.item_id %]</td>
 		<td>[% dtl.$id.item_name.substr(0,22) %]</td>
 		<td align="right">[% dtl.$id.req_qty %]</td>
+		<td nowrap>[% dtl.$id.unit %]</td>
 		<td align="right">[% dtl.$id.cost %]</td>
 		<td align="right">[% nf.format_price(dtl.$id.req_qty * dtl.$id.cost,0) %]</td>
 		<td align="right">[% dtl.$id.onhand %]</td>
@@ -81,7 +87,7 @@
 [% END %]
 
         <tr>
-		<th colspan="4" align="right">TOTAL</th>
+		<th colspan="5" align="right">TOTAL</th>
 		<th align="right">[% nf.format_price(net_cost_total,0) %]</th>
         <th colspan="5" align="right">&nbsp;</th>
 	    </tr>

@@ -191,7 +191,7 @@ sub pr {
     $vars->{nf}       = $nf;
     $vars->{hdr}      = $dbs->query( 'SELECT * FROM pr WHERE tr_num=?', $id )->hash;
     $vars->{company}  = $dbs->query( 'SELECT * FROM ap_vendors WHERE vendor_id=?', $vars->{hdr}->{vendor_id} )->hash;
-    $vars->{dtl}      = $dbs->query( 'SELECT * FROM pr_lines WHERE tr_num = ?', $id )->map_hashes('id');
+    $vars->{dtl}      = $dbs->query( 'SELECT pr_lines.*, ic_items.uom_stk_id unit FROM pr_lines, ic_items WHERE pr_lines.item_id = ic_items.item_id AND tr_num = ?', $id )->map_hashes('ln');
     $vars->{pr_amt}   = $dbs->query( 'SELECT SUM(req_qty*cost) FROM pr_lines WHERE tr_num = ?', $id )->list;
     $vars->{req_by}   = $dbs->query( 'SELECT loc_name FROM ic_locs WHERE loc_id = ?', $vars->{hdr}->{req_by} )->list;
     $vars->{store_id} = $dbs->query( 'SELECT loc_name FROM ic_locs WHERE loc_id = ?', $vars->{hdr}->{store_id} )->list;

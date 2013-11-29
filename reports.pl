@@ -119,6 +119,14 @@ sub guest_folio {
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }
 
+#----------------------------------------
+sub regcard {
+    my $vars = {};
+    $vars->{res} = $dbs->query( 'SELECT * FROM hc_res WHERE res_id=?', $id )->hash;
+    $vars->{checkin_time} = $dbs->query("SELECT TO_CHAR(checkin_time2, 'DD-MON-YYYY HH24:MI:SS') FROM hc_res WHERE res_id = ?", $id)->list;
+    print $q->header();
+    $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
+}
 
 #----------------------------------------
 sub invoice {

@@ -166,11 +166,13 @@ sub reminder {
         SELECT TO_CHAR(inv_date,'yymmdd')||inv_num id, hc_invoices.* 
         FROM hc_invoices WHERE comp_code=? AND ROUND(inv_amt - rec_amt,0) <> 0 ", $comp_code )->map_hashes('id');
     $vars->{tax}     = $dbs->query( "
-        SELECT TO_CHAR(inv_date,'yymmdd')||i.inv_num id, i.inv_num, i.inv_date, i.inv_amt, r.rec_type, r.rec_amt, r.other_ref1
+        SELECT TO_CHAR(inv_date,'yymmdd')||i.inv_num id, i.inv_num, i.inv_date, i.inv_amt, r.rec_amt, r.other_ref1, r.other_ref2
         FROM hc_receipts_detail r, hc_invoices i
         WHERE r.inv_num = i.inv_num
-        AND i.comp_code=? 
-        AND i.inv_num IN (SELECT DISTINCT inv_num FROM hc_receipts_detail WHERE rec_type = 'TAX' AND gl_posted='N')
+        AND i.comp_code = ?
+        AND r.rec_type = 'TAX'
+        AND r.gl_posted = 'N'
+        ORDER BY i.inv_num, i.inv_date
     ", $comp_code )->map_hashes('id');
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";

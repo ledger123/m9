@@ -29,7 +29,9 @@
     <th>Invoice Date</th>
     <th>Invoice Number</th>
     <th>Invoice Amount</th>
-    <th>Tax Amount</th>
+    <th>Receipt Type</th>
+    <th>Receipt Reference</th>
+    <th>Receipt Amount</th>
 </tr>
 
 [% inv_amt_total = 0 %]
@@ -39,6 +41,8 @@
     <td align="center">[% tax.$id.inv_date %]</td>
     <td align="center">[% tax.$id.inv_num %]</td>
     <td align="right">[% nf.format_price(tax.$id.inv_amt) %]</td>
+    <td align="center">[% tax.$id.rec_type %]</td>
+    <td align="center">[% tax.$id.other_ref1 %]</td>
     <td align="right">[% nf.format_price(tax.$id.rec_amt) %]</td>
 </tr>
 [% inv_amt_total = inv_amt_total + tax.$id.inv_amt %]
@@ -48,6 +52,7 @@
 <tr>
     <th colspan="2" align="right">TOTAL</th>
     <th align="right">[% nf.format_price(inv_amt_total) %]</th>
+    <th colspan="2" align="right">&nbsp;</th>
     <th align="right">[% nf.format_price(rec_amt_total) %]</th>
 </tr>
 </table>

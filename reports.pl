@@ -17,7 +17,7 @@ my $q  = new CGI;
 my $nf = new Number::Format( -int_curr_symbol => '' );
 my $tt = Template->new(
     {
-        INCLUDE_PATH => ['/var/www/munshi9/tmpl', '/var/www/lighttpd/munshi9/tmpl'],
+        INCLUDE_PATH => [ '/var/www/munshi9/tmpl', '/var/www/lighttpd/munshi9/tmpl' ],
         INTERPOLATE  => 1,
     }
 ) || die "$Template::ERROR\n";
@@ -98,11 +98,14 @@ sub banquet {
 sub fbchq {
     my $vars = {};
     $vars->{hdr} = $dbs->query( 'SELECT * FROM hc_fb_sale WHERE sale_id=?', $id )->hash;
-    $vars->{dtl} = $dbs->query( 'SELECT * FROM hc_fb_sale_lines sale_id=?',  $id )->map_hashes('id');
+    $vars->{dtl} = $dbs->query( 'SELECT * FROM hc_fb_sale_lines WHERE sale_id=?', $id )->map_hashes('id');
+    $vars->{user} = $dbs->query("SELECT 'USER: ' || created_by || ' AT ' || TO_CHAR(creation_date, 'DD-MON-RR HH24:MI') FROM dual")->list;
+    $vars->{outlet} = $dbs->query('SELECT outlet_name FROM hc_fb_outlets WHERE outlet_id = ?', $vars->{hdr}->{outlet_id})->list;
+    $vars->{sc_amt} = $dbs->query( 'SELECT ROUND(fsale_amt + bsale_amt + osale_amt * sc/100,2) FROM hc_fb_sale WHERE sale_id=?', $id )->list;
+    
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }
-
 
 #----------------------------------------
 sub reservation {
@@ -126,7 +129,7 @@ sub guestfolio {
 sub regcard {
     my $vars = {};
     $vars->{res} = $dbs->query( 'SELECT * FROM hc_res WHERE res_id=?', $id )->hash;
-    $vars->{checkin_time} = $dbs->query("SELECT TO_CHAR(checkin_time2, 'DD-MON-YYYY HH24:MI:SS') FROM hc_res WHERE res_id = ?", $id)->list;
+    $vars->{checkin_time} = $dbs->query( "SELECT TO_CHAR(checkin_time2, 'DD-MON-YYYY HH24:MI:SS') FROM hc_res WHERE res_id = ?", $id )->list;
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }
@@ -147,7 +150,6 @@ sub invoice {
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }
 
-
 #----------------------------------------
 sub payable {
     my $vars = {};
@@ -167,7 +169,7 @@ sub reminder {
     $vars->{invoices} = $dbs->query( "
         SELECT TO_CHAR(inv_date,'yymmdd')||inv_num id, hc_invoices.* 
         FROM hc_invoices WHERE comp_code=? AND ROUND(inv_amt - rec_amt,0) <> 0 ", $comp_code )->map_hashes('id');
-    $vars->{tax}     = $dbs->query( "
+    $vars->{tax} = $dbs->query( "
         SELECT TO_CHAR(inv_date,'yymmdd')||i.inv_num id, i.inv_num, i.inv_date, i.inv_amt, r.rec_amt, r.other_ref1, r.other_ref2
         FROM hc_receipts_detail r, hc_invoices i
         WHERE r.inv_num = i.inv_num

@@ -1,0 +1,165 @@
+<html>
+<head>
+  <title>Guest Check</title>
+  <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+</head>
+
+<body onload="return window.print();">
+  <table width="65%" cellspacing="0" cellpadding="1" border="1">
+    <tr>
+      <td width="50%" align="left"><img src="http://localhost/munshi9/logo.jpg"></td>
+      <td><h2 align="center">[% outlet %]</h2></td>
+    </tr>
+  </table>
+
+  <table width="65%" cellspacing="0" cellpadding="2" border="1">
+    <tr>
+      <th align="left">Chq. Num</th>
+      <td>[% hdr.chq_num %]</td>
+      <td>Guest Name</td>
+      <td>[% hdr.guest_name1 %]</td>
+    </tr>
+
+    <tr>
+      <th align="left">DATE</th>
+      <td>[% hdr.sale_date %]</td>
+      <th align="left">Company</th>
+      <td>[% hdr.company %]</td>
+    </tr>
+
+    <tr>
+      <th align="left">Pax</th>
+      <td>[% hdr.covers %]</td>
+      <th align="left">Room/TABLE</th>
+      <td>[% hdr.room_num %] / [% hdr.table_num %]</td>
+    </tr>
+  </table>
+
+  <table width="65%" cellspacing="0" cellpadding="0" border="1">
+    <tr>
+      <th>KOT</th>
+      <th>Description</th>
+      <th>Qty</th>
+      <th>Price</th>
+      <th>Amt</th>
+    </tr>
+
+[% FOREACH id IN dtl.keys.sort %]
+    <tr>
+      <td>[% dtl.$id.kot_num %]</td>
+      <td>[% dtl.$id.item_name %]</td>
+      <td align="right">[% dtl.$id.qty %]</td>
+      <td align="right">[% dtl.$id.price %]</td>
+      <td align="right">[% dtl.$id.amount %]</td>
+    </tr>
+[% END %]
+
+  </table>
+
+  <table width="65%">
+
+[% IF hdr.sc > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td>Srv Chgs</td>
+      <td align="right">[% sc_amt %]</td>
+    </tr>
+[% END %]
+
+[% IF hdr.fdisc_amt > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td>Food Disc</td>
+      <td align="right">[% hdr.fdisc_amt %]</td>
+    </tr>
+[% END %]
+
+[% IF hdr.bdisc_amt > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td>Bev.Disc</td>
+      <td align="right">[% hdr.bdisc_amt %]</td>
+    </tr>
+[% END %]
+
+[% IF hdr.tip > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td>Tip</td>
+      <td align="right">[% hdr.tip %]</td>
+    </tr>
+[% END %]
+
+
+[% IF hdr.ced > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td>17% Tax</td>
+      <td align="right">[% hdr.ced %]</td>
+    </tr>
+[% END %]
+
+
+[% IF hdr.tax10 > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td>10% Adv.Tax</td>
+      <td align="right">[% hdr.tax10 %]</td>
+    </tr>
+[% END %]
+
+    <tr>
+      <td width="50%"></td>
+      <td><b>Total</b></td>
+      <td align="right">[% hdr.net_amt %]</td>
+    </tr>
+
+[% IF hdr.adv_pymt > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td>Advance</td>
+      <td align="right">[% hdr.adv_pymt %]</td>
+    </tr>
+[% END %]
+
+[% IF hdr.cash_pymt > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td><b>Cash Pymt</b></td>
+      <td align="right">[% hdr.cash_pymt %]</td>
+    </tr>
+[% END %]
+
+[% IF hdr.btc_pymt > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td><b>Cash Pymt</b></td>
+      <td align="right">[% hdr.btc_pymt %]</td>
+    </tr>
+[% END %]
+
+[% IF hdr.cc_pymt > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td><b>CC Pymt</b></td>
+      <td align="right">[% hdr.cc_pymt %]</td>
+    </tr>
+[% END %]
+
+    <tr>
+      <td width="50%"></td>
+      <td><b>Balance</b></td>
+      <td align="right">[% hdr.net_amt - (hdr.cash_pymt - hdr.room_charge - hdr.btc_pymt - hdr.adv_pymt) %]</td>
+    </tr>
+
+  </table><br>
+  ------------------------<br>
+  Guest Signature
+
+  <table width="65%" cellspacing="0" cellpadding="0" border="0">
+    <tr>
+      <td align="right">[% user %]</td>
+    </tr>
+  </table>
+</body>
+</html>

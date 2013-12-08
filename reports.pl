@@ -89,9 +89,20 @@ sub banquet {
     my $vars = {};
     $vars->{hdr} = $dbs->query( 'SELECT * FROM banquet_header WHERE event_number=?', $id )->hash;
     $vars->{dtl} = $dbs->query( 'SELECT * FROM banquet_lines WHERE event_number=?',  $id )->map_hashes('id');
+    $vars->{hdr}->{setup_detail} =~ s/\n/<br>/g;
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }
+
+#----------------------------------------
+sub fbchq {
+    my $vars = {};
+    $vars->{hdr} = $dbs->query( 'SELECT * FROM hc_fb_sale WHERE sale_id=?', $id )->hash;
+    $vars->{dtl} = $dbs->query( 'SELECT * FROM hc_fb_sale_lines sale_id=?',  $id )->map_hashes('id');
+    print $q->header();
+    $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
+}
+
 
 #----------------------------------------
 sub reservation {
@@ -103,15 +114,7 @@ sub reservation {
 }
 
 #----------------------------------------
-sub reg_card {
-    my $vars = {};
-    $vars->{res} = $dbs->query( 'SELECT * FROM hc_res WHERE res_id=?', $id )->hash;
-    print $q->header();
-    $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
-}
-
-#----------------------------------------
-sub guest_folio {
+sub guestfolio {
     my $vars = {};
     $vars->{res} = $dbs->query( 'SELECT * FROM hc_res WHERE res_id=?', $id )->hash;
     $vars->{charges} = $dbs->query( 'SELECT * FROM hc_charges WHERE res_id=? ORDER BY charge_date', $id )->map_hashes('tr_num');
@@ -156,7 +159,6 @@ sub payable {
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }
 
-
 #----------------------------------------
 sub reminder {
     my $vars = {};
@@ -173,22 +175,6 @@ sub reminder {
         AND r.rec_type = 'TAX'
         AND r.gl_posted = 'N'
         ORDER BY i.inv_num, i.inv_date
-    ", $comp_code )->map_hashes('id');
-    print $q->header();
-    $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
-}
-
-#----------------------------------------
-sub taxreminder {
-    my $vars = {};
-    $vars->{nf}      = $nf;
-    $vars->{company} = $dbs->query( 'SELECT * FROM hc_companies WHERE comp_code=?', $comp_code )->hash;
-    $vars->{tax}     = $dbs->query( "
-        SELECT TO_CHAR(inv_date,'yymmdd')||i.inv_num id, i.inv_amt, r.rec_type, r.rec_amt, r.other_ref1
-        FROM hc_receipts_detail r, hc_invoices i
-        WHERE r.inv_num = i.inv_num
-        AND comp_code=? 
-        AND inv_num IN (SELECT DISTINCT inv_num FROM hc_receipts_detail WHERE rec_type = 'TAX')
     ", $comp_code )->map_hashes('id');
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";

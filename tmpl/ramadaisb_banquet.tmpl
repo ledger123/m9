@@ -1,0 +1,255 @@
+<html>
+<head>
+  <title>Banquet Event</title>
+  <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+</head>
+
+<body onload="return window.print();">
+  <img src="/munshi9/logo.jpg">
+
+  <h1>Event Number: [% hdr.event_number %]</h1>
+
+  <table width="100%" border="1" cellpadding="2" cellspacing="0">
+    <tr>
+      <th align="left">Company Code</th>
+
+      <td>[% hdr.comp_code %]</td>
+    </tr>
+
+    <tr>
+      <th align="left">Company Name</th>
+
+      <td>[% hdr.company %]&nbsp;</td>
+    </tr>
+
+    <tr>
+      <th align="left">Address</th>
+
+      <td>[% hdr.address %]&nbsp;</td>
+    </tr>
+
+    <tr>
+      <th align="left">City</th>
+
+      <td>[% hdr.city %]&nbsp;</td>
+    </tr>
+
+    <tr>
+      <th align="left">Contact Person</th>
+
+      <td>[% hdr.contact_person %]&nbsp;</td>
+    </tr>
+
+    <tr>
+      <th align="left">Designation</th>
+
+      <td>[% hdr.designation %]&nbsp;</td>
+    </tr>
+
+    <tr>
+      <th align="left">Phone1</th>
+
+      <td>[% hdr.phone1 %]&nbsp;</td>
+    </tr>
+
+    <tr>
+      <th align="left">Phone2</th>
+
+      <td>[% hdr.phone2 %]&nbsp;</td>
+    </tr>
+
+    <tr>
+      <th align="left">Fax</th>
+
+      <td>[% hdr.fax %]&nbsp;</td>
+    </tr>
+
+    <tr>
+      <th align="left">Mobile</th>
+
+      <td>[% hdr.mobile %]&nbsp;</td>
+    </tr>
+
+    <tr>
+      <th align="left">Email</th>
+
+      <td>[% hdr.email %]</td>
+    </tr>
+  </table>
+
+  <h1>Event Detail</h1>
+
+  <table width="100%" border="1" cellpadding="2" cellspacing="0">
+    <tr>
+      <th>Booking Date</th>
+
+      <td>[% hdr.booking_date %]&nbsp;</td>
+
+      <th>Event Date</th>
+
+      <td>[% hdr.event_date %]</td>
+
+      <th>Event Time</th>
+
+      <td>[% hdr.event_time %]</td>
+    </tr>
+
+    <tr>
+      <th>Event Type</th>
+
+      <td>[% hdr.event_type %]&nbsp;</td>
+
+      <th>Venue</th>
+
+      <td>[% hdr.venue %]&nbsp;</td>
+
+      <th>Rental</th>
+
+      <td>[% hdr.rental %]&nbsp;</td>
+    </tr>
+
+    <tr>
+      <th>G Pax</th>
+
+      <td>[% hdr.g_pax %]&nbsp;</td>
+
+      <th>Rate Food/Pax</th>
+
+      <td>[% hdr.rate_per_pax_food %]&nbsp;</td>
+
+      <th>M-Tea</th>
+
+      <td>[% hdr.mtea_rate %]&nbsp;</td>
+    </tr>
+
+    <tr>
+      <th>E Pax</th>
+
+      <td>[% hdr.e_pax %]&nbsp;</td>
+
+      <th>Rate Bev/Pax</th>
+
+      <td>[% hdr.rate_per_pax_bev %]&nbsp;</td>
+
+      <th>E-Tea</th>
+
+      <td>[% hdr.etea_rate %]&nbsp;</td>
+    </tr>
+  </table><br>
+
+  <h1>Payments</h1>
+
+  <table width="100%" border="1" cellpadding="2" cellspacing="0">
+    <tr>
+      <th>Payment Mode</th>
+
+      <td>BTC&nbsp;</td>
+
+      <th>&nbsp;</th>
+
+      <td>&nbsp;</td>
+
+      <th>Care of</th>
+
+      <td>[% hdr.others %]&nbsp;</td>
+    </tr>
+
+    <tr>
+      <th>Advance</th>
+
+      <td>[% hdr.advance %]&nbsp;</td>
+
+      <th>Receipt Number</th>
+
+      <td>[% hdr.receipt_number %]&nbsp;</td>
+
+      <th>&nbsp;</th>
+
+      <td>&nbsp;</td>
+    </tr>
+  </table><br>
+
+  <table width="100%" border="1" cellpadding="2" cellspacing="0">
+    <tr>
+      <td valign="top">
+        <table>
+          <tr>
+            <th>MENU</th>
+          </tr>
+[% FOREACH id IN dtl.keys.sort %]
+          <tr>
+            <td>[% dtl.$id.item_name %]
+          </tr>
+[% END %]
+        </table>
+      </td>
+
+      <td valign="top">
+        <table>
+          <tr>
+            <th>SETUP DETAIL</th>
+          </tr>
+
+          <tr>
+            <td>[% hdr.setup_detail %]</td>
+          </tr>
+
+        </table>
+      </td>
+
+      <td valign="top">
+        <table>
+          <tr>
+            <th>Organizer name</th>
+          </tr>
+
+          <tr>
+            <td>[% hdr.organizer_name %]&nbsp;</td>
+          </tr>
+
+          <tr>
+            <th>Special Instructions</th>
+          </tr>
+
+          <tr>
+            <td>[% hdr.special_instructions %]&nbsp;</td>
+          </tr>
+
+          <tr>
+            <th>Bulletin Board</th>
+          </tr>
+
+          <tr>
+            <th>[% hdr.bulletin_board %]&nbsp;</th>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table><br>
+
+  <div align="left">
+    _________________
+  </div>
+
+  <div align="right">
+    ________________
+  </div>
+
+  <div align="left">
+    Banquet Manager
+  </div>
+
+  <div align="right">
+    Guest Signature
+  </div>
+
+  <div align="center">
+    This final event form to be read with all other correspondance previously done with the company related to this event.
+  </div>
+
+  <div align="left">
+    CC: GM, F&amp;B, Chef, Chief Steward, Purchase, Finance, Engineering, House Keeping, Bakery, Banquet Staff
+  </div>
+</body>
+</html>

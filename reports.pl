@@ -207,4 +207,185 @@ sub po {
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }
 
+#----------------------------------------
+sub report_header {
+
+    my $report_title = shift;
+
+    print $q->header();
+
+    print qq|
+<html>
+<head>
+ <title>$report_title</title>
+ <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+<link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+<link type="text/css" href="/munshi9/css/start/jquery-ui-1.8.10.custom.css" rel="Stylesheet" />
+<script type="text/javascript" language="javascript" src="/munshi9/js/jquery-1.4.4.min.js"></script>
+<script type="text/javascript" language="javascript" src="/munshi9/js/jquery.validate.min.js"></script>
+<script type="text/javascript" language="javascript" src="/munshi9/js/jquery-ui-1.8.10.custom.min.js"></script>
+<script type="text/javascript" language="javascript" src="/munshi9/js/jquery.tablesorter.min.js"></script>
+|;
+
+   print q|
+<script type="text/javascript" charset="utf-8">
+    $(document).ready(function() {
+    $("input[type='text']:first", document.forms[0]).focus();
+       $("#form1").validate();
+    })
+</script>
+<script>
+$(function() {
+   $( ".datepicker" ).datepicker({
+	dateFormat: 'd-M-yy',
+	showOn: "button",
+	buttonImage: "http://localhost/munshi9/css/calendar.gif",
+	buttonImageOnly: true,
+	showOtherMonths: true,
+	selectOtherMonths: true,
+	changeMonth: true,
+	changeYear: true
+   }); 
+
+$(function(){
+  $("#sortedtable").tablesorter();
+});
+
+});
+</script>
+</head>
+|;
+  print qq|
+<body>
+<h1>$report_title</h1>
+|;
+
+}
+
+
+#----------------------------------------
+# TODO:
+#   sortorder bug
+#
+sub sample_report {
+
+    &report_header('Sample Report');
+
+    my @columns = qw(charge_code charge_date charge_desc amount);
+    my @search_columns = qw(fromdate todate);
+
+    my %sort_positions = {
+        charge_code => 1,
+        charge_date => 2,
+        charge_desc => 3,
+        charge_amount => 4,
+    };
+    my $sort = $q->param('sort') ? $q->param('sort') : 'charge_code';
+    my $sortorder = $q->param('sortorder') ? $q->param('sortorder') : 'asc';
+    $sortorder = ($sort eq $q->{'oldsort'}) ? ($sortorder eq 'asc' ? 'desc' : 'asc') : 'asc';
+
+    print qq|
+<form action="reports.pl" method="post">
+From date: <input name=fromdate type=text size=12 class="datepicker" value="|.$q->param('fromdate').qq|"><br/>
+To date: <input name=todate type=text size=12 class="datepicker" value="|.$q->param('todate').qq|"><br/>
+Include: |;
+    for (@columns) {
+        $checked = ($action eq 'Update') ? ($q->param("l_$_") ? 'checked' : '') : 'checked';
+        print qq|<input type=checkbox name=l_$_ value="1" $checked> |.ucfirst($_) 
+    }
+    print qq|<br/>
+    Subtotal: <input type=checkbox name=l_subtotal value="checked" |.$q->param('l_subtotal').qq|><br/>
+    <hr/>
+    <input type=hidden name=nextsub value=$nextsub>
+    <input type=submit name=action class=submit value="Update">
+</form>
+|;
+
+    my @report_columns;
+    for (@columns) { push @report_columns, $_ if $q->param("l_$_") }
+
+   my $where = ' 1 = 1';
+   my @bind = ();
+
+   if ($q->param('fromdate')){
+	$where .= qq| AND charge_date >= ?|;
+	push @bind, $q->param('fromdate');
+   }
+
+   if ($q->param('todate')){
+	$where .= qq| AND charge_date <= ?|;
+	push @bind, $q->param('todate');
+   }
+
+    my @allrows = $dbs->query(qq|
+        SELECT  charge_code, charge_date, charge_desc, amount
+        FROM hc_charges
+        WHERE $where
+        ORDER BY $sort_positions($sort) $sortorder
+    |, @bind)->hashes;
+
+
+    my @allrows = $dbs->query(qq|
+        SELECT  charge_code, charge_date, charge_desc, amount
+        FROM hc_charges 
+        WHERE charge_date = '12-MAR-2013'
+        AND rownum < 100
+        ORDER BY $sort_positions($sort) $sortorder
+    |)->hashes;
+
+    my @total_columns = qw(amount);
+
+    my %tabledata, %totals, %subtotals;
+
+    my $url = "reports.pl?action=$action&nextsub=$nextsub&oldsort=$sort&sortorder=$sortorder&l_subtotal=".$q->param(l_subtotal);
+    for (@report_columns) { $url .= "&l_$_=".$q->param("l_$_") if $q->param("l_$_") }
+    for (@search_columns) { $url .= "&$_=".$q->param("$_") if $q->param("$_") }
+    for (@report_columns) { $tabledata{$_} = qq|<th><a class="listheading" href="$url&sort=$_">| . ucfirst $_ . qq|</a></th>\n| };
+
+    print qq|
+        <table cellpadding="3" cellspacing="2">
+        <tr class="listheading">
+|;
+    for (@report_columns) { print $tabledata{$_} }
+
+    print qq|
+        </tr>
+|;
+
+    my $groupvalue;
+    for $row (@allrows) {
+        $groupvalue = $row->{$sort} if !$groupvalue;
+        if ($q->param(l_subtotal) and $row->{$sort} ne $groupvalue){
+            for (@report_columns) { $tabledata{$_} = qq|<td>&nbsp;</td>| }
+            for (@total_columns) { $tabledata{$_} = qq|<th align="right">|.$nf->format_price($subtotals{$_}, 2).qq|</th>| }
+
+            print qq|<tr class="listsubtotal">|;
+            for (@report_columns) { print $tabledata{$_} }
+            print qq|</tr>|;
+            $groupvalue = $row->{$sort};
+            for (@total_columns) { $subtotals{$_} = 0 }
+        }
+        for (@report_columns) { $tabledata{$_} = qq|<td>$row->{$_}</td>| };
+        for (@total_columns) { $tabledata{$_} = qq|<td align="right">|.$nf->format_price($row->{$_}, 2).qq|</td>| };
+        for (@total_columns) { $totals{$_} += $row->{$_} }
+        for (@total_columns) { $subtotals{$_} += $row->{$_} }
+
+        print qq|<tr class="listrow0">|;
+        for (@report_columns) { print $tabledata{$_} }
+        print qq|</tr>|;
+    }
+
+    for (@report_columns) { $tabledata{$_} = qq|<td>&nbsp;</td>| }
+    for (@total_columns) { $tabledata{$_} = qq|<th align="right">|.$nf->format_price($subtotals{$_}, 2).qq|</th>| }
+
+    print qq|<tr class="listsubtotal">|;
+    for (@report_columns) { print $tabledata{$_} }
+    print qq|</tr>|;
+
+    for (@total_columns) { $tabledata{$_} = qq|<th align="right">|.$nf->format_price($totals{$_}, 2).qq|</th>| }
+    print qq|<tr class="listtotal">|;
+    for (@report_columns) { print $tabledata{$_} }
+    print qq|</tr>|;
+}
+
 # EOF

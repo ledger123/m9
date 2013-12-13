@@ -382,6 +382,135 @@ Include: |;
 }
 
 #----------------------------------------
+sub business_analysis {
+
+    &report_header('Business Analysis Report');
+
+    my @columns        = qw(payment_mode res_id room_num comp_code company checkin_date checkout_date room_rate adults nights amount);
+    my @total_columns  = qw(adults room_rate nights amount);
+    my @search_columns = qw(fromdate todate);
+
+    my %sort_positions = {
+        payment_mode  => 1,
+        res_id        => 2,
+        room_num      => 3,
+        comp_code     => 4,
+        company       => 5,
+        checkin_date  => 6,
+        checkout_date => 7,
+        room_rate     => 8,
+        adults        => 9,
+        nights        => 10,
+        amount        => 11,
+    };
+    my $sort      = $q->param('sort') ? $q->param('sort') : 'payment_mode';
+    my $sortorder = $q->param('sortorder');
+    my $oldsort   = $q->param('oldsort');
+    $sortorder = ( $sort eq $oldsort ) ? ( $sortorder eq 'asc' ? 'desc' : 'asc' ) : 'asc';
+
+    print qq|
+<form action="reports.pl" method="post">
+From charge date: <input name=fromdate type=text size=12 class="datepicker" value="| . $q->param('fromdate') . qq|"><br/>
+To charge date: <input name=todate type=text size=12 class="datepicker" value="| . $q->param('todate') . qq|"><br/>
+Include: |;
+    for (@columns) {
+        $checked = ( $action eq 'Update' ) ? ( $q->param("l_$_") ? 'checked' : '' ) : 'checked';
+        print qq|<input type=checkbox name=l_$_ value="1" $checked> | . ucfirst($_);
+    }
+    print qq|<br/>
+    Subtotal: <input type=checkbox name=l_subtotal value="checked" | . $q->param('l_subtotal') . qq|><br/>
+    <hr/>
+    <input type=hidden name=nextsub value=$nextsub>
+    <input type=submit name=action class=submit value="Update">
+</form>
+|;
+
+    my @report_columns;
+    for (@columns) { push @report_columns, $_ if $q->param("l_$_") }
+
+    my $where = ' 1 = 1 ';
+    $where = ' 1 = 2 ' if $action ne 'Update';    # Display data only when Update button is pressed.
+    my @bind = ();
+
+    if ( $q->param('fromdate') ) {
+        $where .= qq| AND c.charge_date >= ?|;
+        push @bind, $q->param('fromdate');
+    }
+
+    if ( $q->param('todate') ) {
+        $where .= qq| AND c.charge_date <= ?|;
+        push @bind, $q->param('todate');
+    }
+
+    my $query = qq|
+        SELECT r.payment_mode, r.res_id, r.room_num, r.comp_code, r.company, r.checkin_date, r.checkout_date, r.room_rate, r.adults, COUNT(*) nights, SUM(c.amount) amount
+        FROM hc_res r
+        JOIN hc_charges c ON (c.res_id = r.res_id)
+        WHERE $where
+        AND c.charge_code = '101'
+        GROUP BY r.payment_mode, r.res_id, r.room_num, r.comp_code, r.company, r.checkin_date, r.checkout_date, r.room_rate, r.adults
+        ORDER BY $sort_positions($sort) $sortorder
+    |;
+
+    my @allrows = $dbs->query( $query, @bind )->hashes or die( $dbs->error );
+
+    my ( %tabledata, %totals, %subtotals );
+
+    my $url = "reports.pl?action=$action&nextsub=$nextsub&oldsort=$sort&sortorder=$sortorder&l_subtotal=" . $q->param(l_subtotal);
+    for (@report_columns) { $url .= "&l_$_=" . $q->param("l_$_") if $q->param("l_$_") }
+    for (@search_columns) { $url .= "&$_=" . $q->param("$_")     if $q->param("$_") }
+    for (@report_columns) { $tabledata{$_} = qq|<th><a class="listheading" href="$url&sort=$_">| . ucfirst $_ . qq|</a></th>\n| }
+
+    print qq|
+        <table cellpadding="3" cellspacing="2">
+        <tr class="listheading">
+|;
+    for (@report_columns) { print $tabledata{$_} }
+
+    print qq|
+        </tr>
+|;
+
+    my $groupvalue;
+    my $i = 0;
+    for $row (@allrows) {
+        $groupvalue = $row->{$sort} if !$groupvalue;
+        if ( $q->param(l_subtotal) and $row->{$sort} ne $groupvalue ) {
+            for (@report_columns) { $tabledata{$_} = qq|<td>&nbsp;</td>| }
+            for (@total_columns) { $tabledata{$_} = qq|<th align="right">| . $nf->format_price( $subtotals{$_}, 2 ) . qq|</th>| }
+
+            print qq|<tr class="listsubtotal">|;
+            for (@report_columns) { print $tabledata{$_} }
+            print qq|</tr>|;
+            $groupvalue = $row->{$sort};
+            for (@total_columns) { $subtotals{$_} = 0 }
+        }
+        for (@report_columns) { $tabledata{$_} = qq|<td>$row->{$_}</td>| }
+        for (@total_columns) { $tabledata{$_} = qq|<td align="right">| . $nf->format_price( $row->{$_}, 2 ) . qq|</td>| }
+        for (@total_columns) { $totals{$_}    += $row->{$_} }
+        for (@total_columns) { $subtotals{$_} += $row->{$_} }
+
+        print qq|<tr class="listrow$i">|;
+        for (@report_columns) { print $tabledata{$_} }
+        print qq|</tr>|;
+        $i += 1;
+        $i %= 2;
+    }
+
+    for (@report_columns) { $tabledata{$_} = qq|<td>&nbsp;</td>| }
+    for (@total_columns) { $tabledata{$_} = qq|<th align="right">| . $nf->format_price( $subtotals{$_}, 2 ) . qq|</th>| }
+
+    print qq|<tr class="listsubtotal">|;
+    for (@report_columns) { print $tabledata{$_} }
+    print qq|</tr>|;
+
+    for (@total_columns) { $tabledata{$_} = qq|<th align="right">| . $nf->format_price( $totals{$_}, 2 ) . qq|</th>| }
+    print qq|<tr class="listtotal">|;
+    for (@report_columns) { print $tabledata{$_} }
+    print qq|</tr>|;
+}
+
+#----------------------------------------
 sub entlist {
 
     &report_header('Officer / Entertainment Report');

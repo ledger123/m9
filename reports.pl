@@ -388,7 +388,7 @@ sub business_analysis {
 
     my @columns        = qw(payment_mode res_id room_num comp_code company checkin_date checkout_date room_rate adults nights amount);
     my @total_columns  = qw(adults room_rate nights amount);
-    my @search_columns = qw(fromdate todate);
+    my @search_columns = qw(fromdate todate payment_mode);
 
     my %sort_positions = {
         payment_mode  => 1,
@@ -412,6 +412,7 @@ sub business_analysis {
 <form action="reports.pl" method="post">
 From charge date: <input name=fromdate type=text size=12 class="datepicker" value="| . $q->param('fromdate') . qq|"><br/>
 To charge date: <input name=todate type=text size=12 class="datepicker" value="| . $q->param('todate') . qq|"><br/>
+Payment Mode: <select name="payment_mode">| . lookup1( 'PAYMENT_MODE', $q->param('payment_mode') ) . qq|</select><br/>
 Include: |;
     for (@columns) {
         $checked = ( $action eq 'Update' ) ? ( $q->param("l_$_") ? 'checked' : '' ) : 'checked';
@@ -440,6 +441,11 @@ Include: |;
     if ( $q->param('todate') ) {
         $where .= qq| AND c.charge_date <= ?|;
         push @bind, $q->param('todate');
+    }
+
+    if ( $q->param('payment_mode') ) {
+        $where .= qq| AND r.payment_mode = ?|;
+        push @bind, $q->param('payment_mode');
     }
 
     my $query = qq|
@@ -510,6 +516,23 @@ Include: |;
     print qq|</tr>|;
 }
 
+
+#----------------------------------------
+sub lookup1 {
+    my ( $cname, $default ) = @_;
+    my @rows = $dbs->query( q|SELECT cval FROM a$lookup WHERE cname = ? ORDER BY seq|, $cname )->hashes;
+    my $option = qq|<option>\n|;
+    for $row (@rows) {
+        if ($row->{cval} eq $default){
+            $option .= qq|<option value="$row->{cval}" selected>$row->{cval}\n|;
+        } else {
+            $option .= qq|<option value="$row->{cval}">$row->{cval}\n|; 
+        }
+    }
+    $option;
+}
+
+
 #----------------------------------------
 sub entlist {
 
@@ -540,9 +563,9 @@ sub entlist {
 <form action="reports.pl" method="post">
 From date: <input name=fromdate type=text size=12 class="datepicker" value="| . $q->param('fromdate') . qq|"><br/>
 To date: <input name=todate type=text size=12 class="datepicker" value="| . $q->param('todate') . qq|"><br/>
-Chq Type1: <input name=type1 type=text size=15 value="| . $q->param('type1') . qq|"><br/>
-Chq Type2: <input name=type1 type=text size=15 value="| . $q->param('type2') . qq|"><br/>
-By: <input name=table_num type=text size=15 value="| . $q->param('table_num') . qq|"><br/>
+Chq Type1: <select name="type1">| . lookup1( 'FLAG1', $q->param('type1') ) . qq|</select><br/>
+Chq Type2: <select name="type2">| . lookup1( 'FLAG2', $q->param('type2') ) . qq|</select><br/>
+Table: <input name=table_num type=text size=15 value="| . $q->param('table_num') . qq|"><br/>
 Include: |;
     for (@columns) {
         $checked = ( $action eq 'Update' ) ? ( $q->param("l_$_") ? 'checked' : '' ) : 'checked';
@@ -571,6 +594,21 @@ Include: |;
     if ( $q->param('todate') ) {
         $where .= qq| AND sale_date <= ?|;
         push @bind, $q->param('todate');
+    }
+
+    if ( $q->param('type1') ) {
+        $where .= qq| AND flag1 = ?|;
+        push @bind, $q->param('type1');
+    }
+
+    if ( $q->param('type2') ) {
+        $where .= qq| AND flag4 = ?|;
+        push @bind, $q->param('type2');
+    }
+
+    if ( $q->param('table_num') ) {
+        $where .= qq| AND UPPER(table_num) = ?|;
+        push @bind, uc $q->param('table_num');
     }
 
     my $query = qq|

@@ -644,24 +644,25 @@ sub inhouse_summary {
 
     &report_header('Inhouse Summary');
 
-    my @columns       = qw(res_id room guest1 guest2 group_id company billing payment pax rate checkin chkin_time user_name checkout);
+    my @columns       = qw(res_id room room_type guest1 guest2 group_id company billing payment pax rate checkin chkin_time user_name checkout);
     my @total_columns = qw(rate);
 
     my %sort_positions = {
         res_id     => 1,
         room       => 2,
-        guest1     => 3,
-        guest2     => 4,
-        group_id   => 5,
-        company    => 6,
-        billing    => 7,
-        payment    => 8,
-        pax        => 9,
-        rate       => 10,
-        checkin    => 11,
-        chkin_time => 12,
-        user_name  => 13,
-        checkout   => 14,
+        room_type  => 3,
+        guest1     => 4,
+        guest2     => 5,
+        group_id   => 6,
+        company    => 7,
+        billing    => 8,
+        payment    => 9,
+        pax        => 10,
+        rate       => 11,
+        checkin    => 12,
+        chkin_time => 13,
+        user_name  => 14,
+        checkout   => 15,
     };
 
     my $sort      = $q->param('sort') ? $q->param('sort') : 'room';
@@ -702,7 +703,7 @@ Include: |;
     }
 
     my $query = qq|
-            SELECT   hc_res.res_id, hc_res.room_num room, hc_res.guest_name1 guest1, 
+            SELECT   hc_res.res_id, hc_res.room_num room, hc_res.room_type, hc_res.guest_name1 guest1, 
                      hc_res.guest_name2 guest2, hc_res.GROUP_ID,
                      hc_res.company, hc_res.billing_ins billing, hc_res.payment_mode payment, 
                      hc_res.adults pax, hc_res.room_rate rate, hc_res.checkin_date checkin, 

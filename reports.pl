@@ -264,7 +264,6 @@ $(function(){
 
 #----------------------------------------
 # TODO:
-#   sortorder bug
 #
 sub sample_report {
 
@@ -279,9 +278,10 @@ sub sample_report {
         charge_desc   => 3,
         charge_amount => 4,
     };
-    my $sort      = $q->param('sort')      ? $q->param('sort')      : 'charge_code';
-    my $sortorder = $q->param('sortorder') ? $q->param('sortorder') : 'asc';
-    $sortorder = ( $sort eq $q->{'oldsort'} ) ? ( $sortorder eq 'asc' ? 'desc' : 'asc' ) : 'asc';
+    my $sort      = $q->param('sort') ? $q->param('sort') : 'charge_code';
+    my $sortorder = $q->param('sortorder');
+    my $oldsort   = $q->param('oldsort');
+    $sortorder = ( $sort eq $oldsort ) ? ( $sortorder eq 'asc' ? 'desc' : 'asc' ) : 'asc';
 
     print qq|
 <form action="reports.pl" method="post">

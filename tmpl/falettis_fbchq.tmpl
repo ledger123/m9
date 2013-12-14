@@ -1,0 +1,104 @@
+<html>
+<head>
+  <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+</head>
+
+<body onload="return window.print();">
+
+  <table width="65%" cellspacing="5" cellpadding="2">
+    <tr><td>[% hdr.guest_name1 %]</td></tr>
+    <tr><td>[% hdr.room_num %]</td></tr>
+    <tr><td>[% hdr.sale_date %]</td></tr>
+  </table>
+
+  <table width="65%" cellspacing="5" cellpadding="0">
+    <tr><td colspan=4>&nbsp;</td></tr>
+    <tr><td colspan=4>&nbsp;</td></tr>
+    <tr><td colspan=4>&nbsp;</td></tr>
+
+[% FOREACH id IN dtl.keys.sort %]
+    <tr>
+      <td>[% dtl.$id.item_name %]</td>
+      <td align="right">[% dtl.$id.qty %]</td>
+      <td align="right">[% dtl.$id.price %]</td>
+      <td align="right">[% dtl.$id.amount %]</td>
+    </tr>
+[% END %]
+
+  </table>
+
+  <table width="65%">
+
+[% IF hdr.sc > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td>Srv Chgs</td>
+      <td align="right">[% sc_amt %]</td>
+    </tr>
+[% END %]
+
+[% IF hdr.fdisc_amt > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td>Food Disc</td>
+      <td align="right">[% hdr.fdisc_amt %]</td>
+    </tr>
+[% END %]
+
+[% IF hdr.bdisc_amt > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td>Bev.Disc</td>
+      <td align="right">[% hdr.bdisc_amt %]</td>
+    </tr>
+[% END %]
+
+    <tr>
+      <td width="50%"></td>
+      <td><b>Sub Total</b></td>
+      <td align="right">[% hdr.sale_amt %]</td>
+    </tr>
+
+[% IF hdr.tip > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td>Tip</td>
+      <td align="right">[% hdr.tip %]</td>
+    </tr>
+[% END %]
+
+
+[% IF hdr.ced > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td>17% Tax</td>
+      <td align="right">[% hdr.ced %]</td>
+    </tr>
+[% END %]
+
+
+[% IF hdr.tax10 > 0 %]
+    <tr>
+      <td width="50%"></td>
+      <td>10% Adv.Tax</td>
+      <td align="right">[% hdr.tax10 %]</td>
+    </tr>
+[% END %]
+
+    <tr>
+      <td width="50%"></td>
+      <td><b>Total</b></td>
+      <td align="right">[% hdr.net_amt %]</td>
+    </tr>
+
+  </table><br>
+  ------------------------<br>
+  Guest Signature
+
+  <table width="65%" cellspacing="0" cellpadding="0" border="0">
+    <tr>
+      <td align="right">[% user %]</td>
+    </tr>
+  </table>
+</body>
+</html>

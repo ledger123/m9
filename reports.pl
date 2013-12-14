@@ -516,22 +516,21 @@ Include: |;
     print qq|</tr>|;
 }
 
-
 #----------------------------------------
 sub lookup1 {
     my ( $cname, $default ) = @_;
     my @rows = $dbs->query( q|SELECT cval FROM a$lookup WHERE cname = ? ORDER BY seq|, $cname )->hashes;
     my $option = qq|<option>\n|;
     for $row (@rows) {
-        if ($row->{cval} eq $default){
+        if ( $row->{cval} eq $default ) {
             $option .= qq|<option value="$row->{cval}" selected>$row->{cval}\n|;
-        } else {
-            $option .= qq|<option value="$row->{cval}">$row->{cval}\n|; 
+        }
+        else {
+            $option .= qq|<option value="$row->{cval}">$row->{cval}\n|;
         }
     }
     $option;
 }
-
 
 #----------------------------------------
 sub entlist {
@@ -939,6 +938,93 @@ Include: |;
     print qq|<tr class="listtotal">|;
     for (@report_columns) { print $tabledata{$_} }
     print qq|</tr>|;
+}
+
+#---------------------------------------------------------------------------------------------------
+sub emp {
+
+    my $row = {};
+    if ( $q->param('id') ) {
+        $row = $dbs->query( '
+            SELECT id, emp_num, emp_name,
+                    father_name, desig, dept,
+                    pymt_type, sex, married,
+                    religion, ntn, nid,
+                    eobi_num, blood_group, bank_acc,
+                    address1, address2, city,
+                    phone, email, dob, doj,
+                    job_status, reference1, reference2,
+                    reference3, basic_pay, house_rent,
+                    coveyance, medical, utilities,
+                    others, gross_pay
+            FROM hr_emp
+            WHERE id = ?', $q->param('id') )->hash or die( $dbs->error );
+    }
+
+    #-----------------------------------------------
+    # DB FORM
+    #-----------------------------------------------
+    my @form1flds =
+      qw(id emp_num emp_name father_name desig dept pymt_type sex married religion ntn nid eobi_num blood_group bank_acc address1 address2 city phone email dob doj job_status reference1 reference2 reference3 basic_pay house_rent coveyance medical utilities others gross_pay );
+    my @form1hidden = qw(id);
+    my $form1       = CGI::FormBuilder->new(
+        method     => 'post',
+        table      => 1,
+        fields     => \@form1flds,
+        required   => [qw(emp_name)],
+        submit     => [qw(Save Delete)],
+        values     => $row,
+        params     => $q,
+        stylesheet => 1,
+        template   => {
+            type     => 'TT2',
+            template => 'form.tmpl',
+            variable => 'form1',
+        },
+        keepextras => [qw(nextsub action)],
+    );
+    for (@form1hidden) { $form1->field( name => $_, type => 'hidden' ) }
+    &report_header('Employees database');
+    print $form1->render if $q->param('action') eq 'form';
+
+    #-----------------------------------------------
+    # DATA BASE PROCESSING
+    #-----------------------------------------------
+    my $data = $form1->fields;
+    $data->{id} *= 1;
+    for (qw(action nextsub)) { delete $data->{$_} }
+    if ( $form1->submitted eq 'Save' ) {
+        if ( $data->{id} ) {
+            $dbs->update( 'hr_emp', $data, { id => $data->{id} } );
+        }
+        else {
+            delete $data->{id};
+            $dbs->insert( 'hr_emp', $data );
+        }
+        print qq|Employee saved\n|;
+    }
+    elsif ( $form1->submitted eq 'Delete' ) {
+        $dbs->delete( 'hr_emp', { id => $data->{id} } );
+        print qq|Employee deleted\n|;
+    }
+
+    #-----------------------------------------------
+    # REPORT
+    #-----------------------------------------------
+    print qq|<a href="$pageurl?nextsub=emp&action=form">Add a new employee</a>|;
+    my $table = $dbs->query( "
+        SELECT '<a href=reports.pl?nextsub=emp&action=form&id='||id||'>'||emp_num||'</a>' emp_num, 
+            emp_name 
+        FROM hr_emp 
+        ORDER BY id"
+      )->xto(
+        table => { cellpadding => "5",          cellspacing => "2" },
+        tr    => { class       => [ 'listrow0', 'listrow1' ] },
+        th    => { class       => ['listheading'] },
+      ) or die( $dbs->error );
+
+    print $table->output;
+    print qq|</body></html>|;
 }
 
 # EOF

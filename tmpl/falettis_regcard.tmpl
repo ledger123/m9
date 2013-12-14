@@ -6,7 +6,13 @@
 
 <body onload="return window.print();">
 
-  <div align="center"><img src="/munshi9/logo.jpg"></div>
+  <table width="100%">
+  <tr>
+        <th><img src="/munshi9/logo.jpg"></th>
+        <th>GREETINGS FROM FALETTI'S HOTEL</th>
+        <th>Registration Card - Form D</th>
+  </tr>
+  </table>
 
   <table width="100%" cellspacing="0" cellpadding="0">
     <tr>
@@ -65,6 +71,12 @@
             <th align="left">Checkout Date</th>
             <td align="left">[% res.checkout_date %]</td>
           </tr>
+
+          <tr>
+            <th align="left">Payment Mode</th>
+            <td align="left">[% res.payment_mode %]&nbsp;</td>
+          </tr>
+
         </table>
       </td>
 
@@ -124,17 +136,14 @@
       </td>
     </tr>
 
-    <tr>
-      <td colspan="4" align="right">CHECKED-IN BY: [% res.entered_by %] AT [% checkin_time %]</td>
-    </tr>
   </table><br>
   <b>Please note:</b>
 
   <ol>
-    <li><b>Checkout Time: 14:00 hours</b></li>
-    <li><b>Late checkout will be charged</b></li>
-    <li>Guest will be responsible for any damage done in the room.</li>
-    I, solemnly agree all above mentioned instructions from the management of Falettis Hotel.</li>
+    <li>Please note check out time: 12:00 noon
+    <li>Kindly keep your valuable items in the safe box provided in your room.
+    <li>Hotel management holds no responsibility for any loss of valuable.
+    <li>The Registration of Foreign Rule-1996 11 - 15, Hotel Arrival Report. Thanks
   </ol><br>
 
   <table width="100%">

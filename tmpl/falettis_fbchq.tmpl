@@ -17,10 +17,13 @@
     <tr><td colspan=4>&nbsp;</td></tr>
     <tr><td colspan=4>&nbsp;</td></tr>
     <tr><td colspan=4>&nbsp;</td></tr>
-    <tr><td colspan=4>&nbsp;</td></tr>
-    <tr><td colspan=4>&nbsp;</td></tr>
-    <tr><td colspan=4>&nbsp;</td></tr>
-    <tr><td colspan=4>&nbsp;</td></tr>
+
+    <tr>
+      <th align='left'>tem Name</th>
+      <th>Qty</th>
+      <th>Price</th>
+      <th>Amount</th>
+    </tr>
 
 [% FOREACH id IN dtl.keys.sort %]
     <tr>
@@ -37,7 +40,7 @@
 
 [% IF hdr.sc > 0 %]
     <tr>
-      <td width="50%"></td>
+      <td width="60%"></td>
       <td>Srv Chgs</td>
       <td align="right">[% nf.format_price(hdr.sc_amt) %]</td>
     </tr>

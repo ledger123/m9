@@ -72,7 +72,7 @@
 [% FOREACH id IN dtl.keys.sort %]
 	<tr>
 		<td nowrap>[% dtl.$id.item_id %]</td>
-		<td>[% dtl.$id.item_name.substr(0,22) %]</td>
+		<td>[% dtl.$id.item_name %]</td>
 		<td align="right">[% dtl.$id.req_qty %]</td>
 		<td nowrap>[% dtl.$id.unit %]</td>
 		<td align="right">[% dtl.$id.cost %]</td>

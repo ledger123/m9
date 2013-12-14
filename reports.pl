@@ -97,7 +97,9 @@ sub banquet {
 #----------------------------------------
 sub fbchq {
     my $vars = {};
+    $vars->{nf}      = $nf;
     $vars->{hdr} = $dbs->query( 'SELECT * FROM hc_fb_sale WHERE sale_id=?',       $id )->hash;
+    $vars->{guest_name1} = $dbs->query( 'SELECT guest_name1 FROM hc_res WHERE res_id=?',  $vars->{hdr}->{res_id} )->list;
     $vars->{dtl} = $dbs->query( 'SELECT * FROM hc_fb_sale_lines WHERE sale_id=?', $id )->map_hashes('id');
     $vars->{user}   = $dbs->query("SELECT 'USER: ' || created_by || ' AT ' || TO_CHAR(creation_date, 'DD-MON-RR HH24:MI') FROM dual")->list;
     $vars->{outlet} = $dbs->query( 'SELECT outlet_name FROM hc_fb_outlets WHERE outlet_id = ?', $vars->{hdr}->{outlet_id} )->list;

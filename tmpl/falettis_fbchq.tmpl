@@ -5,14 +5,13 @@
 
 <body onload="return window.print();">
 
-  <table width="65%" cellspacing="8" cellpadding="2">
+  <table width="75%" cellspacing="11" cellpadding="2">
     <tr><td width='20%'>&nbsp;</td><td>[% guest_name1 %]</td><td>&nbsp;</td><td>&nbsp;</td></tr>
     <tr><td>&nbsp;</td><td>[% hdr.room_num %]</td><td>&nbsp;</td><td>&nbsp;</td></tr>
-    <tr><td colspan=4>&nbsp;</td></tr>
     <tr><td>&nbsp;</td><td>[% hdr.sale_date %]</td><td>&nbsp;</td><td>[% nf.format_price(hdr.net_amt) %]</td></tr>
   </table>
 
-  <table width="65%" cellspacing="5" cellpadding="0">
+  <table width="75%" cellspacing="5" cellpadding="0">
     <tr><td colspan=4>&nbsp;</td></tr>
     <tr><td colspan=4>&nbsp;</td></tr>
     <tr><td colspan=4>&nbsp;</td></tr>
@@ -37,11 +36,11 @@
 
   </table>
 
-  <table width="65%">
+  <table width="75%">
 
 [% IF hdr.sc > 0 %]
     <tr>
-      <td width="60%"></td>
+      <td width="75%"></td>
       <td>Srv Chgs</td>
       <td align="right">[% nf.format_price(hdr.sc_amt) %]</td>
     </tr>
@@ -49,7 +48,7 @@
 
 [% IF hdr.fdisc_amt > 0 %]
     <tr>
-      <td width="50%"></td>
+      <td width="75%"></td>
       <td>Food Disc</td>
       <td align="right">[% nf.format_price(hdr.fdisc_amt) %]</td>
     </tr>
@@ -57,21 +56,21 @@
 
 [% IF hdr.bdisc_amt > 0 %]
     <tr>
-      <td width="50%"></td>
+      <td width="75%"></td>
       <td>Bev.Disc</td>
       <td align="right">[% nf.format_price(hdr.bdisc_amt) %]</td>
     </tr>
 [% END %]
 
     <tr>
-      <td width="50%"></td>
+      <td width="75%"></td>
       <td><b>Sub Total</b></td>
       <td align="right">[% nf.format_price(hdr.sale_amt) %]</td>
     </tr>
 
 [% IF hdr.tip > 0 %]
     <tr>
-      <td width="50%"></td>
+      <td width="75%"></td>
       <td>Tip</td>
       <td align="right">[% nf.format_price(hdr.tip) %]</td>
     </tr>
@@ -80,7 +79,7 @@
 
 [% IF hdr.ced > 0 %]
     <tr>
-      <td width="50%"></td>
+      <td width="75%"></td>
       <td>16% Tax</td>
       <td align="right">[% nf.format_price(hdr.ced) %]</td>
     </tr>
@@ -89,21 +88,21 @@
 
 [% IF hdr.tax10 > 0 %]
     <tr>
-      <td width="50%"></td>
+      <td width="75%"></td>
       <td>10% Adv.Tax</td>
       <td align="right">[% nf.format_price(hdr.tax10) %]</td>
     </tr>
 [% END %]
 
     <tr>
-      <td width="50%"></td>
+      <td width="75%"></td>
       <td><b>Total</b></td>
       <td align="right">[% nf.format_price(hdr.net_amt) %]</td>
     </tr>
 
   </table><br>
 
-  <table width="65%" cellspacing="0" cellpadding="0" border="0">
+  <table width="75%" cellspacing="0" cellpadding="0" border="0">
     <tr>
       <td align="right">[% user %]</td>
     </tr>

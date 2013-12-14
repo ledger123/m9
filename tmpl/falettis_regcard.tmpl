@@ -51,7 +51,14 @@
 
           <tr>
             <th align="left">Checkin Date</th>
-            <td align="left">[% res.checkin_date %]</td>
+
+            <td align="left">
+            [% IF res.checkin_date %]
+                [% res.checkin_date %]
+            [% ELSE %]
+                [% res.arrival_date %]
+            [% END %]
+            </td>
           </tr>
 
           <tr>

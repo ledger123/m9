@@ -265,6 +265,33 @@ $(function(){
 }
 
 #----------------------------------------
+sub runsql {
+    &report_header('Sample Report');
+
+    print qq|
+<form action="reports.pl" method="post">
+SQL: <textarea name="query">| . $q->param('query') . qq|</textarea>
+    <hr/>
+    <input type=hidden name=nextsub value=$nextsub>
+    <input type=submit name=action class=submit value="Update">
+</form>
+|;
+    my $query = $q->param('query');
+    die('Invalid query') if $query =~ /(insert|update|delete|drop|create)/i;
+
+    if ( $q->param('action') eq 'Update' ) {
+        my $table = $dbs->query($query)->xto(
+            table => { cellpadding => "5",          cellspacing => "2" },
+            tr    => { class       => [ 'listrow0', 'listrow1' ] },
+            th    => { class       => ['listheading'] },
+        ) or die( $dbs->error );
+
+        print $table->output;
+
+    }
+}
+
+#----------------------------------------
 sub sample_report {
 
     &report_header('Sample Report');

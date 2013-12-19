@@ -24,3 +24,5 @@ begin
 end;
 /
 
+alter table po add terms varchar2(4000);
+

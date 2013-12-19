@@ -1,6 +1,6 @@
 <html>
 <head>
- <title>Report Name</title>
+ <title>Purchase Order</title>
  <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
 </head>
 <body onload="return window.print();">
@@ -44,6 +44,7 @@
 		<th>Item</th>
 		<th>Description</th>
 		<th>Qty</th>
+		<th>Unit</th>
 		<th>Price</th>
 		<th>Amount</th>
 	</tr>
@@ -54,6 +55,7 @@
 		<td nowrap>[% dtl.$id.item_id %]</td>
 		<td>[% dtl.$id.item_name %]</td>
 		<td align="right">[% nf.format_price(dtl.$id.req_qty) %]</td>
+		<td align="center">[% dtl.$id.unit %]</td>
 		<td align="right">[% nf.format_price(dtl.$id.cost) %]</td>
 		<td align="right">[% nf.format_price(dtl.$id.net_cost) %]</td>
 	</tr>
@@ -61,14 +63,19 @@
 [% END %]
 
         <tr>
-		<th colspan=4" align="right">TOTAL</th>
+		<th colspan=5" align="right">TOTAL</th>
 		<th align="right">[% nf.format_price(net_cost_total) %]</th>
 	</tr>
 	</table>
     </td>
 </tr>
 </table>
-
+[% IF hdr.terms %]
+TERMS & CONDITIONS<br/>
+[% hdr.terms %]
+[% END %]
+<br/>
+<br/>
 Terms & Conditions:
 <ul>
 <li>Merchandise must be delivered to our Receiving Office, Faletti's Hotel Lahore accompained with Billing duplicate which must specify the Purchase Order Number</li>

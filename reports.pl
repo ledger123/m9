@@ -203,8 +203,13 @@ sub po {
     my $vars = {};
     $vars->{nf}      = $nf;
     $vars->{hdr}     = $dbs->query( 'SELECT * FROM po WHERE tr_num=?', $id )->hash;
+    $vars->{hdr}->{terms} =~ s/\n/<br>/g;
     $vars->{company} = $dbs->query( 'SELECT * FROM ap_vendors WHERE vendor_id=?', $vars->{hdr}->{vendor_id} )->hash;
-    $vars->{dtl}     = $dbs->query( 'SELECT * FROM po_lines WHERE tr_num = ?', $id )->map_hashes('id');
+    $vars->{dtl}     = $dbs->query( '
+        SELECT po_lines.*, ic_items.uom_stk_id unit
+        FROM po_lines
+        JOIN ic_items ON (ic_items.item_id = po_lines.item_id) 
+        WHERE tr_num = ?', $id )->map_hashes('id');
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }

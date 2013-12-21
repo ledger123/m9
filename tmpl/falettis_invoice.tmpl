@@ -54,6 +54,7 @@
 [% tax_amt_total = 0 %]
 [% bill_amt_total = 0 %]
 [% btc_pymt_total = 0 %]
+[% ced_total = 0 %]
 [% tax10_total = 0 %]
 [% FOREACH res_id IN dtl.keys.sort %]
 	<tr>
@@ -70,6 +71,7 @@
 [% tax_amt_total = tax_amt_total + dtl.$res_id.tax_amt %]
 [% bill_amt_total = bill_amt_total + dtl.$res_id.amount %]
 [% btc_pymt_total = btc_pymt_total + dtl.$res_id.amount %]
+[% ced_total = ced_total + (dtl.$res_id.amount - dtl.$res_id.tax_amt) %]
 [% END %]
 
 [% FOREACH sale_id IN chq.keys.sort %]
@@ -87,13 +89,14 @@
 [% tax_amt_total = tax_amt_total + chq.$sale_id.sale_amt + chq.$sale_id.tip %]
 [% bill_amt_total = bill_amt_total + chq.$sale_id.net_amt %]
 [% btc_pymt_total = btc_pymt_total + chq.$sale_id.btc_pymt %]
+[% ced_total = ced_total + chq.$sale_id.ced %]
 [% tax10_total = tax10_total + chq.$sale_id.tax10 %]
 [% END %]
 
         <tr>
 		<th colspan=5" align="right">TOTAL</th>
 		<th align="right">[% nf.format_price(tax_amt_total) %]</th>
-		<th align="right">[% nf.format_price(bill_amt_total - tax_amt_total) %]</th>
+		<th align="right">[% nf.format_price(ced_total) %]</th>
 		<th align="right">[% nf.format_price(tax10_total) %]</th>
 		<th align="right">[% nf.format_price(btc_pymt_total) %]</th>
 	</tr>

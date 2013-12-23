@@ -12,6 +12,7 @@
 		<tr><th>PURCHASE ORDER</th></tr>
 		<tr><th><img src="/munshi9/logo.jpg"></th></tr>
         <tr><th>Falettis Hotel</th></tr>
+		<tr><th>NTN: 4032712 - 4</th></tr>
 	</table>
     </td>
 </tr>
@@ -27,6 +28,8 @@
 		<tr><th align="left">Address:</th><td>[% company.address1 %]</td></tr>
 		<tr><th align="left">City:</th><td>[% company.city %]</td></tr>
 		<tr><th align="left">Phone:</th><td>[% company.phone1 %]</td></tr>
+		<tr><th align="left">NTN:</th><td>[% company.tax_num %]</td></tr>
+		<tr><th align="left">GST:</th><td>[% company.web_url %]</td></tr>
 		</table></td><td valign="top"><table>
 		<tr><th align="left">PO Number:</th><td>[% hdr.tr_num %]</td></tr>
 		<tr><th align="left">PO Amount:</th><td><b>[% nf.format_price(hdr.ord_amt) %]</b></td></tr>
@@ -46,6 +49,8 @@
 		<th>Qty</th>
 		<th>Unit</th>
 		<th>Price</th>
+		<th>Disc</th>
+		<th>Tax</th>
 		<th>Amount</th>
 	</tr>
 [% net_cost_total = 0 %]
@@ -57,13 +62,15 @@
 		<td align="right">[% nf.format_price(dtl.$id.req_qty) %]</td>
 		<td align="center">[% dtl.$id.unit %]</td>
 		<td align="right">[% nf.format_price(dtl.$id.cost) %]</td>
+		<td align="right">[% nf.format_price(dtl.$id.dis_amt) %]</td>
+		<td align="right">[% nf.format_price(dtl.$id.tax_amt) %]</td>
 		<td align="right">[% nf.format_price(dtl.$id.net_cost) %]</td>
 	</tr>
 [% net_cost_total = net_cost_total + dtl.$id.net_cost %]
 [% END %]
 
         <tr>
-		<th colspan=5" align="right">TOTAL</th>
+		<th colspan=7" align="right">TOTAL</th>
 		<th align="right">[% nf.format_price(net_cost_total) %]</th>
 	</tr>
 	</table>
@@ -94,6 +101,7 @@ Terms & Conditions:
 	<th>________________</th>
 	<th>________________</th>
 	<th>________________</th>
+	<th>________________</th>
 	</tr>
 
 	<tr>
@@ -101,7 +109,8 @@ Terms & Conditions:
 	<th>Department Head</th>
 	<th>Finance Manager</th>
 	<th>Director Operations</th>
-	<th>Purcahse Manage</th>
+	<th>Purchase Manager</th>
+	<th>Vendor Sign</th>
 	</tr>
 	</table>
 </td></tr>

@@ -11,7 +11,7 @@
 	<table width="100%">
 		<tr><th>PURCHASE ORDER</th></tr>
 		<tr><th><img src="/munshi9/logo.jpg"></th></tr>
-        <tr><th>Falettis Hotel</th></tr>
+		<tr><th>Imperial Hotel Management Services (Pvt) Ltd.</th></tr>
 		<tr><th>NTN: 4032712 - 4</th></tr>
 	</table>
     </td>
@@ -77,6 +77,11 @@
     </td>
 </tr>
 </table>
+[% IF hdr.notes %]
+NOTES<br/>
+[% hdr.notes %]
+[% END %]
+
 [% IF hdr.terms %]
 TERMS & CONDITIONS<br/>
 [% hdr.terms %]

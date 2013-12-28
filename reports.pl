@@ -842,7 +842,7 @@ Include: |;
 #----------------------------------------
 sub history1 {
 
-    &report_header('Inhouse Summary');
+    &report_header('History Report');
 
     my @columns       = qw(res_id room guest1 mobile dob company email nation passport cnic);
     my @total_columns = qw();

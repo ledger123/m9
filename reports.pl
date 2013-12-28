@@ -946,7 +946,7 @@ Include: |;
             $groupvalue = $row->{$sort};
             for (@total_columns) { $subtotals{$_} = 0 }
         }
-        for (@report_columns) { $tabledata{$_} = qq|<td>$row->{$_}</td>| }
+        for (@report_columns) { $tabledata{$_} = qq|<td nowrap>$row->{$_}</td>| }
         for (@total_columns) { $tabledata{$_} = qq|<td align="right">| . $nf->format_price( $row->{$_}, 2 ) . qq|</td>| }
         for (@total_columns) { $totals{$_}    += $row->{$_} }
         for (@total_columns) { $subtotals{$_} += $row->{$_} }

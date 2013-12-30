@@ -246,7 +246,7 @@ $(function() {
    $( ".datepicker" ).datepicker({
 	dateFormat: 'd-M-yy',
 	showOn: "button",
-	buttonImage: "http://localhost/munshi9/css/calendar.gif",
+	buttonImage: "/munshi9/css/calendar.gif",
 	buttonImageOnly: true,
 	showOtherMonths: true,
 	selectOtherMonths: true,
@@ -913,7 +913,7 @@ Include: |;
                ORDER BY $sort_positions($sort) $sortorder
     |;
 
-    my @allrows = $dbs->query( $query, @bind )->hashes or die( $dbs->error );
+    my @allrows = $dbs->query( $query, @bind )->hashes;
 
     my ( %tabledata, %totals, %subtotals );
 

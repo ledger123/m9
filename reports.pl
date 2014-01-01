@@ -901,8 +901,9 @@ Include: |;
         push @bind, $q->param('todate');
     }
 
-    my $query = qq|
-            SELECT   res_id, room_num room, guest_name1 guest1,
+    my $munshi9_url = $dbs->query("select global_value from z_apps_data where id=?", 'MUNSHI9_URL')->list;
+    my $query = qq~
+            SELECT   '<a href="http://$munshi9_url:8000/munshi9/a\$hc_res.frm?f_res_id='||res_id||'">'||res_id||'</a>' res_id, room_num room, guest_name1 guest1,
                      mobile, dob, company,
                      email, nation, passport,
                      nid_num cnic
@@ -911,7 +912,7 @@ Include: |;
                  AND room_num NOT IN ('CTL', 'NA')
                  AND $where
                ORDER BY $sort_positions($sort) $sortorder
-    |;
+    ~;
 
     my @allrows = $dbs->query( $query, @bind )->hashes;
 

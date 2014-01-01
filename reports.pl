@@ -1037,7 +1037,7 @@ Include: |;
                ORDER BY $sort_positions($sort) $sortorder
     |;
 
-    my @allrows = $dbs->query( $query, @bind )->hashes or die($dbs->error);
+    my @allrows = $dbs->query( $query, @bind )->hashes;
 
     my ( %tabledata, %totals, %subtotals );
 
@@ -1482,6 +1482,7 @@ sub ccard {
         keepextras => [qw(nextsub action)],
     );
     for (@form1hidden) { $form1->field( name => $_, type => 'hidden' ) }
+    $form1->field(name => 'dob', class=>'datepicker');
     &report_header('Comment Cards');
     print $form1->render if $q->param('action') eq 'form';
 

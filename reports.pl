@@ -972,6 +972,132 @@ Include: |;
 }
 
 #----------------------------------------
+sub history2 {
+
+    &report_header('Banquet History Report');
+
+    my @columns       = qw(event_number event_type event_date contact_person phone1 mobile email);
+    my @total_columns = qw();
+    my @search_columns = qw(fromdate todate);
+
+    my %sort_positions = {
+        event_number => 1,
+        event_type => 2,
+        event_date => 3,
+        contact_person => 4,
+        phone1 => 5,
+        mobile => 6,
+        email => 7,
+    };
+
+    my $sort      = $q->param('sort') ? $q->param('sort') : 'event_number';
+    my $sortorder = $q->param('sortorder');
+    my $oldsort   = $q->param('oldsort');
+    $sortorder = ( $sort eq $oldsort ) ? ( $sortorder eq 'asc' ? 'desc' : 'asc' ) : 'asc';
+
+    print qq|
+<form action="reports.pl" method="post">
+From event date: <input name=fromdate type=text size=12 class="datepicker" value="| . $q->param('fromdate') . qq|"><br/>
+To to date: <input name=todate type=text size=12 class="datepicker" value="| . $q->param('todate') . qq|"><br/>
+
+Include: |;
+    for (@columns) {
+        $checked = ( $action eq 'Update' ) ? ( $q->param("l_$_") ? 'checked' : '' ) : 'checked';
+        print qq|<input type=checkbox name=l_$_ value="1" $checked> | . ucfirst($_);
+    }
+    print qq|<br/>
+    Subtotal: <input type=checkbox name=l_subtotal value="checked" | . $q->param('l_subtotal') . qq|><br/>
+    <hr/>
+    <input type=hidden name=nextsub value=$nextsub>
+    <input type=submit name=action class=submit value="Update">
+</form>
+|;
+
+    my @report_columns;
+    for (@columns) { push @report_columns, $_ if $q->param("l_$_") }
+
+    my $where = ' 1 = 1 ';
+    $where = ' 1 = 2 ' if $action ne 'Update';    # Display data only when Update button is pressed.
+    my @bind = ();
+
+    if ( $q->param('fromdate') ) {
+        $where .= qq| AND h.event_date >= ?|;
+        push @bind, $q->param('fromdate');
+    }
+
+    if ( $q->param('todate') ) {
+        $where .= qq| AND h.event_date <= ?|;
+        push @bind, $q->param('todate');
+    }
+
+    my $query = qq|
+              SELECT event_number, event_type, event_date, contact_person, phone1, mobile, email
+                FROM banquet_header h
+               WHERE $where
+               ORDER BY $sort_positions($sort) $sortorder
+    |;
+
+    my @allrows = $dbs->query( $query, @bind )->hashes or die($dbs->error);
+
+    my ( %tabledata, %totals, %subtotals );
+
+    my $url = "reports.pl?action=$action&nextsub=$nextsub&oldsort=$sort&sortorder=$sortorder&l_subtotal=" . $q->param(l_subtotal);
+    for (@report_columns) { $url .= "&l_$_=" . $q->param("l_$_") if $q->param("l_$_") }
+    for (@search_columns) { $url .= "&$_=" . $q->param("$_")     if $q->param("$_") }
+    for (@report_columns) { $tabledata{$_} = qq|<th><a class="listheading" href="$url&sort=$_">| . ucfirst $_ . qq|</a></th>\n| }
+
+    print qq|
+        <table cellpadding="3" cellspacing="2">
+        <tr class="listheading">
+|;
+    for (@report_columns) { print $tabledata{$_} }
+
+    print qq|
+        </tr>
+|;
+
+    my $groupvalue;
+    my $i = 0;
+    for $row (@allrows) {
+        $groupvalue = $row->{$sort} if !$groupvalue;
+        if ( $q->param(l_subtotal) and $row->{$sort} ne $groupvalue ) {
+            for (@report_columns) { $tabledata{$_} = qq|<td>&nbsp;</td>| }
+            for (@total_columns) { $tabledata{$_} = qq|<th align="right">| . $nf->format_price( $subtotals{$_}, 2 ) . qq|</th>| }
+
+            print qq|<tr class="listsubtotal">|;
+            for (@report_columns) { print $tabledata{$_} }
+            print qq|</tr>|;
+            $groupvalue = $row->{$sort};
+            for (@total_columns) { $subtotals{$_} = 0 }
+        }
+        for (@report_columns) { $tabledata{$_} = qq|<td nowrap>$row->{$_}</td>| }
+        for (@total_columns) { $tabledata{$_} = qq|<td align="right">| . $nf->format_price( $row->{$_}, 2 ) . qq|</td>| }
+        for (@total_columns) { $totals{$_}    += $row->{$_} }
+        for (@total_columns) { $subtotals{$_} += $row->{$_} }
+
+        print qq|<tr class="listrow$i">|;
+        for (@report_columns) { print $tabledata{$_} }
+        print qq|</tr>|;
+        $i += 1;
+        $i %= 2;
+    }
+
+    for (@report_columns) { $tabledata{$_} = qq|<td>&nbsp;</td>| }
+    for (@total_columns) { $tabledata{$_} = qq|<th align="right">| . $nf->format_price( $subtotals{$_}, 2 ) . qq|</th>| }
+
+    print qq|<tr class="listsubtotal">|;
+    for (@report_columns) { print $tabledata{$_} }
+    print qq|</tr>|;
+
+    for (@total_columns) { $tabledata{$_} = qq|<th align="right">| . $nf->format_price( $totals{$_}, 2 ) . qq|</th>| }
+    print qq|<tr class="listtotal">|;
+    for (@report_columns) { print $tabledata{$_} }
+    print qq|</tr>|;
+}
+
+
+
+#----------------------------------------
 sub inhouse_summary {
 
     &report_header('Inhouse Summary');
@@ -1312,6 +1438,82 @@ sub emp {
         SELECT '<a href=reports.pl?nextsub=emp&action=form&id='||id||'>'||emp_num||'</a>' emp_num, 
             emp_name 
         FROM hr_emp 
+        ORDER BY id"
+      )->xto(
+        table => { cellpadding => "5",          cellspacing => "2" },
+        tr    => { class       => [ 'listrow0', 'listrow1' ] },
+        th    => { class       => ['listheading'] },
+      ) or die( $dbs->error );
+
+    print $table->output;
+    print qq|</body></html>|;
+}
+
+#---------------------------------------------------------------------------------------------------
+sub ccard {
+
+    my $row = {};
+    if ( $q->param('id') ) {
+        $row = $dbs->query( '
+            SELECT id, name, address, email, dob, mobile
+            FROM ccard
+            WHERE id = ?', $q->param('id') )->hash or die( $dbs->error );
+    }
+
+    #-----------------------------------------------
+    # DB FORM
+    #-----------------------------------------------
+    my @form1flds = qw(id name address email dob mobile );
+    my @form1hidden = qw(id);
+    my $form1       = CGI::FormBuilder->new(
+        method     => 'post',
+        table      => 1,
+        fields     => \@form1flds,
+        required   => [qw(name)],
+        submit     => [qw(Save Delete)],
+        values     => $row,
+        params     => $q,
+        stylesheet => 1,
+        template   => {
+            type     => 'TT2',
+            template => 'form.tmpl',
+            variable => 'form1',
+        },
+        keepextras => [qw(nextsub action)],
+    );
+    for (@form1hidden) { $form1->field( name => $_, type => 'hidden' ) }
+    &report_header('Comment Cards');
+    print $form1->render if $q->param('action') eq 'form';
+
+    #-----------------------------------------------
+    # DATA BASE PROCESSING
+    #-----------------------------------------------
+    my $data = $form1->fields;
+    $data->{id} *= 1;
+    for (qw(action nextsub)) { delete $data->{$_} }
+    if ( $form1->submitted eq 'Save' ) {
+        if ( $data->{id} ) {
+            $dbs->update( 'ccard', $data, { id => $data->{id} } );
+        }
+        else {
+            delete $data->{id};
+            $dbs->insert( 'ccard', $data );
+        }
+        print qq|Card saved\n|;
+    }
+    elsif ( $form1->submitted eq 'Delete' ) {
+        $dbs->delete( 'hr_emp', { id => $data->{id} } );
+        print qq|Card deleted\n|;
+    }
+
+    #-----------------------------------------------
+    # REPORT
+    #-----------------------------------------------
+    print qq|<a href="$pageurl?nextsub=ccard&action=form">Add a new comment card</a>|;
+    my $table = $dbs->query( "
+        SELECT '<a href=reports.pl?nextsub=ccard&action=form&id='||id||'>'||name||'</a>' name, 
+            address, email, dob, mobile
+        FROM ccard
         ORDER BY id"
       )->xto(
         table => { cellpadding => "5",          cellspacing => "2" },

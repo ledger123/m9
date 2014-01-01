@@ -27,5 +27,29 @@ end;
 
 alter table po add terms varchar2(4000);
 
+
+--
+-- comment card
+--
+create table ccard (
+    id      integer,
+    name    varchar2(50),
+    address varchar2(200),
+    email   varchar2(200),
+    dob     date,
+    mobile  varchar2(50)
+);
+
+create sequence ccard_seq start with 1 nocache order;
+create or replace trigger ccard_trg
+before insert
+on ccard
+for each row
+begin
+    select ccard_seq.nextval into :new.id from dual;
+end;
+/
+
+
 -----------------------------------------
 

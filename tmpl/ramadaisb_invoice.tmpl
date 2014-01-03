@@ -5,8 +5,6 @@
  </head>
 
 <body onload="return window.print();">
-
-<h1 class="noprint">Print and Save</h1>
 <img src="/munshi9/logo.jpg">
 <br/>1 Club Road Islamabad
 <br/>Phone: , Fax: 
@@ -85,9 +83,31 @@
 </tr>
 </table>
 <br/>
-<br/>
-<br/>
-<br/>
+<p>Payment detail</p>
+<table border=1 cellspacing=0 cellpadding=3>
+<tr>
+    <th>Date</th>
+    <th>Type</th>
+    <th>Rec Ref</th>
+    <th>Amt</th>
+</tr>
+[% total_rec_amt = 0 %]
+[% FOREACH id IN receipts.keys.sort %]
+<tr>
+<td>[% receipts.$id.tr_date %]</td>
+<td>[% receipts.$id.rec_type %]</td>
+<td>[% receipts.$id.rec_ref %]</td>
+<td align="right">[% nf.format_price(receipts.$id.rec_amt) %]</td>
+</tr>
+[% total_rec_amt = total_rec_amt + receipts.$id.rec_amt %]
+[% END %]
+<tr>
+    <th colspan=3>&nbsp;</th>
+    <th align="right">[% nf.format_price(total_rec_amt) %]</th>
+</tr>
+</table>
+
+
 <br/>
 <br/>
 <br/>

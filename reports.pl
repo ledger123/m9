@@ -147,7 +147,12 @@ sub invoice {
 	FROM hc_charges WHERE bill_num=? AND sale_id = 0 ORDER BY 1", $id )->map_hashes('id');
     $vars->{chq} = $dbs->query( "
 	SELECT to_char(sale_date, 'yymmdd')||sale_id id, hc_fb_sale.* FROM hc_fb_sale
-	WHERE sale_id IN (SELECT sale_id FROM hc_charges WHERE bill_num = ?) ORDER BY 1", $id )->map_hashes('id');
+	WHERE sale_id IN (SELECT sale_id FROM hc_charges WHERE bill_num = ?) ORDER BY 1", $id )->map_hashes('id') or die($dbs->error);
+
+    $vars->{receipts}     = $dbs->query( "
+	SELECT to_char(tr_date, 'yymmdd')||tr_num id, tr_num, tr_date, rec_type, rec_ref, rec_desc, rec_amt, other_ref1, other_ref2
+	FROM hc_receipts_detail WHERE inv_num = ? ORDER BY 1", $id )->map_hashes('id') or die($dbs->error);
+
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }
@@ -1456,7 +1461,7 @@ sub ccard {
     my $row = {};
     if ( $q->param('id') ) {
         $row = $dbs->query( '
-            SELECT id, name, address, email, dob, mobile
+            SELECT id, name, address, email, dob, mobile, anniversary
             FROM ccard
             WHERE id = ?', $q->param('id') )->hash or die( $dbs->error );
     }
@@ -1464,7 +1469,7 @@ sub ccard {
     #-----------------------------------------------
     # DB FORM
     #-----------------------------------------------
-    my @form1flds = qw(id name address email dob mobile );
+    my @form1flds = qw(id name address email dob mobile anniversary );
     my @form1hidden = qw(id);
     my $form1       = CGI::FormBuilder->new(
         method     => 'post',
@@ -1484,6 +1489,7 @@ sub ccard {
     );
     for (@form1hidden) { $form1->field( name => $_, type => 'hidden' ) }
     $form1->field(name => 'dob', class=>'datepicker');
+    $form1->field(name => 'anniversary', class=>'datepicker');
     &report_header('Comment Cards');
     print $form1->render if $q->param('action') eq 'form';
 
@@ -1514,7 +1520,7 @@ sub ccard {
     print qq|<a href="$pageurl?nextsub=ccard&action=form">Add a new comment card</a>|;
     my $table = $dbs->query( "
         SELECT '<a href=reports.pl?nextsub=ccard&action=form&id='||id||'>'||name||'</a>' name, 
-            address, email, dob, mobile
+            address, email, dob, mobile, anniversary
         FROM ccard
         ORDER BY id"
       )->xto(

@@ -40,6 +40,8 @@ create table ccard (
     mobile  varchar2(50)
 );
 
+ALTER TABLE ccard ADD anniversary DATE;
+
 create sequence ccard_seq start with 1 nocache order;
 create or replace trigger ccard_trg
 before insert

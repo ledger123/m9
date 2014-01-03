@@ -75,35 +75,24 @@
 [% tax10_total = tax10_total + chq.$sale_id.tax10 %]
 [% END %]
  <tr>
-    <th colspan=5" align="right">TOTAL</th>
+    <th colspan=5 align="right">TOTAL</th>
     <th align="right">[% nf.format_price(tax_amt_total) %]</th>
     <th align="right">[% nf.format_price(bill_amt_total - tax_amt_total) %]</th>
     <th align="right">[% nf.format_price(tax10_total) %]</th>
     <th align="right">[% nf.format_price(btc_pymt_total) %]</th>
 </tr>
-</table>
-<br/>
-<p>Payment detail</p>
-<table border=1 cellspacing=0 cellpadding=3>
-<tr>
-    <th>Date</th>
-    <th>Type</th>
-    <th>Rec Ref</th>
-    <th>Amt</th>
-</tr>
+
 [% total_rec_amt = 0 %]
 [% FOREACH id IN receipts.keys.sort %]
 <tr>
-<td>[% receipts.$id.tr_date %]</td>
-<td>[% receipts.$id.rec_type %]</td>
-<td>[% receipts.$id.rec_ref %]</td>
+<td colspan="8" align="right">[% receipts.$id.rec_type %] on [% receipts.$id.tr_date %] via [% receipts.$id.rec_ref %]</td>
 <td align="right">[% nf.format_price(receipts.$id.rec_amt) %]</td>
 </tr>
 [% total_rec_amt = total_rec_amt + receipts.$id.rec_amt %]
 [% END %]
 <tr>
-    <th colspan=3>&nbsp;</th>
-    <th align="right">[% nf.format_price(total_rec_amt) %]</th>
+    <th colspan="8" align="right">BALANCE</th>
+    <th align="right">[% nf.format_price(btc_pymt_total - total_rec_amt) %]</th>
 </tr>
 </table>
 

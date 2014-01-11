@@ -142,7 +142,7 @@ sub invoice {
 
     my $taxper = $dbs->query("SELECT global_value FROM z_apps_data WHERE id='FB_TAX1_PER'")->list or die($dbs->error);
     my $taxper = 1 + ($taxper/100);
-die($taxper);
+
     $vars->{nf}      = $nf;
     $vars->{hdr}     = $dbs->query( 'SELECT * FROM hc_invoices WHERE inv_num=?', $id )->hash;
     $vars->{company} = $dbs->query( 'SELECT * FROM hc_companies WHERE comp_code=?', $vars->{hdr}->{comp_code} )->hash;

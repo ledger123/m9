@@ -139,11 +139,15 @@ sub regcard {
 #----------------------------------------
 sub invoice {
     my $vars = {};
+
+    my $taxper = $dbs->query("SELECT global_value FROM z_apps_data WHERE id='FB_TAX1_PER'")->list or die($dbs->error);
+    my $taxper = 1 + ($taxper/100);
+die($taxper);
     $vars->{nf}      = $nf;
     $vars->{hdr}     = $dbs->query( 'SELECT * FROM hc_invoices WHERE inv_num=?', $id )->hash;
     $vars->{company} = $dbs->query( 'SELECT * FROM hc_companies WHERE comp_code=?', $vars->{hdr}->{comp_code} )->hash;
     $vars->{dtl}     = $dbs->query( "
-	SELECT to_char(charge_date, 'yymmdd')||tr_num id, tr_num, charge_date, res_id, guest_name1, other_ref1, other_ref2, room_num, 0-amount amount, ROUND((0-amount) / 1.16, 2) tax_amt
+	SELECT to_char(charge_date, 'yymmdd')||tr_num id, tr_num, charge_date, res_id, guest_name1, other_ref1, other_ref2, room_num, 0-amount amount, ROUND((0-amount) / $taxper, 2) tax_amt
 	FROM hc_charges WHERE bill_num=? AND sale_id = 0 ORDER BY 1", $id )->map_hashes('id');
     $vars->{chq} = $dbs->query( "
 	SELECT to_char(sale_date, 'yymmdd')||sale_id id, hc_fb_sale.* FROM hc_fb_sale

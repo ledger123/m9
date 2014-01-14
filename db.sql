@@ -53,5 +53,8 @@ end;
 /
 
 
+alter table hc_fb_items add recipe_outlet_id varchar2(10) default 'NA';
+alter table hc_fb_items add recipe_item varchar2(10) default 'NA';
+
 -----------------------------------------
 

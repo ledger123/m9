@@ -140,8 +140,8 @@ sub regcard {
 sub invoice {
     my $vars = {};
 
-    my $taxper = $dbs->query("SELECT global_value FROM z_apps_data WHERE id='FB_TAX1_PER'")->list or die($dbs->error);
-    my $taxper = 1 + ($taxper/100);
+    my $taxper = $dbs->query("SELECT global_value FROM z_apps_data WHERE id='FB_TAX1_PER'")->list or die( $dbs->error );
+    my $taxper = 1 + ( $taxper / 100 );
 
     $vars->{nf}      = $nf;
     $vars->{hdr}     = $dbs->query( 'SELECT * FROM hc_invoices WHERE inv_num=?', $id )->hash;
@@ -151,11 +151,11 @@ sub invoice {
 	FROM hc_charges WHERE bill_num=? AND sale_id = 0 ORDER BY 1", $id )->map_hashes('id');
     $vars->{chq} = $dbs->query( "
 	SELECT to_char(sale_date, 'yymmdd')||sale_id id, hc_fb_sale.* FROM hc_fb_sale
-	WHERE sale_id IN (SELECT sale_id FROM hc_charges WHERE bill_num = ?) ORDER BY 1", $id )->map_hashes('id') or die($dbs->error);
+	WHERE sale_id IN (SELECT sale_id FROM hc_charges WHERE bill_num = ?) ORDER BY 1", $id )->map_hashes('id') or die( $dbs->error );
 
-    $vars->{receipts}     = $dbs->query( "
+    $vars->{receipts} = $dbs->query( "
 	SELECT to_char(tr_date, 'yymmdd')||tr_num id, tr_num, tr_date, rec_type, rec_ref, rec_desc, rec_amt, other_ref1, other_ref2
-	FROM hc_receipts_detail WHERE inv_num = ? ORDER BY 1", $id )->map_hashes('id') or die($dbs->error);
+	FROM hc_receipts_detail WHERE inv_num = ? ORDER BY 1", $id )->map_hashes('id') or die( $dbs->error );
 
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
@@ -853,8 +853,8 @@ sub history1 {
 
     &report_header('History Report');
 
-    my @columns       = qw(res_id room guest1 mobile dob company email nation passport cnic);
-    my @total_columns = qw();
+    my @columns        = qw(res_id room guest1 mobile dob company email nation passport cnic);
+    my @total_columns  = qw();
     my @search_columns = qw(fromdate todate);
 
     my %sort_positions = {
@@ -910,7 +910,7 @@ Include: |;
         push @bind, $q->param('todate');
     }
 
-    my $munshi9_url = $dbs->query("select global_value from z_apps_data where id=?", 'MUNSHI9_URL')->list;
+    my $munshi9_url = $dbs->query( "select global_value from z_apps_data where id=?", 'MUNSHI9_URL' )->list;
     my $query = qq~
             SELECT   '<a href="http://$munshi9_url:8000/munshi9/a\$hc_res.frm?f_res_id='||res_id||'">'||res_id||'</a>' res_id, room_num room, guest_name1 guest1,
                      mobile, dob, company,
@@ -986,18 +986,18 @@ sub history2 {
 
     &report_header('Banquet History Report');
 
-    my @columns       = qw(event_number event_type event_date contact_person phone1 mobile email);
-    my @total_columns = qw();
+    my @columns        = qw(event_number event_type event_date contact_person phone1 mobile email);
+    my @total_columns  = qw();
     my @search_columns = qw(fromdate todate);
 
     my %sort_positions = {
-        event_number => 1,
-        event_type => 2,
-        event_date => 3,
+        event_number   => 1,
+        event_type     => 2,
+        event_date     => 3,
         contact_person => 4,
-        phone1 => 5,
-        mobile => 6,
-        email => 7,
+        phone1         => 5,
+        mobile         => 6,
+        email          => 7,
     };
 
     my $sort      = $q->param('sort') ? $q->param('sort') : 'event_number';
@@ -1104,8 +1104,6 @@ Include: |;
     for (@report_columns) { print $tabledata{$_} }
     print qq|</tr>|;
 }
-
-
 
 #----------------------------------------
 sub inhouse_summary {
@@ -1247,25 +1245,25 @@ sub expected_arrivals {
 
     &report_header('Expected Arrivals');
 
-    my @columns       = qw(res_id room room_type guest1 guest2 group_id company billing payment pax rate arrival vip user_name checkout);
+    my @columns       = qw(res_id room type guest1 guest2 grp company billing payment pax rate arrival vip usr checkout);
     my @total_columns = qw(rate);
 
     my %sort_positions = {
-        res_id     => 1,
-        room       => 2,
-        room_type  => 3,
-        guest1     => 4,
-        guest2     => 5,
-        group_id   => 6,
-        company    => 7,
-        billing    => 8,
-        payment    => 9,
-        pax        => 10,
-        rate       => 11,
-        arrival    => 12,
-        vip        => 13,
-        user_name  => 14,
-        checkout   => 15,
+        res_id   => 1,
+        room     => 2,
+        type     => 3,
+        guest1   => 4,
+        guest2   => 5,
+        grp      => 6,
+        company  => 7,
+        billing  => 8,
+        payment  => 9,
+        pax      => 10,
+        rate     => 11,
+        arrival  => 12,
+        vip      => 13,
+        usr      => 14,
+        checkout => 15,
     };
 
     my $sort      = $q->param('sort') ? $q->param('sort') : 'room';
@@ -1275,9 +1273,10 @@ sub expected_arrivals {
     $sortorder = ( $sort eq $oldsort ) ? ( $sortorder eq 'asc' ? 'desc' : 'asc' ) : 'asc';
 
     my $arrival_date;
-    if ($q->param('arrival_date')){
+    if ( $q->param('arrival_date') ) {
         $arrival_date = $q->param('arrival_date');
-    } else {
+    }
+    else {
         $arrival_date = $dbs->query("SELECT global_value FROM z_apps_data WHERE id='HC_SYSDATE'")->list;
     }
 
@@ -1286,6 +1285,7 @@ sub expected_arrivals {
 Include: |;
     for (@columns) {
         $checked = ( $action eq 'Update' ) ? ( $q->param("l_$_") ? 'checked' : '' ) : 'checked';
+        $checked = '' if $_ =~ /(guest2|billing|usr)/;
         print qq|<input type=checkbox name=l_$_ value="1" $checked> | . ucfirst($_);
     }
     print qq|<br/>
@@ -1305,7 +1305,7 @@ Include: |;
     $where = ' 1 = 2 ' if $action ne 'Update';    # Display data only when Update button is pressed.
     my @bind = ();
 
-    if ( $q->param('arrival_date') ) {
+    if ( $q->param('arriival_date') ) {
         $where .= qq| AND hc_res.arrival_date >= ?|;
         push @bind, $q->param('arrival_date');
     }
@@ -1316,19 +1316,18 @@ Include: |;
     }
 
     my $query = qq|
-            SELECT   hc_res.res_id, hc_res.room_num room, hc_res.room_type, hc_res.guest_name1 guest1, 
-                     hc_res.guest_name2 guest2, hc_res.GROUP_ID, hc_res.vip,
-                     hc_res.company, hc_res.billing_ins billing, hc_res.payment_mode payment, 
+            SELECT   hc_res.res_id, hc_res.room_num room, hc_res.room_type type, hc_res.guest_name1 guest1, 
+                     hc_res.guest_name2 guest2, hc_res.GROUP_ID grp, hc_res.vip,
+                     hc_res.company, hc_res.billing_ins billing, hc_res.payment_mode pymt, 
                      hc_res.adults pax, hc_res.room_rate rate, hc_res.arrival_date arrival, 
-                     hc_res.created_by user_name, checkout_date checkout
+                     hc_res.created_by usr, checkout_date checkout
                 FROM hc_res
                WHERE hc_res.res_status = 'Active'
-                 AND hc_res.room_num NOT IN ('ADV', 'CTL', 'GM', 'LUD', 'NA', 'CTLR', 'ECB', 'SPR', 'GL')
                  AND $where
                ORDER BY $sort_positions($sort) $sortorder
     |;
 
-    my @allrows = $dbs->query( $query, @bind )->hashes or die( $dbs->error );
+    my @allrows = $dbs->query( $query, @bind )->hashes;
 
     my ( %tabledata, %totals, %subtotals );
 
@@ -1361,8 +1360,9 @@ Include: |;
             $groupvalue = $row->{$sort};
             for (@total_columns) { $subtotals{$_} = 0 }
         }
-        for (@report_columns) { $tabledata{$_} = qq|<td>$row->{$_}</td>| }
-        for (@total_columns) { $tabledata{$_} = qq|<td align="right">| . $nf->format_price( $row->{$_}, 2 ) . qq|</td>| }
+        for (@report_columns) { $tabledata{$_} = qq|<td nowrap>$row->{$_}</td>| }
+        for (@total_columns) { $tabledata{$_} = qq|<td align="right" nowrap>| . $nf->format_price( $row->{$_}, 2 ) . qq|</td>| }
+        $tabledata{billing} = qq|<td>$row->{billing}</td>|;    # wrapped
         for (@total_columns) { $totals{$_}    += $row->{$_} }
         for (@total_columns) { $subtotals{$_} += $row->{$_} }
 
@@ -1385,7 +1385,6 @@ Include: |;
     for (@report_columns) { print $tabledata{$_} }
     print qq|</tr>|;
 }
-
 
 #----------------------------------------
 sub billing_ins {
@@ -1516,7 +1515,6 @@ Include: |;
     for (@report_columns) { print $tabledata{$_} }
     print qq|</tr>|;
 }
-
 
 #----------------------------------------
 sub billing_ins {
@@ -1749,7 +1747,7 @@ sub ccard {
     #-----------------------------------------------
     # DB FORM
     #-----------------------------------------------
-    my @form1flds = qw(id name address email dob mobile anniversary );
+    my @form1flds   = qw(id name address email dob mobile anniversary );
     my @form1hidden = qw(id);
     my $form1       = CGI::FormBuilder->new(
         method     => 'post',
@@ -1768,8 +1766,8 @@ sub ccard {
         keepextras => [qw(nextsub action)],
     );
     for (@form1hidden) { $form1->field( name => $_, type => 'hidden' ) }
-    $form1->field(name => 'dob', class=>'datepicker');
-    $form1->field(name => 'anniversary', class=>'datepicker');
+    $form1->field( name => 'dob',         class => 'datepicker' );
+    $form1->field( name => 'anniversary', class => 'datepicker' );
     &report_header('Comment Cards');
     print $form1->render if $q->param('action') eq 'form';
 

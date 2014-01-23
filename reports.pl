@@ -1790,6 +1790,195 @@ Include: |;
 }
 
 #---------------------------------------------------------------------------------------------------
+sub onhand {
+
+    &report_header('Inventory Onhand Report');
+
+    my @columns       = qw(item_cat item_id item_name uom_stk_id avg_cost onhand amount);
+    my @total_columns = qw(avg_cost onhand amount);
+
+    my %sort_positions = {
+        item_cat => 1,
+        item_id => 2,
+        item_name => 3,
+        uom_stk_id => 4,
+        avg_cost => 5,
+        onhand => 6,
+        amount => 7,
+    };
+
+    my $sort      = $q->param('sort') ? $q->param('sort') : 'item_cat';
+    my $vip       = $q->param('vip');
+    my $sortorder = $q->param('sortorder');
+    my $oldsort   = $q->param('oldsort');
+    my $item_cat = $q->param('item_cat');
+    my $store_id = $q->param('store_id');
+    my $include = $q->param('include');
+    $store_id = 'MAIN-STORE' if !$store_id;
+
+    $sortorder = ( $sort eq $oldsort ) ? ( $sortorder eq 'asc' ? 'desc' : 'asc' ) : 'asc';
+
+    my $fromdate;
+    my $todate;
+    if ( $q->param('fromdate') ) {
+        $fromdate = $q->param('fromdate');
+        $todate = $q->param('todate');
+    }
+    else {
+        $fromdate = '1-JAN-2000';
+        $todate = $dbs->query("SELECT global_value FROM z_apps_data WHERE id='HC_SYSDATE'")->list;
+    }
+
+    print qq|
+<form action="reports.pl" method="post">
+Include: |;
+    for (@columns) {
+        $checked = ( $action eq 'Update' ) ? ( $q->param("l_$_") ? 'checked' : '' ) : 'checked';
+        print qq|<input type=checkbox name=l_$_ value="1" $checked> | . ucfirst($_);
+    }
+    print qq|<br/>
+    Include: <select name=include><option value="$include">$include<option value=""><option value="NON-ZERO">NON-ZERO</select><br/>
+    Store: <input type=text name=store_id size=12 value="$store_id"><br/>
+    Category: <input type=text name=item_cat size=12 value="$item_cat"><br/>
+    From date: <input type=text class=datepicker name="fromdate" size=12 value="$fromdate"><br/>
+    To date: <input type=text class=datepicker name="todate" size=12 value="$todate"><br/>
+    Subtotal: <input type=checkbox name=l_subtotal value="checked" | . $q->param('l_subtotal') . qq|><br/>
+    <hr/>
+    <input type=hidden name=nextsub value=$nextsub>
+    <input type=submit name=action class=submit value="Update">
+</form>
+|;
+
+    my @report_columns;
+    for (@columns) { push @report_columns, $_ if $q->param("l_$_") }
+
+    my $where1;
+    my $where2;
+
+    my @bind = ();
+
+    if ( $store_id ) {
+        $where1 .= qq| AND h.rec_loc_id = ?|;
+        push @bind, $store_id;
+    }
+    if ( $item_cat ) {
+        $where1 .= qq| AND i.item_cat = ?|;
+        push @bind, $item_cat;
+    }
+    if ( $q->param('fromdate') ) {
+        $where1 .= qq| AND h.tr_date >= ?|;
+        push @bind, $q->param('fromdate');
+    }
+    if ( $q->param('todate') ) {
+        $where1 .= qq| AND h.tr_date <= ?|;
+        push @bind, $q->param('todate');
+    }
+
+    if ( $store_id ) {
+        $where2 .= qq| AND h.iss_loc_id = ?|;
+        push @bind, $store_id;
+    }
+    if ( $item_cat ) {
+        $where2 .= qq| AND i.item_cat = ?|;
+        push @bind, $item_cat;
+    }
+    if ( $q->param('fromdate') ) {
+        $where2 .= qq| AND h.tr_date >= ?|;
+        push @bind, $q->param('fromdate');
+    }
+    if ( $q->param('todate') ) {
+        $where2 .= qq| AND h.tr_date <= ?|;
+        push @bind, $q->param('todate');
+    }
+
+    my $having;
+    if ($include eq 'NON-ZERO'){
+       $having = "HAVING SUM (qty) <> 0";
+    }
+
+    my $query = qq|
+            SELECT   item_cat, item_id, item_name, uom_stk_id, avg_cost, SUM (qty) onhand, avg_cost * SUM (qty) amount
+                FROM (SELECT   i.item_cat, l.item_id, i.item_name, i.uom_stk_id, i.avg_cost, SUM (l.qty) qty
+                          FROM ic_trans_lines_tmp l, ic_trans_header_tmp h, ic_items i
+                         WHERE l.tr_num = h.tr_num
+                           AND l.item_id = i.item_id
+                           AND h.tr_type = 'PURCHASE'
+                           $where1
+                      GROUP BY i.item_cat, l.item_id, i.item_name, i.uom_stk_id, i.avg_cost
+                      UNION ALL
+                      SELECT   i.item_cat, l.item_id, i.item_name, i.uom_stk_id, i.avg_cost, SUM (0 - l.qty) qty
+                          FROM ic_trans_lines_tmp l, ic_trans_header_tmp h, ic_items i
+                         WHERE l.tr_num = h.tr_num
+                           AND l.item_id = i.item_id
+                           AND h.tr_type = 'ISSUE'
+                           $where2
+                      GROUP BY i.item_cat, l.item_id, i.item_name, i.uom_stk_id, i.avg_cost)
+               GROUP BY item_cat, item_id, item_name, uom_stk_id, avg_cost
+               $having
+               ORDER BY $sort_positions($sort) $sortorder
+    |;
+
+    my @allrows = $dbs->query( $query, @bind )->hashes or die($dbs->error);
+
+    my ( %tabledata, %totals, %subtotals );
+
+    my $url = "reports.pl?action=$action&nextsub=$nextsub&oldsort=$sort&sortorder=$sortorder&l_subtotal=" . $q->param(l_subtotal);
+    for (@report_columns) { $url .= "&l_$_=" . $q->param("l_$_") if $q->param("l_$_") }
+    for (@search_columns) { $url .= "&$_=" . $q->param("$_")     if $q->param("$_") }
+    for (@report_columns) { $tabledata{$_} = qq|<th><a class="listheading" href="$url&sort=$_">| . ucfirst $_ . qq|</a></th>\n| }
+
+    print qq|
+        <table cellpadding="3" cellspacing="2">
+        <tr class="listheading">
+|;
+    for (@report_columns) { print $tabledata{$_} }
+
+    print qq|
+        </tr>
+|;
+
+    my $groupvalue;
+    my $i = 0;
+    for $row (@allrows) {
+        $groupvalue = $row->{$sort} if !$groupvalue;
+        if ( $q->param(l_subtotal) and $row->{$sort} ne $groupvalue ) {
+            for (@report_columns) { $tabledata{$_} = qq|<td>&nbsp;</td>| }
+            for (@total_columns) { $tabledata{$_} = qq|<th align="right">| . $nf->format_price( $subtotals{$_}, 2 ) . qq|</th>| }
+
+            print qq|<tr class="listsubtotal">|;
+            for (@report_columns) { print $tabledata{$_} }
+            print qq|</tr>|;
+            $groupvalue = $row->{$sort};
+            for (@total_columns) { $subtotals{$_} = 0 }
+        }
+        for (@report_columns) { $tabledata{$_} = qq|<td nowrap>$row->{$_}</td>| }
+        for (@total_columns) { $tabledata{$_} = qq|<td align="right" nowrap>| . $nf->format_price( $row->{$_}, 2 ) . qq|</td>| }
+        $tabledata{billing} = qq|<td>$row->{billing}</td>|;    # wrapped
+        for (@total_columns) { $totals{$_}    += $row->{$_} }
+        for (@total_columns) { $subtotals{$_} += $row->{$_} }
+
+        print qq|<tr class="listrow$i">|;
+        for (@report_columns) { print $tabledata{$_} }
+        print qq|</tr>|;
+        $i += 1;
+        $i %= 2;
+    }
+
+    for (@report_columns) { $tabledata{$_} = qq|<td>&nbsp;</td>| }
+    for (@total_columns) { $tabledata{$_} = qq|<th align="right">| . $nf->format_price( $subtotals{$_}, 2 ) . qq|</th>| }
+
+    print qq|<tr class="listsubtotal">|;
+    for (@report_columns) { print $tabledata{$_} }
+    print qq|</tr>|;
+
+    for (@total_columns) { $tabledata{$_} = qq|<th align="right">| . $nf->format_price( $totals{$_}, 2 ) . qq|</th>| }
+    print qq|<tr class="listtotal">|;
+    for (@report_columns) { print $tabledata{$_} }
+    print qq|</tr>|;
+}
+
+
+#---------------------------------------------------------------------------------------------------
 sub emp {
 
     my $row = {};

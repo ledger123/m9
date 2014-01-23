@@ -1387,6 +1387,149 @@ Include: |;
 }
 
 #----------------------------------------
+sub dayuse_guests {
+
+    &report_header('Day use guests');
+
+    my @columns       = qw(checkin res_id room type guest1 guest2 company pax amount);
+    my @total_columns = qw(amount);
+
+    my %sort_positions = {
+        checkin  => 1,
+        res_id   => 2,
+        room     => 3,
+        type     => 4,
+        guest1   => 5,
+        guest2   => 6,
+        company  => 7,
+        pax      => 8,
+        amount   => 9,
+    };
+
+    my $sort      = $q->param('sort') ? $q->param('sort') : 'checkin';
+    my $vip       = $q->param('vip');
+    my $sortorder = $q->param('sortorder');
+    my $oldsort   = $q->param('oldsort');
+    $sortorder = ( $sort eq $oldsort ) ? ( $sortorder eq 'asc' ? 'desc' : 'asc' ) : 'asc';
+
+    my $fromdate;
+    my $todate;
+    if ( $q->param('fromdate') ) {
+        $fromdate = $q->param('fromdate');
+        $todate = $q->param('todate');
+    }
+    else {
+        $fromdate = $dbs->query("SELECT global_value FROM z_apps_data WHERE id='HC_SYSDATE'")->list;
+        $todate = $fromdate;
+    }
+
+    print qq|
+<form action="reports.pl" method="post">
+Include: |;
+    for (@columns) {
+        $checked = ( $action eq 'Update' ) ? ( $q->param("l_$_") ? 'checked' : '' ) : 'checked';
+        $checked = '' if $_ =~ /(guest2|billing|usr)/;
+        print qq|<input type=checkbox name=l_$_ value="1" $checked> | . ucfirst($_);
+    }
+    print qq|<br/>
+    From date: <input type=text class=datepicker name="fromdate" size=12 value="$fromdate"><br/>
+    To date: <input type=text class=datepicker name="todate" size=12 value="$todate"><br/>
+    Subtotal: <input type=checkbox name=l_subtotal value="checked" | . $q->param('l_subtotal') . qq|><br/>
+    <hr/>
+    <input type=hidden name=nextsub value=$nextsub>
+    <input type=submit name=action class=submit value="Update">
+</form>
+|;
+
+    my @report_columns;
+    for (@columns) { push @report_columns, $_ if $q->param("l_$_") }
+
+    my $where = ' 1 = 1 ';
+    $where = ' 1 = 2 ' if $action ne 'Update';    # Display data only when Update button is pressed.
+    my @bind = ();
+
+    if ( $q->param('fromdate') ) {
+        $where .= qq| AND r.checkin_date >= ?|;
+        push @bind, $q->param('fromdate');
+    }
+    if ( $q->param('todate') ) {
+        $where .= qq| AND r.checkin_date <= ?|;
+        push @bind, $q->param('todate');
+    }
+
+    my $query = qq|
+            SELECT   r.res_id, r.room_num room, r.room_type type, r.guest_name1 guest1, 
+                     r.guest_name2 guest2, r.company, r.adults pax, r.checkin_date checkin,
+                     (select nvl(sum(amount),0) from hc_charges c where c.res_id = r.res_id and charge_code='101') amount
+                FROM hc_res r
+               WHERE TO_CHAR(r.checkin_date, 'DD-MON-RR') = TO_CHAR(r.actual_checkout_date, 'DD-MON-RR')
+                 AND $where
+               ORDER BY $sort_positions($sort) $sortorder
+    |;
+
+    my @allrows = $dbs->query( $query, @bind )->hashes or die($dbs->error);
+
+    my ( %tabledata, %totals, %subtotals );
+
+    my $url = "reports.pl?action=$action&nextsub=$nextsub&oldsort=$sort&sortorder=$sortorder&l_subtotal=" . $q->param(l_subtotal);
+    for (@report_columns) { $url .= "&l_$_=" . $q->param("l_$_") if $q->param("l_$_") }
+    for (@search_columns) { $url .= "&$_=" . $q->param("$_")     if $q->param("$_") }
+    for (@report_columns) { $tabledata{$_} = qq|<th><a class="listheading" href="$url&sort=$_">| . ucfirst $_ . qq|</a></th>\n| }
+
+    print qq|
+        <table cellpadding="3" cellspacing="2">
+        <tr class="listheading">
+|;
+    for (@report_columns) { print $tabledata{$_} }
+
+    print qq|
+        </tr>
+|;
+
+    my $groupvalue;
+    my $i = 0;
+    for $row (@allrows) {
+        $groupvalue = $row->{$sort} if !$groupvalue;
+        if ( $q->param(l_subtotal) and $row->{$sort} ne $groupvalue ) {
+            for (@report_columns) { $tabledata{$_} = qq|<td>&nbsp;</td>| }
+            for (@total_columns) { $tabledata{$_} = qq|<th align="right">| . $nf->format_price( $subtotals{$_}, 2 ) . qq|</th>| }
+
+            print qq|<tr class="listsubtotal">|;
+            for (@report_columns) { print $tabledata{$_} }
+            print qq|</tr>|;
+            $groupvalue = $row->{$sort};
+            for (@total_columns) { $subtotals{$_} = 0 }
+        }
+        for (@report_columns) { $tabledata{$_} = qq|<td nowrap>$row->{$_}</td>| }
+        for (@total_columns) { $tabledata{$_} = qq|<td align="right" nowrap>| . $nf->format_price( $row->{$_}, 2 ) . qq|</td>| }
+        $tabledata{billing} = qq|<td>$row->{billing}</td>|;    # wrapped
+        for (@total_columns) { $totals{$_}    += $row->{$_} }
+        for (@total_columns) { $subtotals{$_} += $row->{$_} }
+
+        print qq|<tr class="listrow$i">|;
+        for (@report_columns) { print $tabledata{$_} }
+        print qq|</tr>|;
+        $i += 1;
+        $i %= 2;
+    }
+
+    for (@report_columns) { $tabledata{$_} = qq|<td>&nbsp;</td>| }
+    for (@total_columns) { $tabledata{$_} = qq|<th align="right">| . $nf->format_price( $subtotals{$_}, 2 ) . qq|</th>| }
+
+    print qq|<tr class="listsubtotal">|;
+    for (@report_columns) { print $tabledata{$_} }
+    print qq|</tr>|;
+
+    for (@total_columns) { $tabledata{$_} = qq|<th align="right">| . $nf->format_price( $totals{$_}, 2 ) . qq|</th>| }
+    print qq|<tr class="listtotal">|;
+    for (@report_columns) { print $tabledata{$_} }
+    print qq|</tr>|;
+}
+
+
+
+
+#----------------------------------------
 sub billing_ins {
 
     &report_header('Billing Instructions Report');

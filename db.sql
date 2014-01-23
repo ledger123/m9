@@ -12,6 +12,7 @@ insert into perl_functions values (3, 'Category wise Issues Summary', 'inventory
 insert into perl_functions values (4, 'Inhouse Summary Report', 'fo', 'reports.pl?nextsub=inhouse_summary');
 insert into perl_functions values (5, 'Billing Instructions Report', 'fo', 'reports.pl?nextsub=billing_ins');
 insert into perl_functions values (6, 'Expected Arrivals VIP', 'fo', 'reports.pl?nextsub=expected_arrivals');
+insert into perl_functions values (7, 'Day use Guests', 'cashier', 'reports.pl?nextsub=dayuse_guests');
 
 alter table a$sec_users add loc_id varchar2(10) default 'NA';
 

@@ -91,7 +91,7 @@
 
       <th>Event Time</th>
 
-      <td>[% hdr.event_time %]</td>
+      <td>[% hdr.event_time %] - [% hdr.ccnumber %]</td>
     </tr>
 
     <tr>
@@ -115,11 +115,11 @@
 
       <th>Rate Food/Pax</th>
 
-      <td>[% hdr.rate_per_pax_food %]&nbsp;</td>
+      <td>[% hdr.rate_per_pax_food %] + Tax</td>
 
       <th>M-Tea</th>
 
-      <td>[% hdr.mtea_rate %]&nbsp;</td>
+      <td>[% hdr.mtea_rate %] + Tax</td>
     </tr>
 
     <tr>
@@ -129,11 +129,11 @@
 
       <th>Rate Bev/Pax</th>
 
-      <td>[% hdr.rate_per_pax_bev %]&nbsp;</td>
+      <td>[% hdr.rate_per_pax_bev %] + Tax</td>
 
       <th>E-Tea</th>
 
-      <td>[% hdr.etea_rate %]&nbsp;</td>
+      <td>[% hdr.etea_rate %] + Tax</td>
     </tr>
   </table><br>
 
@@ -212,7 +212,7 @@
           </tr>
 
           <tr>
-            <td>[% hdr.special_instructions %]&nbsp;</td>
+            <td>[% hdr.special_instruction %]&nbsp;</td>
           </tr>
 
           <tr>

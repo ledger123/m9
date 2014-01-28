@@ -1391,19 +1391,21 @@ sub dayuse_guests {
 
     &report_header('Day use guests');
 
-    my @columns       = qw(checkin res_id room type guest1 guest2 company pax amount);
-    my @total_columns = qw(amount);
+    my @columns        = qw(checkin res_id room type guest1 guest2 comp_code company pax amount);
+    my @total_columns  = qw(amount);
+    my @search_columns = qw(fromdate todate comp_code);
 
     my %sort_positions = {
-        checkin  => 1,
-        res_id   => 2,
-        room     => 3,
-        type     => 4,
-        guest1   => 5,
-        guest2   => 6,
-        company  => 7,
-        pax      => 8,
-        amount   => 9,
+        checkin   => 1,
+        res_id    => 2,
+        room      => 3,
+        type      => 4,
+        guest1    => 5,
+        guest2    => 6,
+        comp_code => 7,
+        company   => 8,
+        pax       => 9,
+        amount    => 10,
     };
 
     my $sort      = $q->param('sort') ? $q->param('sort') : 'checkin';
@@ -1416,11 +1418,11 @@ sub dayuse_guests {
     my $todate;
     if ( $q->param('fromdate') ) {
         $fromdate = $q->param('fromdate');
-        $todate = $q->param('todate');
+        $todate   = $q->param('todate');
     }
     else {
         $fromdate = $dbs->query("SELECT global_value FROM z_apps_data WHERE id='HC_SYSDATE'")->list;
-        $todate = $fromdate;
+        $todate   = $fromdate;
     }
 
     print qq|
@@ -1434,7 +1436,8 @@ Include: |;
     print qq|<br/>
     From date: <input type=text class=datepicker name="fromdate" size=12 value="$fromdate"><br/>
     To date: <input type=text class=datepicker name="todate" size=12 value="$todate"><br/>
-    Subtotal: <input type=checkbox name=l_subtotal value="checked" | . $q->param('l_subtotal') . qq|><br/>
+    Company Code: <input type=text name="comp_code" size=8 value="| . $q->param('comp_code') . qq|"><br/>
+    Subtotal: <input type=checkbox name=l_subtotal value="checked"| . $q->param('l_subtotal') . qq|><br/>
     <hr/>
     <input type=hidden name=nextsub value=$nextsub>
     <input type=submit name=action class=submit value="Update">
@@ -1456,10 +1459,14 @@ Include: |;
         $where .= qq| AND r.checkin_date <= ?|;
         push @bind, $q->param('todate');
     }
+    if ( $q->param('comp_code') ) {
+        $where .= qq| AND r.comp_code like ?|;
+        push @bind, $q->param('comp_code');
+    }
 
     my $query = qq|
             SELECT   r.res_id, r.room_num room, r.room_type type, r.guest_name1 guest1, 
-                     r.guest_name2 guest2, r.company, r.adults pax, r.checkin_date checkin,
+                     r.guest_name2 guest2, r.comp_code, r.company, r.adults pax, r.checkin_date checkin,
                      (select nvl(sum(amount),0) from hc_charges c where c.res_id = r.res_id and charge_code='101') amount
                 FROM hc_res r
                WHERE TO_CHAR(r.checkin_date, 'DD-MON-RR') = TO_CHAR(r.actual_checkout_date, 'DD-MON-RR')
@@ -1467,7 +1474,7 @@ Include: |;
                ORDER BY $sort_positions($sort) $sortorder
     |;
 
-    my @allrows = $dbs->query( $query, @bind )->hashes or die($dbs->error);
+    my @allrows = $dbs->query( $query, @bind )->hashes or die( $dbs->error );
 
     my ( %tabledata, %totals, %subtotals );
 
@@ -1525,9 +1532,6 @@ Include: |;
     for (@report_columns) { print $tabledata{$_} }
     print qq|</tr>|;
 }
-
-
-
 
 #----------------------------------------
 sub billing_ins {
@@ -1798,22 +1802,22 @@ sub onhand {
     my @total_columns = qw(avg_cost onhand amount);
 
     my %sort_positions = {
-        item_cat => 1,
-        item_id => 2,
-        item_name => 3,
+        item_cat   => 1,
+        item_id    => 2,
+        item_name  => 3,
         uom_stk_id => 4,
-        avg_cost => 5,
-        onhand => 6,
-        amount => 7,
+        avg_cost   => 5,
+        onhand     => 6,
+        amount     => 7,
     };
 
     my $sort      = $q->param('sort') ? $q->param('sort') : 'item_cat';
     my $vip       = $q->param('vip');
     my $sortorder = $q->param('sortorder');
     my $oldsort   = $q->param('oldsort');
-    my $item_cat = $q->param('item_cat');
-    my $store_id = $q->param('store_id');
-    my $include = $q->param('include');
+    my $item_cat  = $q->param('item_cat');
+    my $store_id  = $q->param('store_id');
+    my $include   = $q->param('include');
     $store_id = 'MAIN-STORE' if !$store_id;
 
     $sortorder = ( $sort eq $oldsort ) ? ( $sortorder eq 'asc' ? 'desc' : 'asc' ) : 'asc';
@@ -1822,11 +1826,11 @@ sub onhand {
     my $todate;
     if ( $q->param('fromdate') ) {
         $fromdate = $q->param('fromdate');
-        $todate = $q->param('todate');
+        $todate   = $q->param('todate');
     }
     else {
         $fromdate = '1-JAN-2000';
-        $todate = $dbs->query("SELECT global_value FROM z_apps_data WHERE id='HC_SYSDATE'")->list;
+        $todate   = $dbs->query("SELECT global_value FROM z_apps_data WHERE id='HC_SYSDATE'")->list;
     }
 
     print qq|
@@ -1857,11 +1861,11 @@ Include: |;
 
     my @bind = ();
 
-    if ( $store_id ) {
+    if ($store_id) {
         $where1 .= qq| AND h.rec_loc_id = ?|;
         push @bind, $store_id;
     }
-    if ( $item_cat ) {
+    if ($item_cat) {
         $where1 .= qq| AND i.item_cat = ?|;
         push @bind, $item_cat;
     }
@@ -1874,11 +1878,11 @@ Include: |;
         push @bind, $q->param('todate');
     }
 
-    if ( $store_id ) {
+    if ($store_id) {
         $where2 .= qq| AND h.iss_loc_id = ?|;
         push @bind, $store_id;
     }
-    if ( $item_cat ) {
+    if ($item_cat) {
         $where2 .= qq| AND i.item_cat = ?|;
         push @bind, $item_cat;
     }
@@ -1892,8 +1896,8 @@ Include: |;
     }
 
     my $having;
-    if ($include eq 'NON-ZERO'){
-       $having = "HAVING SUM (qty) <> 0";
+    if ( $include eq 'NON-ZERO' ) {
+        $having = "HAVING SUM (qty) <> 0";
     }
 
     my $query = qq|
@@ -1918,7 +1922,7 @@ Include: |;
                ORDER BY $sort_positions($sort) $sortorder
     |;
 
-    my @allrows = $dbs->query( $query, @bind )->hashes or die($dbs->error);
+    my @allrows = $dbs->query( $query, @bind )->hashes or die( $dbs->error );
 
     my ( %tabledata, %totals, %subtotals );
 
@@ -1987,16 +1991,16 @@ sub journal {
     my @search_columns = qw(fromdate todate doc_num ref1);
 
     my %sort_positions = {
-        doc_date => 1,
-        acc_num  => 2,
+        doc_date  => 1,
+        acc_num   => 2,
         acc_title => 3,
-        debit   => 4,
-        credit  => 5,
-        doc_num => 6,
-        ref1    => 7,
-        line_desc  => 8,
-        doc_type => 9,
-        tbl_name => 10,
+        debit     => 4,
+        credit    => 5,
+        doc_num   => 6,
+        ref1      => 7,
+        line_desc => 8,
+        doc_type  => 9,
+        tbl_name  => 10,
     };
 
     my $sort      = $q->param('sort') ? $q->param('sort') : 'acc_num';
@@ -2130,8 +2134,6 @@ Include: |;
     for (@report_columns) { print $tabledata{$_} }
     print qq|</tr>|;
 }
-
-
 
 #---------------------------------------------------------------------------------------------------
 sub emp {

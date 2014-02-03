@@ -1,7 +1,7 @@
 <html>
 <head>
   <title>Banquet Event</title>
-  <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+  <link rel="stylesheet" href="/munshi9/small.css" type="text/css">
 </head>
 
 <body onload="return window.print();">
@@ -9,72 +9,67 @@
 
   <h1>Event Number: [% hdr.event_number %]</h1>
 
-  <table width="100%" border="1" cellpadding="2" cellspacing="0">
+  <table width="100%" cellpadding="0" cellspacing="0">
+
+    <tr><td valign="top"> <!-- BIG CELL 1 -->
+
+    <table width="100%" border="1" cellpadding="2" cellspacing="0">
     <tr>
       <th align="left">Company Code</th>
-
       <td>[% hdr.comp_code %]</td>
     </tr>
-
     <tr>
       <th align="left">Company Name</th>
-
       <td>[% hdr.company %]&nbsp;</td>
     </tr>
-
     <tr>
       <th align="left">Address</th>
-
       <td>[% hdr.address %]&nbsp;</td>
     </tr>
-
     <tr>
       <th align="left">City</th>
-
       <td>[% hdr.city %]&nbsp;</td>
     </tr>
-
     <tr>
       <th align="left">Contact Person</th>
-
       <td>[% hdr.contact_person %]&nbsp;</td>
     </tr>
-
     <tr>
       <th align="left">Designation</th>
-
       <td>[% hdr.designation %]&nbsp;</td>
     </tr>
+    </table>
 
+    </td><td valign="top"> <!-- BIG CELL 2 -->
+
+    <table width="100%" border="1" cellpadding="2" cellspacing="0">
     <tr>
       <th align="left">Phone1</th>
-
       <td>[% hdr.phone1 %]&nbsp;</td>
     </tr>
-
-    <tr>
-      <th align="left">Phone2</th>
-
-      <td>[% hdr.phone2 %]&nbsp;</td>
-    </tr>
-
     <tr>
       <th align="left">Fax</th>
-
       <td>[% hdr.fax %]&nbsp;</td>
     </tr>
-
     <tr>
       <th align="left">Mobile</th>
-
       <td>[% hdr.mobile %]&nbsp;</td>
     </tr>
-
     <tr>
       <th align="left">Email</th>
-
       <td>[% hdr.email %]</td>
     </tr>
+    <tr>
+      <th align="left">CNIC #</th>
+      <td>[% hdr.cnic %]&nbsp;</td>
+    </tr>
+    <tr>
+      <th align="left">NTN #</th>
+      <td>[% hdr.ntn %]</td>
+    </tr>
+
+    </table>
+    </td></tr>
   </table>
 
   <h1>Event Detail</h1>
@@ -103,7 +98,7 @@
 
       <td>[% hdr.venue %]&nbsp;</td>
 
-      <th>Rental</th>
+      <th>Hall Rent</th>
 
       <td>[% hdr.rental %]&nbsp;</td>
     </tr>
@@ -194,11 +189,6 @@
             <td>[% hdr.setup_detail %]</td>
           </tr>
 
-        </table>
-      </td>
-
-      <td valign="top">
-        <table>
           <tr>
             <th>Organizer name</th>
           </tr>

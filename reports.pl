@@ -726,18 +726,18 @@ sub store_dept_cat_issues {
 
     &report_header('Category wise Issues Summary');
 
-    my @columns        = qw(iss_loc_id rec_loc_id item_cat cat_desc net_cost);
+    my @columns        = qw(store dept item_cat cat_desc net_cost);
     my @total_columns  = qw(net_cost);
-    my @search_columns = qw(fromdate todate);
+    my @search_columns = qw(fromdate todate iss_loc_id rec_loc_id item_cat);
 
     my %sort_positions = {
-        iss_loc_id => 1,
-        rec_loc_id => 2,
-        item_cat   => 3,
-        cat_desc   => 4,
-        cost_amt   => 5,
-        tax_amt    => 6,
-        net_amt    => 7,
+        store    => 1,
+        dept     => 2,
+        item_cat => 3,
+        cat_desc => 4,
+        cost_amt => 5,
+        tax_amt  => 6,
+        net_amt  => 7,
     };
 
     my $sort      = $q->param('sort') ? $q->param('sort') : 'iss_loc_id';
@@ -747,15 +747,20 @@ sub store_dept_cat_issues {
 
     print qq|
 <form action="reports.pl" method="post">
-From date: <input name=fromdate type=text size=12 class="datepicker" value="| . $q->param('fromdate') . qq|"><br/>
-To date: <input name=todate type=text size=12 class="datepicker" value="| . $q->param('todate') . qq|"><br/>
-Include: |;
+<table>
+<tr><th align="right">From date</th><td><input name=fromdate type=text size=12 class="datepicker" value="| . $q->param('fromdate') . qq|"></td></tr>
+<tr><th align="right">To date</th><td><input name=todate type=text size=12 class="datepicker" value="| . $q->param('todate') . qq|"></td></tr>
+<tr><th align="right">Store</th><td><input name=iss_loc_id type=text size=12 value="| . $q->param('iss_loc_id') . qq|"></td></tr>
+<tr><th align="right">Department</th><td><input name=rec_loc_id type=text size=12 value="| . $q->param('rec_loc_id') . qq|"></td></tr>
+<tr><th align="right">Category</th><td><input name=item_cat type=text size=12 value="| . $q->param('item_cat') . qq|"></td></tr>
+<tr><th align="right">Include</th><td>|;
     for (@columns) {
         $checked = ( $action eq 'Update' ) ? ( $q->param("l_$_") ? 'checked' : '' ) : 'checked';
         print qq|<input type=checkbox name=l_$_ value="1" $checked> | . ucfirst($_);
     }
-    print qq|<br/>
-    Subtotal: <input type=checkbox name=l_subtotal value="checked" | . $q->param('l_subtotal') . qq|><br/>
+    print qq|</td></tr>
+    <tr><th align="right">Subtotal</th><td><input type=checkbox name=l_subtotal value="checked" | . $q->param('l_subtotal') . qq|></td></tr>
+</table>
     <hr/>
     <input type=hidden name=nextsub value=$nextsub>
     <input type=submit name=action class=submit value="Update">
@@ -773,13 +778,25 @@ Include: |;
         $where .= qq| AND h.tr_date >= ?|;
         push @bind, $q->param('fromdate');
     }
-
     if ( $q->param('todate') ) {
         $where .= qq| AND h.tr_date <= ?|;
         push @bind, $q->param('todate');
     }
+    if ( $q->param('iss_loc_id') ) {
+        $where .= qq| AND h.iss_loc_id LIKE ?|;
+        push @bind, $q->param('iss_loc_id');
+    }
+    if ( $q->param('rec_loc_id') ) {
+        $where .= qq| AND h.rec_loc_id LIKE ?|;
+        push @bind, $q->param('rec_loc_id');
+    }
+    if ( $q->param('item_cat') ) {
+        $where .= qq| AND h.item_cat LIKE ?|;
+        push @bind, $q->param('item_cat');
+    }
+
     my $query = qq|
-            SELECT  h.iss_loc_id, h.rec_loc_id, c.item_cat, c.cat_desc, SUM(l.net_cost) net_cost
+            SELECT  h.iss_loc_id store, h.rec_loc_id dept, c.item_cat, c.cat_desc, SUM(l.net_cost) net_cost
                 FROM ic_trans_lines_tmp l 
                 JOIN ic_trans_header_tmp h ON (h.tr_num = l.tr_num)
                 JOIN ic_items i ON (i.item_id = l.item_id)

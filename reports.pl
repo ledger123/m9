@@ -740,7 +740,7 @@ sub store_dept_cat_issues {
         net_amt  => 7,
     };
 
-    my $sort      = $q->param('sort') ? $q->param('sort') : 'iss_loc_id';
+    my $sort      = $q->param('sort') ? $q->param('sort') : 'store';
     my $sortorder = $q->param('sortorder');
     my $oldsort   = $q->param('oldsort');
     $sortorder = ( $sort eq $oldsort ) ? ( $sortorder eq 'asc' ? 'desc' : 'asc' ) : 'asc';

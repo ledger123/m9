@@ -560,6 +560,164 @@ Include: |;
 }
 
 #----------------------------------------
+sub revenue_summary {
+
+    &report_header('Room Revenue Summary');
+
+    my @columns        = qw(comp_code company ntn rooms foodbev others salestax bedtax banquettax total);
+    my @total_columns  = qw(rooms foodbev others salestax bedtax banquettax total);
+    my @search_columns = qw(fromdate todate);
+
+    my %sort_positions = {
+        comp_code => 1,
+        company   => 2,
+        rooms     => 3,
+    };
+
+    my $sort      = $q->param('sort') ? $q->param('sort') : 'payment_mode';
+    my $sortorder = $q->param('sortorder');
+    my $oldsort   = $q->param('oldsort');
+    $sortorder = ( $sort eq $oldsort ) ? ( $sortorder eq 'asc' ? 'desc' : 'asc' ) : 'asc';
+
+    print qq|
+<form action="reports.pl" method="post">
+From charge date: <input name=fromdate type=text size=12 class="datepicker" value="| . $q->param('fromdate') . qq|"><br/>
+To charge date: <input name=todate type=text size=12 class="datepicker" value="| . $q->param('todate') . qq|"><br/>
+Include: |;
+    for (@columns) {
+        $checked = ( $action eq 'Update' ) ? ( $q->param("l_$_") ? 'checked' : '' ) : 'checked';
+        print qq|<input type=checkbox name=l_$_ value="1" $checked> | . ucfirst($_);
+    }
+    print qq|<br/>
+    Subtotal: <input type=checkbox name=l_subtotal value="checked" | . $q->param('l_subtotal') . qq|><br/>
+    <hr/>
+    <input type=hidden name=nextsub value=$nextsub>
+    <input type=submit name=action class=submit value="Update">
+</form>
+|;
+
+    my @report_columns;
+    for (@columns) { push @report_columns, $_ if $q->param("l_$_") }
+
+    my $where = ' AND 1 = 1 ';
+    $where = ' AND 1 = 2 ' if $action ne 'Update';    # Display data only when Update button is pressed.
+    my @bind = ();
+
+    if ( $q->param('fromdate') ) {
+        $where .= qq| AND ch.charge_date >= ?|;
+        push @bind, $q->param('fromdate');
+    }
+
+    if ( $q->param('todate') ) {
+        $where .= qq| AND ch.charge_date <= ?|;
+        push @bind, $q->param('todate');
+    }
+
+    my $query = qq|
+        SELECT co.comp_code, co.company, co.ntn,
+             (SELECT SUM(amount) FROM hc_charges ch 
+             WHERE ch.charge_code IN (SELECT charge_code FROM hc_charge_codes WHERE gl_group IN ('ROOM'))
+             $where
+             AND ch.comp_code = co.comp_code) rooms,
+
+             (SELECT SUM(amount) FROM hc_charges ch
+             WHERE ch.charge_code IN (SELECT charge_code FROM hc_charge_codes WHERE gl_group IN ('F','B'))
+             $where
+             AND ch.comp_code = co.comp_code) foodbev,
+
+             (SELECT SUM(amount) FROM hc_charges ch
+             WHERE ch.charge_code IN (SELECT charge_code FROM hc_charge_codes WHERE gl_group IN ('O'))
+             $where
+             AND ch.comp_code = co.comp_code) others,
+
+             (SELECT SUM(amount) FROM hc_charges ch
+             WHERE ch.charge_code IN (SELECT charge_code FROM hc_charge_codes WHERE gl_group IN ('STAX'))
+             $where
+             AND ch.comp_code = co.comp_code) salestax,
+
+             (SELECT SUM(amount) FROM hc_charges ch
+             WHERE ch.charge_code IN (SELECT charge_code FROM hc_charge_codes WHERE gl_group IN ('BEDTAX'))
+             $where
+             AND ch.comp_code = co.comp_code) bedtax,
+
+             (SELECT SUM(amount) FROM hc_charges ch
+             WHERE ch.charge_code IN (SELECT charge_code FROM hc_charge_codes WHERE gl_group IN ('BANQTAX'))
+             $where
+             AND ch.comp_code = co.comp_code) banquettax,
+
+             (SELECT SUM(amount) FROM hc_charges ch
+             WHERE ch.charge_code IN (SELECT charge_code FROM hc_charge_codes WHERE gl_group IN ('ROOM', 'F', 'B', 'O', 'STAX', 'BEDTAX', 'BANQTAX'))
+             $where
+             AND ch.comp_code = co.comp_code) total
+
+          FROM hc_companies co
+          WHERE co.comp_code IN (SELECT DISTINCT comp_code FROM hc_charges ch WHERE 1 = 1 $where)
+         ORDER BY 1,2
+    |;
+
+    #        WHERE $where
+    #        ORDER BY $sort_positions($sort) $sortorder
+
+    my @allbinds = ( @bind, @bind, @bind, @bind, @bind, @bind, @bind, @bind );
+    my @allrows = $dbs->query( $query, @allbinds )->hashes or die( $dbs->error );
+
+    my ( %tabledata, %totals, %subtotals );
+
+    my $url = "reports.pl?action=$action&nextsub=$nextsub&oldsort=$sort&sortorder=$sortorder&l_subtotal=" . $q->param(l_subtotal);
+    for (@report_columns) { $url .= "&l_$_=" . $q->param("l_$_") if $q->param("l_$_") }
+    for (@search_columns) { $url .= "&$_=" . $q->param("$_")     if $q->param("$_") }
+    for (@report_columns) { $tabledata{$_} = qq|<th><a class="listheading" href="$url&sort=$_">| . ucfirst $_ . qq|</a></th>\n| }
+
+    print qq|
+        <table cellpadding="3" cellspacing="2">
+        <tr class="listheading">
+|;
+    for (@report_columns) { print $tabledata{$_} }
+
+    print qq|
+        </tr>
+|;
+
+    my $groupvalue;
+    my $i = 0;
+    for $row (@allrows) {
+        $groupvalue = $row->{$sort} if !$groupvalue;
+        if ( $q->param(l_subtotal) and $row->{$sort} ne $groupvalue ) {
+            for (@report_columns) { $tabledata{$_} = qq|<td>&nbsp;</td>| }
+            for (@total_columns) { $tabledata{$_} = qq|<th align="right">| . $nf->format_price( $subtotals{$_}, 2 ) . qq|</th>| }
+
+            print qq|<tr class="listsubtotal">|;
+            for (@report_columns) { print $tabledata{$_} }
+            print qq|</tr>|;
+            $groupvalue = $row->{$sort};
+            for (@total_columns) { $subtotals{$_} = 0 }
+        }
+        for (@report_columns) { $tabledata{$_} = qq|<td>$row->{$_}</td>| }
+        for (@total_columns) { $tabledata{$_} = qq|<td align="right">| . $nf->format_price( $row->{$_}, 2 ) . qq|</td>| }
+        for (@total_columns) { $totals{$_}    += $row->{$_} }
+        for (@total_columns) { $subtotals{$_} += $row->{$_} }
+
+        print qq|<tr class="listrow$i">|;
+        for (@report_columns) { print $tabledata{$_} }
+        print qq|</tr>|;
+        $i += 1;
+        $i %= 2;
+    }
+
+    for (@report_columns) { $tabledata{$_} = qq|<td>&nbsp;</td>| }
+    for (@total_columns) { $tabledata{$_} = qq|<th align="right">| . $nf->format_price( $subtotals{$_}, 2 ) . qq|</th>| }
+
+    print qq|<tr class="listsubtotal">|;
+    for (@report_columns) { print $tabledata{$_} }
+    print qq|</tr>|;
+
+    for (@total_columns) { $tabledata{$_} = qq|<th align="right">| . $nf->format_price( $totals{$_}, 2 ) . qq|</th>| }
+    print qq|<tr class="listtotal">|;
+    for (@report_columns) { print $tabledata{$_} }
+    print qq|</tr>|;
+}
+
+#----------------------------------------
 sub lookup1 {
     my ( $cname, $default ) = @_;
     my @rows = $dbs->query( q|SELECT cval FROM a$lookup WHERE cname = ? ORDER BY seq|, $cname )->hashes;

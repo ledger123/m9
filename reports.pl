@@ -1973,8 +1973,9 @@ sub onhand {
 
     &report_header('Inventory Onhand Report');
 
-    my @columns       = qw(item_cat item_id item_name uom_stk_id avg_cost onhand amount);
-    my @total_columns = qw(avg_cost onhand amount);
+    my @columns        = qw(item_cat item_id item_name uom_stk_id avg_cost onhand amount);
+    my @total_columns  = qw(avg_cost onhand amount);
+    my @search_columns = qw(store_id item_cat fromdate todate);
 
     my %sort_positions = {
         item_cat   => 1,
@@ -1992,6 +1993,8 @@ sub onhand {
     my $oldsort   = $q->param('oldsort');
     my $item_cat  = $q->param('item_cat');
     my $store_id  = $q->param('store_id');
+    my $fromdate  = $q->param('fromdate');
+    my $todate    = $q->param('todate');
     my $include   = $q->param('include');
     $store_id = 'MAIN-STORE' if !$store_id;
 
@@ -2116,6 +2119,9 @@ Include: |;
         </tr>
 |;
 
+    my $url = $dbs->query("select global_value from z_apps_data where id='MUNSHI9_URL'")->list;
+    $url = "http://$url:8000/munshi9";
+
     my $groupvalue;
     my $i = 0;
     for $row (@allrows) {
@@ -2131,6 +2137,7 @@ Include: |;
             for (@total_columns) { $subtotals{$_} = 0 }
         }
         for (@report_columns) { $tabledata{$_} = qq|<td nowrap>$row->{$_}</td>| }
+        $tabledata{item_id} = qq|<td nowrap><a href="$url/a\$ic.ledger?p_item_id1=$row->{item_id}&p_tr_date1=$fromdate&p_tr_date2=$todate&p_iss_loc_id1=$store_id">$row->{item_id}</a>|;
         for (@total_columns) { $tabledata{$_} = qq|<td align="right" nowrap>| . $nf->format_price( $row->{$_}, 2 ) . qq|</td>| }
         $tabledata{billing} = qq|<td>$row->{billing}</td>|;    # wrapped
         for (@total_columns) { $totals{$_}    += $row->{$_} }

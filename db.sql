@@ -66,3 +66,5 @@ alter table hc_fb_items add recipe_item varchar2(10) default 'NA';
 alter table banquet_header add cnic varchar2(100);
 alter table banquet_header add ntn varchar2(100);
 
+ALTER TABLE hc_fb_sale_lines ADD kot_print VARCHAR2(1) DEFAULT 'N';
+

@@ -151,7 +151,7 @@ sub invoice {
 	FROM hc_charges WHERE bill_num=? AND sale_id = 0 ORDER BY 1", $id )->map_hashes('id');
     $vars->{chq} = $dbs->query( "
 	SELECT to_char(sale_date, 'yymmdd')||sale_id id, hc_fb_sale.* FROM hc_fb_sale
-	WHERE sale_id IN (SELECT sale_id FROM hc_charges WHERE bill_num = ?) ORDER BY 1", $id )->map_hashes('id') or die( $dbs->error );
+	WHERE sale_id IN (SELECT sale_id FROM hc_charges WHERE bill_num = ?) ORDER BY 1, room_num", $id )->map_hashes('id') or die( $dbs->error );
 
     $vars->{receipts} = $dbs->query( "
 	SELECT to_char(tr_date, 'yymmdd')||tr_num id, tr_num, tr_date, rec_type, rec_ref, rec_desc, rec_amt, other_ref1, other_ref2

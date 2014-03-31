@@ -1,0 +1,103 @@
+<html>
+<head>
+  <title>Banquet Event</title>
+  <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+</head>
+
+<body onload="return window.print();">
+  <table width="100%">
+  <tr valign="top">
+    <td width="33%"><img src="/munshi9/logo.jpg"></td>
+    <td width="33%"><h1>BANQUET SHEET</h1></td>
+    <td width="33%" align="right"><b>FUNCTION NUMBER: [% hdr.event_number %]<br/>BOOKING DATE: [% hdr.booking_date %]</b></td>
+  </tr>
+  </table>
+
+  <table width="100%" cellspacing=0 cellpadding=0><tr><td><!-- BIG TABLE -->
+    <table width="100%" cellspacing=0 cellpadding=5 border=1>
+        <tr>
+            <th align="left" width="25%">FUNCTION</th>
+            <td width="25%">[% hdr.event_type %]</td>
+            <th align="left" width="25%">HOST</th>
+            <td width="25%">[% hdr.contact_person %]</td>
+        </tr>
+        <tr>
+            <th align="left">DAY</th>
+            <td align="left">[% dayname %]</td>
+            <th align="left">TELEPHONE</th>
+            <td align="left">[% hdr.mobile %]</td>
+        </tr>
+        <tr>
+            <th align="left">DATE</th>
+            <td align="left">[% hdr.event_date %]</td>
+            <th align="left">ADDRESS</th>
+            <td align="left">[% hdr.address %]&nbsp;</td>
+        </tr>
+        <tr>
+            <th align="left">TIME</th>
+            <td align="left">[% hdr.event_time %] - [% hdr.ccnumber %]</td>
+            <th align="left">&nbsp;</th>
+            <td align="left">&nbsp;</td>
+        </tr>
+        <tr>
+            <th align="left">VENUE</th>
+            <td align="left">[% hdr.venue %]&nbsp;</td>
+            <th align="left">ADVANCE AMOUNT</th>
+            <td align="left">[% hdr.advance %]&nbsp;</td>
+        </tr>
+        <tr>
+            <th align="left">GURANTEED GUESTS</th>
+            <td align="left">[% hdr.g_pax %]</td>
+            <th align="left">ADVANCE DETAIL</th>
+            <td align="left">[% hdr.payment_mode %]&nbsp;</td>
+        </tr>
+        <tr>
+            <th align="left">EXPECTED GUESTS</th>
+            <td align="left">[% hdr.e_pax %]</td>
+            <th align="left">&nbsp;</th>
+            <td align="left">&nbsp;</td>
+        </tr>
+    </table>
+    <table width="100%" cellspacing=0 cellpadding=5 border=1>
+        <tr>
+            <td><b>SETUP</b>
+                <br/>[% hdr.setup_detail %]
+            </td>
+        </tr>
+    </table>
+    <table width="100%" cellspacing=0 cellpadding=5 border=1>
+        <tr valign="top">
+            <td valign="top" width="50%">
+                <br/><b>MENU</b>
+[% FOREACH id IN dtl.keys.sort %]
+                <li>[% dtl.$id.item_name %]
+[% END %]
+<br/>
+<br/>
+@ RS [% hdr.rate_per_pax_food %] + TAX PER PERSON
+
+
+                <br/><br/><b>BULLETIN BOARD INSCRIPTION</b>
+                <p>[% hdr.bulletin_board %]&nbsp;</p>
+            </td>
+            <td valign="top" width="50%">
+                <table width="100%">
+                    <tr><th align="left">AUDIO / VIDEO</th><td>---</td></tr>
+                    <tr><th align="left">SOFT DRINKS</th><td>---</td></tr>
+                    <tr><th align="left">MINERAL WATER</th><td>---</td></tr>
+                    <tr><th align="left">FLOWER ARRANGEMENTS</th><td>---</td></tr>
+                    <tr><th align="left">OTHER RETNAL</th><td>[% hdr.rental %]</td></tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+    </td>
+  </tr>
+  </table>
+<br/>
+<br/>
+  <div align="center">
+    CC To:- Accounts, Director F & B, Security, Chef, House Keeping, Service BAR, Stewarding, Front Office, Engineering.
+  </div>
+</body>
+</html>

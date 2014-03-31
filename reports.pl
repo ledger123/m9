@@ -89,6 +89,7 @@ sub banquet {
     my $vars = {};
     $vars->{hdr} = $dbs->query( 'SELECT * FROM banquet_header WHERE event_number=?', $id )->hash;
     $vars->{dtl} = $dbs->query( 'SELECT * FROM banquet_lines WHERE event_number=?',  $id )->map_hashes('id');
+    $vars->{dayname} = $dbs->query( "SELECT TO_CHAR(event_date, 'DAY') FROM banquet_header WHERE event_number=?",  $id )->list;
     $vars->{hdr}->{setup_detail} =~ s/\n/<br>/g;
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";

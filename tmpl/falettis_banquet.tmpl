@@ -69,25 +69,18 @@
         <tr valign="top">
             <td valign="top" width="50%">
                 <br/><b>MENU</b>
-[% FOREACH id IN dtl.keys.sort %]
-                <li>[% dtl.$id.item_name %]
-[% END %]
 <br/>
 <br/>
-@ RS [% hdr.rate_per_pax_food %] + TAX PER PERSON
-
-
+[% hdr.setup_detail %]
                 <br/><br/><b>BULLETIN BOARD INSCRIPTION</b>
                 <p>[% hdr.bulletin_board %]&nbsp;</p>
             </td>
+                <ol>
             <td valign="top" width="50%">
-                <table width="100%">
-                    <tr><th align="left">AUDIO / VIDEO</th><td>---</td></tr>
-                    <tr><th align="left">SOFT DRINKS</th><td>---</td></tr>
-                    <tr><th align="left">MINERAL WATER</th><td>---</td></tr>
-                    <tr><th align="left">FLOWER ARRANGEMENTS</th><td>---</td></tr>
-                    <tr><th align="left">OTHER RETNAL</th><td>[% hdr.rental %]</td></tr>
-                </table>
+[% FOREACH id IN dtl.keys.sort %]
+                <li>[% dtl.$id.item_name %]
+[% END %]
+                </ol>
             </td>
         </tr>
     </table>

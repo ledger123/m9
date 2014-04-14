@@ -133,6 +133,7 @@ sub regcard {
     my $vars = {};
     $vars->{res} = $dbs->query( 'SELECT * FROM hc_res WHERE res_id=?', $id )->hash;
     $vars->{checkin_time} = $dbs->query( "SELECT TO_CHAR(checkin_time2, 'DD-MON-YYYY HH24:MI:SS') FROM hc_res WHERE res_id = ?", $id )->list;
+    ($vars->{ramada_username}, $vars->{ramada_checkin_time}) = $dbs->query( "SELECT a\$sec.get_user, TO_CHAR(SYSDATE, 'DD-MON-YYYY HH24:MI:SS') FROM hc_res WHERE res_id = ?", $id )->list;
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";
 }

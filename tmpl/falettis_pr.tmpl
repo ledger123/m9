@@ -77,7 +77,13 @@
 		<td nowrap>[% dtl.$id.unit %]</td>
 		<td align="right">[% dtl.$id.cost %]</td>
 		<td align="right">[% nf.format_price(dtl.$id.req_qty * dtl.$id.cost,0) %]</td>
+
+        [% IF dtl.$id.item_id.substr(0,2) == 'DP' %]
+		<td align="right">-</td>
+        [% ELSE %]
 		<td align="right">[% dtl.$id.onhand %]</td>
+        [% END %]
+
 		<td>[% dtl.$id.vendor_name.substr(0,15) %]</td>
 		<td align="right">[% dtl.$id.last_cost %]</td>
 		<td>[% dtl.$id.last_date %]</td>

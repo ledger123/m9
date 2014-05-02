@@ -43,7 +43,6 @@
 		<tr><th align="left">PO Amount:</th><td><b>[% nf.format_price(hdr.ord_amt) %]</b></td></tr>
 		<tr><th align="left">PO Date:</th><td>[% hdr.tr_date %]</td></tr>
 		<tr><th align="left">Validity:</th><td>[% hdr.validity %]</td></tr>
-		<tr><th align="left">PR Num:</th><td>[% hdr.pr_num %]</td></tr>
 		</table></td></tr>
 	</table>
     </td>
@@ -60,6 +59,7 @@
 		<th>Disc</th>
 		<th>Tax</th>
 		<th>Amount</th>
+		<th>PR #</th>
 	</tr>
 [% net_cost_total = 0 %]
 
@@ -73,6 +73,7 @@
 		<td align="right">[% nf.format_price(dtl.$id.dis_amt) %]</td>
 		<td align="right">[% nf.format_price(dtl.$id.tax_amt) %]</td>
 		<td align="right">[% nf.format_price(dtl.$id.net_cost) %]</td>
+		<td align="right" nowrap>[% dtl.$id.pr_num %]</td>
 	</tr>
 [% net_cost_total = net_cost_total + dtl.$id.net_cost %]
 [% END %]
@@ -80,6 +81,7 @@
         <tr>
 		<th colspan=7" align="right">TOTAL</th>
 		<th align="right">[% nf.format_price(net_cost_total) %]</th>
+		<th>&nbsp;</th>
 	</tr>
 	</table>
     </td>

@@ -1,0 +1,158 @@
+<html>
+<head>
+  <title>City Ledger Invoices Form - MUNSHI8</title>
+  <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+</head>
+
+<body onload="return window.print();">
+  <table cellspacing="0" cellpadding="3" border="0" width="100%">
+    <tr>
+      <td colspan="4" align="center">
+        <div align="left">
+          <h1>INVOICE</h1>
+        </div>
+
+        <div align="right">
+          <b>NTN:</b>0894747-3</b>
+        </div>
+      </td>
+    </tr>
+
+    <tr>
+      <td colspan="4">
+        <hr size="4">
+      </td>
+    </tr>
+
+    <tr>
+      <th align="left">Code</th>
+      <td>[% company.comp_code %]</td>
+      <th align="left">Invoice Number</th>
+      <td>[% hdr.inv_num %]</td>
+    </tr>
+
+    <tr>
+      <th align="left">Company</th>
+      <td>[% company.company %]</td>
+      <th align="left">Invoice Amount</th>
+      <td>[% nf.format_price(hdr.inv_amt) %]</td>
+    </tr>
+
+    <tr>
+      <th align="left">Address</th>
+      <td>[% company.address %]</td>
+      <th align="left">Invoice Date</th>
+      <td>[% hdr.inv_date %]</td>
+    </tr>
+
+    <tr>
+      <th align="left">&nbsp;</th>
+      <td>&nbsp;</td>
+      <th align="left">&nbsp;</th>
+      <td>&nbsp;</td>
+    </tr>
+
+    <tr>
+      <th align="left">City</th>
+
+      <td>[% company.city %]</td>
+
+      <th align="left">&nbsp;</th>
+
+      <td>&nbsp;</td>
+    </tr>
+
+    <tr>
+      <th align="left">Phone</th>
+
+      <td>04235771686</td>
+
+      <th align="left">&nbsp;</th>
+
+      <td>&nbsp;</td>
+    </tr>
+
+    <tr>
+      <td align="left" colspan="2"><br>
+      - You are requested to kindly obtain clarification if any within a week from the recept of this invoice otherwise it will be assumed that the invoice is in order.<br>
+      - Payment of this invoice is due upon receipt within 15 days otherwise 2% penelty will be added in the invoice amouont. Thanking you</td>
+
+      <td align="center" colspan="2"><br>
+      THIS HOTEL IS INDEPENDENTLY OWNED &amp; OPERATED BY MAISONETTE LUXURY APARTMENTS. PLEASE SEND CROSSED CHEQUE TO MAISONETTE LUXURY APARTMENTS. DO NOT SEND CASH.</td>
+    </tr>
+  </table><br>
+  <br>
+
+<table width="100%" border=1 cellspacing=0 cellpadding=3>
+<tr>
+    <th>Date</th>
+    <th>Res ID</th>
+    <th>Guest Name</th>
+    <th>Reference</th>
+    <th>Room #</th>
+    <th>Amount</th>
+    <th>Sales Tax</th>
+    <th>Advance Tax</th>
+    <th>Total</th>
+</tr>
+[% tax_amt_total = 0 %]
+[% bill_amt_total = 0 %]
+[% btc_pymt_total = 0 %]
+[% tax10_total = 0 %]
+[% FOREACH res_id IN dtl.keys.sort %]
+<tr>
+    <td nowrap>[% dtl.$res_id.charge_date %]</td>
+    <td>[% dtl.$res_id.res_id %]</td>
+    <td>[% dtl.$res_id.guest_name1 %]</td>
+    <td>[% dtl.$res_id.other_ref1 %]</td>
+    <td>[% dtl.$res_id.room_num %]</td>
+    <td align="right">[% nf.format_price(dtl.$res_id.tax_amt) %]</td>
+    <td align="right">[% nf.format_price(dtl.$res_id.amount - dtl.$res_id.tax_amt) %]</td>
+    <td align="right">0</td>
+    <td align="right">[% nf.format_price(dtl.$res_id.amount) %]</td>
+</tr>
+[% tax_amt_total = tax_amt_total + dtl.$res_id.tax_amt %]
+[% bill_amt_total = bill_amt_total + dtl.$res_id.amount %]
+[% btc_pymt_total = btc_pymt_total + dtl.$res_id.amount %]
+[% END %]
+
+[% FOREACH sale_id IN chq.keys.sort %]
+<tr>
+    <td>[% chq.$sale_id.sale_date %]</td>
+    <td>[% chq.$sale_id.sale_id %]</td>
+    <td>[% chq.$sale_id.outlet_id %]</td>
+    <td>[% chq.$sale_id.chq_num %]</td>
+    <td>[% chq.$sale_id.covers %]</td>
+    <td align="right">[% nf.format_price(chq.$sale_id.sale_amt+chq.$sale_id.tip) %]</td>
+    <td align="right">[% nf.format_price(chq.$sale_id.ced) %]</td>
+    <td align="right">[% nf.format_price(chq.$sale_id.tax10) %]</td>
+    <td align="right">[% nf.format_price(chq.$sale_id.btc_pymt) %]</td>
+</tr>
+[% tax_amt_total = tax_amt_total + chq.$sale_id.sale_amt + chq.$sale_id.tip %]
+[% bill_amt_total = bill_amt_total + chq.$sale_id.net_amt %]
+[% btc_pymt_total = btc_pymt_total + chq.$sale_id.btc_pymt %]
+[% tax10_total = tax10_total + chq.$sale_id.tax10 %]
+[% END %]
+ <tr>
+    <th colspan=5 align="right">TOTAL</th>
+    <th align="right">[% nf.format_price(tax_amt_total) %]</th>
+    <th align="right">[% nf.format_price(bill_amt_total - tax_amt_total - tax10_total) %]</th>
+    <th align="right">[% nf.format_price(tax10_total) %]</th>
+    <th align="right">[% nf.format_price(btc_pymt_total) %]</th>
+</tr>
+</table>
+
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+  <br>
+
+  <div align="left">
+    <b>Credit Manager</b>
+  </div>
+</body>
+</html>

@@ -142,7 +142,7 @@ sub regcard {
 sub invoice {
     my $vars = {};
 
-    my $taxper = $dbs->query("SELECT global_value FROM z_apps_data WHERE id='FB_TAX1_PER'")->list or die( $dbs->error );
+    my $taxper = $dbs->query("SELECT global_value FROM z_apps_data WHERE id='FB_TAX1_PER'")->list;
     my $taxper = 1 + ( $taxper / 100 );
 
     $vars->{nf}      = $nf;

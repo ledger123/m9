@@ -16,7 +16,7 @@
                 <tr><th align="left">Imperial Hotel Management Services (Pvt) Ltd.</th></tr>
                 </table>
             </td>
-            <th valign="bottom">PURCHASE ORDER</th>
+            <th valign="bottom">STANDING PURCHASE ORDER</th>
         </tr>
         </table>
     </td>
@@ -53,7 +53,6 @@
 	<tr>
 		<th>Item</th>
 		<th>Description</th>
-		<th>Qty</th>
 		<th>Unit</th>
 		<th>Price</th>
 		<th>Disc</th>
@@ -67,7 +66,6 @@
 	<tr>
 		<td nowrap>[% dtl.$id.item_id %]</td>
 		<td>[% dtl.$id.item_name %]</td>
-		<td align="right">[% nf.format_price(dtl.$id.req_qty) %]</td>
 		<td align="center">[% dtl.$id.unit %]</td>
 		<td align="right">[% nf.format_price(dtl.$id.cost) %]</td>
 		<td align="right">[% nf.format_price(dtl.$id.dis_amt) %]</td>
@@ -79,7 +77,7 @@
 [% END %]
 
         <tr>
-		<th colspan=7" align="right">TOTAL</th>
+		<th colspan="6" align="right">TOTAL</th>
 		<th align="right">[% nf.format_price(net_cost_total) %]</th>
 		<th>&nbsp;</th>
 	</tr>

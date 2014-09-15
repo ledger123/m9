@@ -2620,7 +2620,7 @@ sub attachments {
         enctype    => 'multipart/form-data',
         method     => 'post',
         table      => 1,
-        fields     => [qw(filename)],
+        fields     => [qw(filename dir)],
         submit     => [qw(Upload)],
         stylesheet => 1,
         template   => {
@@ -2631,6 +2631,7 @@ sub attachments {
         keepextras => [qw(nextsub action)],
     );
     $form1->field( name => 'filename', type => 'file' );
+    $form1->field( name => 'dir', type => 'hidden', value => $dir)
 
     &report_header('File Upload');
     print $form1->render if $q->param('action') eq 'form';
@@ -2670,7 +2671,7 @@ sub attachments {
         }
     }
 
-    print qq|<br/><br/><a href="$pageurl?nextsub=attachments&action=form">Add a new attachment</a>|;
+    print qq|<br/><br/><a href="$pageurl?nextsub=attachments&action=form&dir=$dir">Add a new attachment</a>|;
 
     print qq|</body></html>|;
 }

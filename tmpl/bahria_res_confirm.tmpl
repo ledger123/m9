@@ -1,0 +1,115 @@
+<html>
+<head>
+ <title>Room Reservation</title>
+ <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+</head>
+<body onload="return window.print();">
+
+<table width="100%">
+<tr><td colspan=2 align="center"><img src=logo.jpg></td></tr>
+<tr><td colspan=2>&nbsp;</td></tr>
+<tr align="center">
+   <td valign="top">
+	<table cellspacing=0 cellpadding=1 width="100%">
+		<tr><td align="left">To:</td><td>[% company.contact_person %]</td></tr>
+		<tr><td align="left">Company:</td><td>[% res.company %]</td></tr>
+		<tr><td align="left">Phone:</td><td>[% res.phone %]</td></tr>
+		<tr><td align="left">Fax:</td><td>[% res.fax %]</td></tr>
+	</table>
+   </td>
+   <td valign="top">
+	<table cellspacing=0 cellpadding=1 width="100%">
+		<tr><td align="left">Resv By:</td><td>[% res.res_made_by %]</td></tr>
+		<tr><td align="left">Phone:</td><td>+92 423 534121241-43</td></tr>
+		<tr><td align="left">Fax:</td><td>+92 423 5341244</td></tr>
+		<tr><td align="left">Date:</td><td>[% res.resdate %]</td></tr>
+		<tr><td align="left">Email:</td><td>reservation@bahriagrand.com</td></tr>
+		<tr><td align="left">Web:</td><td>www.bahriagrand.com</td></tr>
+	</table>
+   </td>
+</tr>
+
+<tr><td colspan=2>&nbsp;</td></tr>
+<tr><td align="center" colspan=2>
+	<table border=1 cellspacing=0 cellpadding=5 width="100%"><tr><th><h2>Reservation Status: [% IF res.res_status == 'Active' %] Confirmed [% ELSE %] Cancelled [% END %]</h2></th></tr></table>
+</td></tr>
+
+<tr><td colspan=2>&nbsp;</td></tr>
+<tr>
+   <td colspan=2">
+   </td>
+</tr>
+
+<tr>
+   <td colspan=2 align="center">
+     <table cellspacing=0 cellpadding=2 border=0 width="100%">
+	<tr><td>
+	   <table cellspacing=0 cellpadding=2 width="100%">
+		<tr><th align="left">Confirmation Number:</th><td>[% res.res_id %]</td></tr>
+		<tr><th align="left">Guest Name1:</th><td>[% res.guest_name1 %]</td></tr>
+		<tr><th align="left">Guest Name2:</th><td>[% res.guest_name2 %]</td></tr>
+		<tr><th align="left">Arrival Date:</th><td>[% res.arrival_date %]</td></tr>
+		<tr><th align="left">Departure Date:</th><td>[% res.checkout_date %]</td></tr>
+		<tr><th align="left">No. of nights:</th><td>[% res.nights %]</td></tr>
+		<tr><th align="left">No. of adult/child:</th><td>[% res.adults %] / [% res.child %]</td></tr>
+	   </table>
+	</td><td>
+	   <table cellspacing=0 cellpadding=2 width="100%">
+		<tr><th align="left">Accomodation:</th><td>[% res.room_type %]</td></tr>
+		<tr><th align="left">Room Rate:</th><td>[% res.room_rate %] + Tax</td></tr>
+		<tr><th align="left">Breakfast Included:</th><td>[% res.adults %]</td></tr>
+		<tr><th align="left">Payment Mode:</th><td>[% res.payment_mode %]</td></tr>
+		<tr><th align="left">Airport Pickup:</th><td>[% res.ap_pickup %]</td></tr>
+		<tr><th align="left">Flight Details:</th><td>[% res.flight_num %] [% res.flight_time %]</td></tr>
+		<tr><th align="left">Res Remarks:</th><td>[% res.res_remarks %]</td></tr>
+	   </table>
+        </td></tr>
+      </table>
+   </td>
+</tr>
+
+<tr><td colspan=2>&nbsp;</td></tr>
+<tr><th colspan=2>
+<table width="100%" border=0 cellpadding=0 cellspacing=0><tr><th><h2>COMPLIMENTRY</h2></th></tr></table>
+</th></tr>
+<tr><td colspan=2>&nbsp;</td></tr>	
+<tr>
+  <td colspan=2">
+	<li>Welcome Drink Upon Arrival.
+	<li>Daily Newspaper 
+	<li>Use of Health Club
+	<li>Complimentry Internet
+
+</td>
+</tr>
+
+</table>
+
+<table width="100%" border=0 cellpadding=0 cellspacing=0><tr><th><h2>ATTENTION</h2></th></tr></table>
+</th></tr>
+<tr><td colspan=2>&nbsp;</td></tr>
+
+<tr>
+  <td colspan=2">
+	<li>Our check-in time is 1400 hrs. and checkout time is 1200 hrs. mid-day. 
+	<li>This reservation is 04:00 pm. Bahria Grand Hotel & Resort reserves the rights of releasing this reservation at 04:00 pm. only guaranteed reservation will be held after 04:00 pm.
+	<li>You may guarantee this reservation by returning this form after completion. Rooms will be charged if the guest list is No-Show. Reservation can also be guaranteed by your company letter if your company is on our credit list. 
+	
+  </td>
+</tr>
+
+</table>
+<br/>
+<br/>
+<br/>
+Best Regards,
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+__________________________<br/>
+Reservation Department
+</body>
+</html>
+

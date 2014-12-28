@@ -1,0 +1,128 @@
+<html>
+<head>
+ <title>Report Name</title>
+ <link rel="stylesheet" href="/munshi9/standard.css" type="text/css">
+</head>
+<body onload="return window.print();">
+
+<table width="100%">
+<tr>
+    <td>
+	<table width="100%">
+		<tr>
+		<th valign="bottom">SALES TAX INVOICE</th>
+		<td><img src="/munshi9/logo.jpg"></td>
+		<td valign="bottom">NTN: 4032712 - 4<br>PNTN: 4032712-4</td>
+		</tr>
+	</table>
+    </td>
+</tr>
+<tr>
+    <td><hr/></td>
+</tr>
+<tr>
+    <td>
+	<table width="100%" border=1 cellspacing=0 cellpadding=3>
+		<tr><td valign="top" width="50%"><table>
+		<tr><th align="left">Code:</th><td>[% hdr.comp_code %]</td></tr>
+		<tr><th align="left">Company:</th><td>[% company.company %]</td></tr>
+		<tr><th align="left">NTN:</th><td>[% company.ntn %]</td></tr>
+		<tr><th align="left">Address:</th><td>[% company.address %]</td></tr>
+		<tr><th align="left">City:</th><td>[% company.city %]</td></tr>
+		<tr><th align="left">Phone:</th><td>[% company.phone %]</td></tr>
+		</table></td><td valign="top"><table>
+		<tr><th align="left">Invoice Number:</th><td>[% hdr.inv_num %]</td></tr>
+		<tr><th align="left">Invoice Amount:</th><td><b>[% nf.format_price(hdr.inv_amt) %]</b></td></tr>
+		<tr><th align="left">Invoice Date:</th><td>[% hdr.inv_date %]</td></tr>
+		</table></td></tr>
+	</table>
+    </td>
+</tr>
+<tr>
+    <td>
+	<table width="100%" border=1 cellspacing=0 cellpadding=3>
+	<tr>
+		<th>Date</th>
+		<th>Res ID</th>
+		<th>Guest Name</th>
+		<th>Ref1</th>
+		<th>Room Num</th>
+		<th>Amount</th>
+		<th>Sales Tax</th>
+		<th>Advance Tax</th>
+		<th>Bill Amt</th>
+	</tr>
+[% tax_amt_total = 0 %]
+[% bill_amt_total = 0 %]
+[% btc_pymt_total = 0 %]
+[% ced_total = 0 %]
+[% tax10_total = 0 %]
+[% FOREACH res_id IN dtl.keys.sort %]
+	<tr>
+		<td nowrap>[% dtl.$res_id.charge_date %]</td>
+		<td>[% dtl.$res_id.res_id %]</td>
+		<td>[% dtl.$res_id.guest_name1 %]</td>
+		<td>[% dtl.$res_id.other_ref1 %]</td>
+		<td>[% dtl.$res_id.room_num %]</td>
+		<td align="right">[% nf.format_price(dtl.$res_id.tax_amt) %]</td>
+		<td align="right">[% nf.format_price(dtl.$res_id.amount - dtl.$res_id.tax_amt) %]</td>
+		<td align="right">0</td>
+		<td align="right">[% nf.format_price(dtl.$res_id.amount) %]</td>
+	</tr>
+[% tax_amt_total = tax_amt_total + dtl.$res_id.tax_amt %]
+[% bill_amt_total = bill_amt_total + dtl.$res_id.amount %]
+[% btc_pymt_total = btc_pymt_total + dtl.$res_id.amount %]
+[% ced_total = ced_total + (dtl.$res_id.amount - dtl.$res_id.tax_amt) %]
+[% END %]
+
+[% FOREACH sale_id IN chq.keys.sort %]
+	<tr>
+		<td>[% chq.$sale_id.sale_date %]</td>
+		<td>[% chq.$sale_id.sale_id %]</td>
+		<td>[% chq.$sale_id.outlet_id %]</td>
+		<td>[% chq.$sale_id.chq_num %]</td>
+		<td>[% chq.$sale_id.covers %]</td>
+		<td align="right">[% nf.format_price(chq.$sale_id.sale_amt+chq.$sale_id.tip) %]</td>
+		<td align="right">[% nf.format_price(chq.$sale_id.ced) %]</td>
+		<td align="right">[% nf.format_price(chq.$sale_id.tax10) %]</td>
+		<td align="right">[% nf.format_price(chq.$sale_id.btc_pymt) %]</td>
+	</tr>
+[% tax_amt_total = tax_amt_total + chq.$sale_id.sale_amt + chq.$sale_id.tip %]
+[% bill_amt_total = bill_amt_total + chq.$sale_id.net_amt %]
+[% btc_pymt_total = btc_pymt_total + chq.$sale_id.btc_pymt %]
+[% ced_total = ced_total + chq.$sale_id.ced %]
+[% tax10_total = tax10_total + chq.$sale_id.tax10 %]
+[% END %]
+
+        <tr>
+		<th colspan=5" align="right">TOTAL</th>
+		<th align="right">[% nf.format_price(tax_amt_total) %]</th>
+		<th align="right">[% nf.format_price(ced_total) %]</th>
+		<th align="right">[% nf.format_price(tax10_total) %]</th>
+		<th align="right">[% nf.format_price(btc_pymt_total) %]</th>
+	</tr>
+	</table>
+    </td>
+</tr>
+<tr><td><br/><br/><br/><br/></td></tr>
+<tr><td>___________________</td></tr>
+<tr><td>Credit Manager</td></tr>
+
+<tr>
+    <td align="center">
+	<table border=1 cellspacing=0 cellpadding=3>
+		<tr><th>15 DAYS CREDIT PERIOD</th></tr>
+		<tr><td>
+Cheque/Draft should be made in the name of<br/>
+<b>Imperial Hotel Management Services Pvt Ltd.</b><br/>
+24-Egerton Road, Lahore. Pakistan 54000.<br/>
+UAN #: +92 42 111-444-333, Fax #: +92 42 3636 6818<br/>
+Mail: credit.manager@falettishotel.com<br/>
+Web: www.falettishotel.com<br/>
+		</td></tr>
+	</table>
+    </td>
+</tr>
+</body>
+</html>
+

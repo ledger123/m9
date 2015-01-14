@@ -70,3 +70,5 @@ alter table banquet_header add ntn varchar2(100);
 
 ALTER TABLE hc_fb_sale_lines ADD kot_print VARCHAR2(1) DEFAULT 'N';
 
+ALTER TABLE hc_revenue_rpt ADD id INTEGER;
+UPDATE hc_revenue_rpt SET id = rownum;

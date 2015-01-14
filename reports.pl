@@ -2461,7 +2461,7 @@ sub onhand_parlevel {
 
     &report_header('Inventory Onhand Report with Par Level');
 
-    my @columns        = qw(item_cat item_id item_name uom_stk_id onhand min max par diff);
+    my @columns        = qw(item_cat item_id item_name uom_stk_id onhand min max reorder par diff);
     my @total_columns  = qw(avg_cost onhand amount min max par diff);
     my @search_columns = qw(store_id item_cat fromdate todate);
 
@@ -2624,9 +2624,15 @@ Include: |;
             $groupvalue = $row->{$sort};
             for (@total_columns) { $subtotals{$_} = 0 }
         }
+        $row->{par} = $row->{max} - $row->{min};
+        $row->{diff} = $row->{onhand} - $row->{par};
+        if ($row->{par} <= $row->{onhand}){
+            $row->{reorder} = 'In Stock';
+        } else {
+            $row->{reorder} = 'Order';
+        }
         for (@report_columns) { $tabledata{$_} = qq|<td nowrap>$row->{$_}</td>| }
         $tabledata{item_id} = qq|<td nowrap><a href="$url/a\$ic.ledger?p_item_id1=$row->{item_id}&p_tr_date1=$fromdate&p_tr_date2=$todate&p_iss_loc_id1=$store_id">$row->{item_id}</a>|;
-        $row->{diff} = $row->{onhand} - $row->{par};
         for (@total_columns) { $tabledata{$_} = qq|<td align="right" nowrap>| . $nf->format_price( $row->{$_}, 2 ) . qq|</td>| }
         for (@total_columns) { $totals{$_}    += $row->{$_} }
         for (@total_columns) { $subtotals{$_} += $row->{$_} }

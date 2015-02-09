@@ -1,0 +1,154 @@
+﻿<h1>Install MUNSHI9</h1>
+
+<h2>Read carefully</h2>
+<ol>
+<li>Print this page and tick each step with pen after completion.
+<li>Run each command one-by-one instead of copying / pasting multiple lines.
+<li>Carefully see the result of each command and try to notice any error message.
+</ol>
+
+<h2>Software needed</h2>
+<ol>
+    <li><b>putty:</b> Putty is used to connect to munshi9 server command line. <a href=http://mavsol.com/misc/mini/putty.exe>Click here to download and run</a>.
+    <li><b>winscp:</b> Winscp is used to copy files from or to munshi9 server. <a href=http://mavsol.com/misc/mini/winscp.exe>Click here to download and install</a>
+</ol>
+
+<h2>Installation steps</h2>
+<ol>
+<li>Download and install Ubuntu 14.04 32bit</li>
+http://www.ubuntu.com/download/alternative-downloads
+<br/><br/>
+
+<li>Increase swap space if RAM is less than 1GB</li>
+https://help.ubuntu.com/community/SwapFaq
+<br/><br/>
+
+<li>Change root (superuser) password</li>
+sudo passwd
+<br/><br/>
+
+<li>Switch to root user</li>
+su -
+<br/><br/>
+
+<li>Change updates server to 'Main Server' using software control center.</li>
+<br/><br/>
+
+<li>Update</li>
+apt-get update
+<br/><br/>
+
+<li>Install software components</li>
+apt-get install libaio1 ssh rlwrap apache2 git-core vim-gnome libcgi-simple-perl libdbi-perl libtemplate-perl libobject-signature-perl libnumber-format-perl libmime-lite-perl libdbix-simple-perl libtext-markdown-perl libdate-calc-perl libgd-gd2-perl libdatetime-perl libhtml-format-perl libmime-tools-perl apg libgd2-xpm-dev build-essential curl
+<br/><br/>
+
+<li>Install cpanminus</li>
+curl -L https://cpanmin.us | perl - App::cpanminus
+<br/><br/>
+
+<li>Download munshi9 perl code</li>
+<pre>
+cd /var/www
+git clone https://github.com/ledger123/m9.git munshi9
+ln -s /var/www/munshi9 /root
+mkdir /var/www/lighttpd
+ln -s /var/www/munshi9 /var/www/lighttpd
+</pre>
+<br/>
+
+<li>Download oracle from <a href='oracle-10g.deb'>this link</a>.
+<br/><br/>
+
+<li>Install oracle</li>
+dpkg -i oracle-10g.deb
+<br/><br/>
+
+<li>Configure oracle with 8000 port and gbaba4000 password</li>
+/etc/init.d/oracle-xe configure
+<br/><br/>
+
+<li>Some post installation changes</li>
+<pre>
+chmod g+w /usr/lib/oracle/xe/app/oracle/product/10.2.0/server/network/log/listener.log
+ln -s /usr/lib/oracle/xe/app/oracle/product/10.2.0/server/bin/oracle_env.sh /etc/profile.d/oracle_env.sh
+touch $HOME/sql.dict
+</pre>
+
+<li>Changed #!/bin/sh to #!/bin/bash in nls_lang.sh</li>
+<pre>
+nano /usr/lib/oracle/xe/app/oracle/product/10.2.0/server/bin/nls_lang.sh
+</pre>
+
+<li>Add following line to /etc/profile</li>
+<pre>
+nano /etc/profile
+alias sqlplus='rlwrap -b "" -f $HOME/sql.dict sqlplus'
+</pre>
+
+<li>Restart the server and login to room again using 'su -' in terminal</li>
+
+<li>Increase datafile and other changes using SQL*Plus</li>
+<pre>
+sqlplus sys as sysdba
+alter database datafile '/usr/lib/oracle/xe/oradata/XE/system.dbf' resize 4500m;
+EXEC DBMS_XDB.SETLISTENERLOCALACCESS(FALSE);
+GRANT dba to munshi8 identified by gbaba4000;
+@http://mavsol.com/misc/em9/install.sql
+@http://mavsol.com/misc/em9/grants.sql
+@http://mavsol.com/misc/em9/epg.sql
+</pre>
+
+<li>Copy latest backup file to /var/www/munshi9/restore/ folder</li>
+<li>Rename the file to latest.dmp.gz</li>
+<li>Run the restore command</li>
+<pre>
+cd /var/www/munshi9/restore/
+./restore.sh
+</pre>
+<li>Copy logo.jpg in /root/munshi9/ folder.</li>
+<li>Logon with MUNSHI8 user, goto 'Munshi9 Preferences' menu and set the server IP number in MUNSHI9_URL preference.
+
+<li>Setup backup/update schedule using cron.</li>
+<pre>
+Edit cron file with this command: 
+crontab -e
+Copy/paste following two lines and save.
+0 0,3,6,9,12,15,18,21 * * * cd /root/munshi9; ./genbackup.sh
+0,5,10,15,20,25,30,35,40,45,50,55 * * * * cd /root/munshi9; git pull
+</pre>
+
+<li>Generate and send your server public_key for online backup
+<pre>
+ssh-keygen -t rsa
+email the /root/.ssh/id_rsa.pub to ar.saqib@gmail.com
+</pre>
+</ol>
+
+<br/><br/><br/><br/>
+INSTALLATION IS NOW COMPLETE. TEST EVERYTHING.
+
+<h1>Delete and restoring data again in existing server</h1>
+<div>WARNING: Do not do it unless you know what you are doing</div>
+<ol>
+<li>Delete existing data
+<pre>
+sqlplus sys as sysdba
+drop user munshi8 cascade;
+grant dba to munshi8 identified by gbaba4000;
+@http://mavsol.com/misc/em9/epg.sql
+<pre>
+</ol>
+
+<h1>Reinstalling Oracle on existing server</h1>
+<pre>
+
+
+
+# Reinstall oracle-xe on ubuntu
+apt-get remove --purge oracle-xe-universal
+
+# Delete following files:
+/etc/passwd.lock
+/etc/gshadow.lock
+
+</pre>

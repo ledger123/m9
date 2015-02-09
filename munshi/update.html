@@ -1,0 +1,76 @@
+<h1>Software needed</h1>
+<ol>
+    <li><b>putty:</b> Putty is used to connect to munshi9 server command line. <a href=http://mavsol.com/misc/mini/putty.exe>Click here to download and run</a>.
+    <li><b>winscp:</b> Winscp is used to copy files from or to munshi9 server. <a href=http://mavsol.com/misc/mini/winscp.exe>Click here to download and install</a>
+</ol>
+
+<h1>Full upgrade</h1>
+<ol>
+<li>Login with putty directly on server. To login type following:</li>
+<pre>root@server-ip-address</pre> and when asked type the server password for root.
+
+<li>Run following commands.</li>
+<pre>
+cd /root/munshi9/
+./download.sh
+</pre>
+</ol>
+
+<h1>Full upgrade without Internet on Server</h1>
+<ol>
+<li>Download munshi9.sql.zip
+<li>Copy munshi9.sql.zip in /root/munshi9/ using winscp.
+<li>Login to server with putty and run following commands:
+<pre>
+cd /root/munshi9/
+unzip munshi9.sql.zip
+sqlplus munshi8/gbaba4000 @munshi9.sql
+</pre>
+</ol>
+
+<h1>Minor update</h1>
+<ol>
+<li>Login with putty or use terminal on server.</li>
+<li>Run following commands.</li>
+<pre>
+cd /root/munshi9/
+sqlplus munshi8/gbaba4000
+   ... Now 'SQL>' will appear. Here you will type the name of the update script as follows
+@http://mavsol.com/munshi9/filename
+</pre>
+</ol>
+
+<h1>Minor update without Internet on server</h1>
+<ol>
+<li>Download http://mavsol.com/munshi9/filename.sql
+<li>Copy filename.sql to /root/munshi9/ folder using WINSCP
+<li>Login with putty or use terminal on server.</li>
+<li>Run following commands.</li>
+<pre>
+cd /root/munshi9/
+sqlplus munshi8/gbaba4000
+   ... Now 'SQL>' will appear. Here you will type the name of the update script as follows
+@filename.sql
+</pre>
+</ol>
+
+<h1>github update</h1>
+<ol>
+<li>Login with putty using root@ip-address and run the following commands.
+<pre>
+cd /root/munshi9/
+git pull
+</pre>
+<li>Let us know if you get any error with this command.
+</ol>
+
+<h1>Running an SQL query</h1>
+<ol>
+<li>Logon to SQL*Plus as shown above in minor update.
+<li>You should be now on SQL> prompt.
+<li>Here type the query we have sent you in email. It is better to copy/paste the query to avoid any typing error.
+<li>Carefully see the message after query (rows updated, rows deleted or ANY ERROR) and report us this message in reply.
+</ol>
+
+
+</ol>

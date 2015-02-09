@@ -1,0 +1,44 @@
+<h1>Daily backup procedure</h1>
+
+<h2>Notes</h2>
+<ol>
+<li>Each backup file 'hotelname.dmp.gz' contains complete backup of every transaction.</li>
+<li>It is recommend to keep backup for ALL dates safe on a DVD or a hard disk or a USB.
+<li>If this is not possible then we recommend to keep at least one file for every one.
+</ol>
+
+<h2>Auto backup</h2>
+Backup file is generated automatically after 4 hours in the /root/munshi9/backups/ folder on server. You need to copy the daily backup file from server to some other computer, usb or harddisk. To do this:
+
+<ol>
+   <li><a href="http://mavsol.com/misc/mini/winscp.exe">Download and install WINSCP. (first time only)</a>
+   <li>Connect to munshi9 server using winscp. Put server ip address in host name, 'root' in user and your server password.
+   <li>Go to munshi9 folder and then backups folder. Here you will see all backup files with dates.
+   <li>Select and drag the backup file to your PC window.
+</ol>
+
+<h2>Manual backup</h2>
+Sometimes you may need to take manual backup for debugging or restoring on other server. For this:
+
+<ol>
+<li>Login with putty (armaghan@your-ip-address) or directly on server.
+<li>Run following commands.
+<pre>
+    cd /root/munshi9/backups/
+    ./genbackup.sh
+</pre>
+<li>Copy backup using winscp.
+</ol>
+
+<h2>Online backup</h2>
+Dropbox is a very easy and secure way to keep your munshi9 backups safe online.
+<ol>
+<li><a href="https://db.tt/7jD1e5Ok">Click here to create your free dropbox account.</a>
+<li>Download and install dropbox software on your computer.
+<li>Copy the backup files from server to your dropbox folder. These files will be uploaded to your dropbox account online.
+<li>There is 2.5 GB limit of each free account. You can create a new account with a new email address if your existing account gets filled up.
+</ol>
+
+<h2>CNIC scans and templates backup</h2>
+You need to copy CNIC scan images (in /root/munshi9/uploads/) and templates (/root/munshi9/tmpl/) using WINSCP. These are not backed-up with the database. In case of any confusion, send email to <a href="ar.saqib@gmail.com">ar.saqib@gmail.com</a> for clarity.
+

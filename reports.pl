@@ -1577,7 +1577,7 @@ sub inhouse_summary {
 
     &report_header('Inhouse Summary');
 
-    my @columns       = qw(res_id room room_type guest1 guest2 group_id nation address mobile company billing payment pax rate checkin chkin_time user_name checkout);
+    my @columns       = qw(res_id room room_type guest1 guest2 cnic passport group_id nation address mobile company billing payment pax rate checkin chkin_time user_name checkout);
     my @total_columns = qw(rate);
 
     my %sort_positions = {
@@ -1586,19 +1586,21 @@ sub inhouse_summary {
         room_type  => 3,
         guest1     => 4,
         guest2     => 5,
-        group_id   => 6,
-        nation     => 7,
-        address    => 8,
-        mobile     => 9,
-        company    => 10,
-        billing    => 11,
-        payment    => 12,
-        pax        => 13,
-        rate       => 14,
-        checkin    => 15,
-        chkin_time => 16,
-        user_name  => 17,
-        checkout   => 18,
+        cnic       => 6,
+        passport   => 7,
+        group_id   => 8,
+        nation     => 9,
+        address    => 10,
+        mobile     => 11,
+        company    => 12,
+        billing    => 13,
+        payment    => 14,
+        pax        => 15,
+        rate       => 16,
+        checkin    => 17,
+        chkin_time => 18,
+        user_name  => 19,
+        checkout   => 20,
     };
 
     my $sort      = $q->param('sort') ? $q->param('sort') : 'room';
@@ -1640,7 +1642,7 @@ Include: |;
 
     my $query = qq|
             SELECT   hc_res.res_id, hc_res.room_num room, hc_res.room_type, hc_res.guest_name1 guest1, 
-                     hc_res.guest_name2 guest2, hc_res.GROUP_ID, hc_res.address, hc_res.mobile, hc_res.nation,
+                     hc_res.guest_name2 guest2, nid_num cnic, passport, hc_res.GROUP_ID, hc_res.address, hc_res.mobile, hc_res.nation,
                      hc_res.company, hc_res.billing_ins billing, hc_res.payment_mode payment, 
                      hc_res.adults pax, hc_res.room_rate rate, hc_res.checkin_date checkin, 
                      TO_CHAR(checkin_time2, 'HH24:MI') chkin_time, hc_res.created_by user_name, checkout_date checkout
@@ -2133,6 +2135,7 @@ Include: |;
     print qq|</tr>|;
 }
 
+## Please see file perltidy.ERR
 ## Please see file perltidy.ERR
 #----------------------------------------
 sub billing_ins {
@@ -2627,11 +2630,12 @@ Include: |;
             $groupvalue = $row->{$sort};
             for (@total_columns) { $subtotals{$_} = 0 }
         }
-        $row->{par} = $row->{max} - $row->{min};
+        $row->{par}  = $row->{max} - $row->{min};
         $row->{diff} = $row->{onhand} - $row->{par};
-        if ($row->{par} <= $row->{onhand}){
+        if ( $row->{par} <= $row->{onhand} ) {
             $row->{reorder} = 'In Stock';
-        } else {
+        }
+        else {
             $row->{reorder} = 'Order';
         }
         for (@report_columns) { $tabledata{$_} = qq|<td nowrap>$row->{$_}</td>| }
@@ -2659,8 +2663,6 @@ Include: |;
     for (@report_columns) { print $tabledata{$_} }
     print qq|</tr>|;
 }
-
-
 
 #----------------------------------------
 sub journal {
@@ -2837,9 +2839,9 @@ sub attachments {
         keepextras => [qw(nextsub action)],
     );
     $form1->field( name => 'filename', type => 'file' );
-    $form1->field( name => 'dir', type => 'hidden', value => $dir)
+    $form1->field( name => 'dir', type => 'hidden', value => $dir )
 
-    &report_header('File Upload');
+      & report_header('File Upload');
     print $form1->render if $q->param('action') eq 'form';
 
     #-----------------------------------------------
@@ -3146,7 +3148,7 @@ sub hc_revenue_rpt {
         table      => 1,
         fields     => \@form1flds,
         required   => [qw(seq_id code particulars rptgroup group2 calctotal)],
-        options     => { calctotal => [qw(Y N)]},
+        options    => { calctotal => [qw(Y N)] },
         submit     => [qw(Save Delete)],
         values     => $row,
         params     => $q,

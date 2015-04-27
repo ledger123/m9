@@ -1752,6 +1752,14 @@ sub expected_arrivals {
         $arrival_date = $dbs->query("SELECT global_value FROM z_apps_data WHERE id='HC_SYSDATE'")->list;
     }
 
+    my $arrival_date2;
+    if ( $q->param('arrival_date2') ) {
+        $arrival_date2 = $q->param('arrival_date2');
+    }
+    else {
+        $arrival_date2 = $dbs->query("SELECT global_value FROM z_apps_data WHERE id='HC_SYSDATE'")->list;
+    }
+
     print qq|
 <form action="reports.pl" method="post">
 Include: |;
@@ -1761,7 +1769,8 @@ Include: |;
         print qq|<input type=checkbox name=l_$_ value="1" $checked> | . ucfirst($_);
     }
     print qq|<br/>
-    Arrival date: <input type=text class=datepicker name="arrival_date" size=12 value="$arrival_date"><br/>
+    From Arrival date: <input type=text class=datepicker name="arrival_date" size=12 value="$arrival_date"><br/>
+    To Arrival date: <input type=text class=datepicker name="arrival_date2" size=12 value="$arrival_date2"><br/>
     VIP: <input type=text size=3 name=vip value="$vip"> (Y or N)<br/>
     Subtotal: <input type=checkbox name=l_subtotal value="checked" | . $q->param('l_subtotal') . qq|><br/>
     <hr/>
@@ -1777,9 +1786,14 @@ Include: |;
     $where = ' 1 = 2 ' if $action ne 'Update';    # Display data only when Update button is pressed.
     my @bind = ();
 
-    if ( $q->param('arriival_date') ) {
+    if ( $q->param('arrival_date') ) {
         $where .= qq| AND hc_res.arrival_date >= ?|;
         push @bind, $q->param('arrival_date');
+    }
+
+    if ( $q->param('arrival_date2') ) {
+        $where .= qq| AND hc_res.arrival_date <= ?|;
+        push @bind, $q->param('arrival_date2');
     }
 
     if ( $q->param('vip') ) {

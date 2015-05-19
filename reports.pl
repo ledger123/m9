@@ -1577,7 +1577,7 @@ sub inhouse_summary {
 
     &report_header('Inhouse Summary');
 
-    my @columns       = qw(res_id room room_type guest1 guest2 cnic passport group_id nation address mobile company billing payment pax rate checkin chkin_time user_name checkout);
+    my @columns       = qw(res_id room room_type guest1 guest2 cnic passport group_id nation purpose next_dest checkin_remarks address mobile company billing payment pax rate checkin chkin_time user_name checkout);
     my @total_columns = qw(rate);
 
     my %sort_positions = {
@@ -1590,17 +1590,20 @@ sub inhouse_summary {
         passport   => 7,
         group_id   => 8,
         nation     => 9,
-        address    => 10,
-        mobile     => 11,
-        company    => 12,
-        billing    => 13,
-        payment    => 14,
-        pax        => 15,
-        rate       => 16,
-        checkin    => 17,
-        chkin_time => 18,
-        user_name  => 19,
-        checkout   => 20,
+        purpose     => 10,
+        next_dest     => 11,
+        checkin_remarks     => 12,
+        address    => 13,
+        mobile     => 14,
+        company    => 15,
+        billing    => 16,
+        payment    => 17,
+        pax        => 18,
+        rate       => 19,
+        checkin    => 20,
+        chkin_time => 21,
+        user_name  => 22,
+        checkout   => 23,
     };
 
     my $sort      = $q->param('sort') ? $q->param('sort') : 'room';
@@ -1643,6 +1646,7 @@ Include: |;
     my $query = qq|
             SELECT   hc_res.res_id, hc_res.room_num room, hc_res.room_type, hc_res.guest_name1 guest1, 
                      hc_res.guest_name2 guest2, nid_num cnic, passport, hc_res.GROUP_ID, hc_res.address, hc_res.mobile, hc_res.nation,
+		     hc_res.purpose, hc_res.next_dest, hc_res.checkin_remarks,
                      hc_res.company, hc_res.billing_ins billing, hc_res.payment_mode payment, 
                      hc_res.adults pax, hc_res.room_rate rate, hc_res.checkin_date checkin, 
                      TO_CHAR(checkin_time2, 'HH24:MI') chkin_time, hc_res.created_by user_name, checkout_date checkout

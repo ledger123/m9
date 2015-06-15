@@ -2879,12 +2879,15 @@ sub attachments {
         }
     }
 
+    print qq|<br/><br/><a href="$pageurl?nextsub=attachments&action=form&dir=$dir">Add a new attachment</a>|;
+
     #-----------------------------------------------
     # REPORT
     #-----------------------------------------------
     opendir( my $dh, "/var/www/munshi9/uploads/$dir" );
     if ($!) {
-        print "Can't opendir /var/www/munshi9/uploads/$dir: $!";
+        mkdir "/var/www/munshi9/uploads/$dir", oct("771");
+        #print "Can't opendir /var/www/munshi9/uploads/$dir: $!";
     }
     else {
         @allfiles = readdir($dh);
@@ -2895,9 +2898,14 @@ sub attachments {
                 print qq|<li><a href="uploads/$dir/$_">$_</a></li>|;
             }
         }
+        for (@allfiles) {
+            if ( !( $_ eq '.' or $_ eq '..' ) ) {
+                print qq|<img src="uploads/$dir/$_">$_</img><br/>|;
+            }
+        }
+
     }
 
-    print qq|<br/><br/><a href="$pageurl?nextsub=attachments&action=form&dir=$dir">Add a new attachment</a>|;
 
     print qq|</body></html>|;
 }

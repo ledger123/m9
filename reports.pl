@@ -2859,7 +2859,7 @@ sub attachments {
     $form1->field( name => 'filename', type => 'file' );
     $form1->field( name => 'dir', type => 'hidden', value => $dir )
 
-      & report_header('File Upload');
+    &report_header('File Upload');
     print $form1->render if $q->param('action') eq 'form';
 
     #-----------------------------------------------
@@ -2868,9 +2868,9 @@ sub attachments {
     if ( $form1->submitted eq 'Upload' ) {
         my $file = $form1->field('filename');
         if ($file) {
-            mkdir "$dir", oct("771") or die $! if ( !-d "$dir" );
+            mkdir "/var/www/munshi9/uploads/$dir", oct("771") or die $! if ( !-d "/var/www/munshi9/uploads/$dir" );
 
-            open F, ">$dir/$file" or die $!;
+            open F, ">/var/www/munshi9/uploads/$dir/$file" or die $!;
             while (<$file>) {
                 print F;
             }
@@ -2882,9 +2882,9 @@ sub attachments {
     #-----------------------------------------------
     # REPORT
     #-----------------------------------------------
-    opendir( my $dh, $dir );
+    opendir( my $dh, "/var/www/munshi9/uploads/$dir" );
     if ($!) {
-        print "Can't opendir $dir: $!";
+        print "Can't opendir /var/www/munshi9/uploads/$dir: $!";
     }
     else {
         @allfiles = readdir($dh);
@@ -2892,7 +2892,7 @@ sub attachments {
         print qq|<h4>List of files</h4>|;
         for (@allfiles) {
             if ( !( $_ eq '.' or $_ eq '..' ) ) {
-                print qq|<li><a href="$dir/$_">$_</a></li>|;
+                print qq|<li><a href="uploads/$dir/$_">$_</a></li>|;
             }
         }
     }

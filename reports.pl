@@ -30,6 +30,7 @@ my $nextsub   = $q->param('nextsub');
 my $action    = $q->param('action');
 my $tmpl      = $q->param('tmpl');
 my $id        = $q->param('id');
+my $emp_num   = $q->param('emp_num');
 my $comp_code = $q->param('comp_code');
 my $dir       = $q->param('dir');
 $dir = 'misc' if !$dir;
@@ -2857,7 +2858,8 @@ sub attachments {
         keepextras => [qw(nextsub action)],
     );
     $form1->field( name => 'filename', type => 'file' );
-    $form1->field( name => 'dir', type => 'hidden', value => $dir )
+    $form1->field( name => 'dir', type => 'hidden', value => $dir );
+    $form1->field( name => 'emp_num', type => 'hidden', value => $emp_num );
 
     &report_header('File Upload');
     print $form1->render if $q->param('action') eq 'form';
@@ -2875,11 +2877,14 @@ sub attachments {
                 print F;
             }
             close F;
+            $dbs->query("UPDATE hr_emp SET photo='$dir/$file' WHERE emp_num = ?", $emp_num);
+            $dbh->commit;
+            print ("UPDATE hr_emp SET photo='$dir/$file' WHERE emp_num = $emp_num");
             print qq|<h3>File uploaded</h3>|;
         }
     }
 
-    print qq|<br/><br/><a href="$pageurl?nextsub=attachments&action=form&dir=$dir">Add a new attachment</a>|;
+    print qq|<br/><br/><a href="$pageurl?nextsub=attachments&action=form&dir=$dir&emp_num=$emp_num">Add a new attachment</a>|;
 
     #-----------------------------------------------
     # REPORT
@@ -2905,7 +2910,6 @@ sub attachments {
         }
 
     }
-
 
     print qq|</body></html>|;
 }

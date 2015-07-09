@@ -23,19 +23,21 @@ http://www.ubuntu.com/download/alternative-downloads
 https://help.ubuntu.com/community/SwapFaq
 <br/><br/>
 
-<li>Change root (superuser) password</li>
-sudo passwd
-<br/><br/>
-
-<li>Switch to root user</li>
-su -
-<br/><br/>
-
 <li>Change updates server to 'Main Server' using software control center.</li>
 <br/><br/>
 
+<li>Open terminal window by pressing Ctrl+Alt+T</li>
+
+<li>Change root (superuser) password</li>
+<pre>sudo passwd</pre>
+<br/><br/>
+
+<li>Switch to root user</li>
+<pre>su -</pre>
+<br/><br/>
+
 <li>Update</li>
-apt-get update
+<pre>apt-get update</pre>
 <br/><br/>
 
 <li>Install software components</li>
@@ -43,28 +45,30 @@ apt-get install libaio1 ssh rlwrap apache2 git-core vim-gnome libcgi-simple-perl
 <br/><br/>
 
 <li>Install cpanminus</li>
-curl -L https://cpanmin.us | perl - App::cpanminus
+<pre>curl -L https://cpanmin.us | perl - App::cpanminus</pre>
 <br/><br/>
 
 <li>Download munshi9 perl code</li>
 <pre>
-cd /var/www
+cd /var/www/html
 git clone https://github.com/ledger123/m9.git munshi9
-ln -s /var/www/munshi9 /root
+ln -s /var/www/html/munshi9 /root
 mkdir /var/www/lighttpd
-ln -s /var/www/munshi9 /var/www/lighttpd
+ln -s /var/www/html/munshi9 /var/www/lighttpd
 </pre>
 <br/>
 
-<li>Download oracle from <a href='oracle-10g.deb'>this link</a>.
+<li>Download oracle from <a href='http://mavsol.com/oracle/oracle-10g.deb'>this link</a>.
 <br/><br/>
 
-<li>Install oracle</li>
-dpkg -i oracle-10g.deb
+<li>Goto download folder from terminal and install oracle</li>
+<pre>
+cd /home/armaghan/Downloads
+dpkg -i oracle-10g.deb</pre>
 <br/><br/>
 
 <li>Configure oracle with 8000 port and gbaba4000 password</li>
-/etc/init.d/oracle-xe configure
+<pre>/etc/init.d/oracle-xe configure</pre>
 <br/><br/>
 
 <li>Some post installation changes</li>
@@ -87,7 +91,7 @@ alias sqlplus='rlwrap -b "" -f $HOME/sql.dict sqlplus'
 
 <li>Restart the server and login to room again using 'su -' in terminal</li>
 
-<li>Increase datafile and other changes using SQL*Plus</li>
+<li>Increase datafile and other changes using SQL*Plus: sys is user name and gbaba4000 is password</li>
 <pre>
 sqlplus sys as sysdba
 alter database datafile '/usr/lib/oracle/xe/oradata/XE/system.dbf' resize 4500m;
@@ -98,11 +102,11 @@ GRANT dba to munshi8 identified by gbaba4000;
 @http://mavsol.com/misc/em9/epg.sql
 </pre>
 
-<li>Copy latest backup file to /var/www/munshi9/restore/ folder</li>
+<li>Copy latest backup file to /var/www/html/munshi9/restore/ folder</li>
 <li>Rename the file to latest.dmp.gz</li>
 <li>Run the restore command</li>
 <pre>
-cd /var/www/munshi9/restore/
+cd /var/www/html/munshi9/restore/
 ./restore.sh
 </pre>
 <li>Copy logo.jpg in /root/munshi9/ folder.</li>

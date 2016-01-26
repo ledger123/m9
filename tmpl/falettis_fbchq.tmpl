@@ -63,7 +63,7 @@
 [% END %]
 
     <tr>
-      <td width="75%"></td>
+      <td width="75%">Guest Name: [% hdr.guestname %]</td>
       <td><b>Sub Total</b></td>
       <td align="right">[% nf.format_price(hdr.sale_amt) %]</td>
     </tr>
@@ -79,7 +79,7 @@
 
 [% IF hdr.ced > 0 %]
     <tr>
-      <td width="75%"></td>
+      <td width="75%">Mobile: [% hdr.mobile %]</td>
       <td>16% Tax</td>
       <td align="right">[% nf.format_price(hdr.ced) %]</td>
     </tr>
@@ -88,7 +88,7 @@
 
 [% IF hdr.tax10 > 0 %]
     <tr>
-      <td width="75%"></td>
+      <td width="75%">CNIC: [% hdr.cnic %]</td>
       <td>B.Tax</td>
       <td align="right">[% nf.format_price(hdr.tax10) %]</td>
     </tr>

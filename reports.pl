@@ -107,7 +107,7 @@ sub fbchq {
     $vars->{dtl}         = $dbs->query( 'SELECT * FROM hc_fb_sale_lines WHERE sale_id=?', $id )->map_hashes('id');
     $vars->{user}        = $dbs->query( "SELECT 'USER: ' || created_by || ' AT ' || TO_CHAR(creation_date, 'DD-MON-RR HH24:MI') FROM hc_fb_sale WHERE sale_id=?", $id )->list;
     $vars->{outlet}      = $dbs->query( 'SELECT outlet_name FROM hc_fb_outlets WHERE outlet_id = ?', $vars->{hdr}->{outlet_id} )->list;
-    $vars->{sc_amt}      = $dbs->query( 'SELECT ROUND(fsale_amt + bsale_amt + osale_amt * sc/100,2) FROM hc_fb_sale WHERE sale_id=?', $id )->list;
+    $vars->{sc_amt}      = $dbs->query( 'SELECT ROUND((fsale_amt + bsale_amt + osale_amt) * sc/100,2) FROM hc_fb_sale WHERE sale_id=?', $id )->list;
 
     print $q->header();
     $tt->process( "$tmpl.tmpl", $vars ) || die $tt->error(), "\n";

@@ -8,12 +8,13 @@
   <div align="center"><img src="/munshi9/logo.jpg"></div>
 
   <b>STR-040-719-0501619</b>
-  <div>Outlet: [% hdr.outlet_id %]</div>
+  <h3>Outlet: [% hdr.outlet_id %]</h3>
 
   <table width="75%" cellspacing="0" cellpadding="5" border=1>
-    <tr><td width='20%'>Guest Name</td><td>[% guest_name1 %]</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    <tr><td width='20%'>Guest Name</td><td>[% guest_name1 %]</td><td>Company</td><td>[% hdr.comp_code %]/[% hdr.company %]</td></tr>
     <tr><td>Sale ID</td><td>[% hdr.sale_id %]</td><td>Room</td><td>[% hdr.room_num %]</td></tr>
     <tr><td>Date</td><td>[% hdr.sale_date %]</td><td>Total Amount</td><td>[% nf.format_price(hdr.net_amt) %]</td></tr>
+    <tr><td>Table</td><td>[% hdr.table_num %]</td><td>Covers</td><td>[% hdr.covers %]</td></tr>
   </table>
 
   <table width="75%" cellspacing="0" cellpadding="5" border=1>
